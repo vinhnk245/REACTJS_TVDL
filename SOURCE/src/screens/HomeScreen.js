@@ -11,7 +11,7 @@ import {
     Linking
 
 } from 'react-native';
-import reactotron from 'src/ReactotronConfig';
+import reactotron from '../ReactotronConfig';
 import axios from "axios";
 import *as API from '@constants/Api'
 

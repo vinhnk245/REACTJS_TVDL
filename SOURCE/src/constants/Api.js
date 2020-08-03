@@ -49,7 +49,7 @@ export const getAxios = createAxios();
 /* Support function */
 function handleResult(api) {
   return api.then(res => {
-    if (res.data.status != 1) {
+    if (res.data.status !== 1) {
       return Promise.reject(res.data);
     }
     return Promise.resolve(res.data);
