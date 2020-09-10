@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "cross-env DEBUG=express-sequelize node ./bin/www",
-    "ws": "set DEBUG=express-base:*,app:* & nodemon ./bin/www",
+    "s": "set DEBUG=express-base:*,app:* & nodemon ./bin/www",
     "ds": "nodemon ./bin/www",
     "devdebug": "DEBUG=express-base:*,app:* nodemon --inspect ./bin/www",
     "devlog": "DEBUG=express-base:*,app:* nodemon ./bin/www",

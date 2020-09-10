@@ -7,6 +7,6 @@ var router = express.Router();
 
 router.post("/login", wrapHandlerWithJSONResponse(customerController.login));
 
-router.get("/list", isAuthenticated(),wrapHandlerWithJSONResponse(customerController.list));
-router.post("/create", wrapHandlerWithJSONResponse(customerController.create));
+router.get("/list", wrapHandlerWithJSONResponse(customerController.list));
+router.post("/create", isAuthenticated(), wrapHandlerWithJSONResponse(customerController.create));
 module.exports = router;

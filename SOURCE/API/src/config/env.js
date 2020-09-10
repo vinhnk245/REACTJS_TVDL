@@ -2,11 +2,12 @@ const Sequelize = require("sequelize");
 const { debug } = require("../utils/constant");
 const CONSTANT = require("../utils/constant");
 
+var db_name  = process.env.DB_NAME || "duonglieu_library";
 const env = {
-  host: process.env.DB_HOST || "127.0.0.1",
+  host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "Hung26051998",
-  database: process.env.DB_NAME || "utruck"
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "duonglieu_library"
 }
 
 const sequelize = new Sequelize(env.database, env.user, env.password, {
@@ -30,6 +31,16 @@ const sequelize = new Sequelize(env.database, env.user, env.password, {
     hooks: true
   }
 });
+
+sequelize
+        .authenticate()
+        .then(() => {
+            console.log('Server already');
+        })
+        .catch((err) => {
+            console.log('Can not connect to the database: ', err);
+        });
+
 
 module.exports = sequelize;
 
