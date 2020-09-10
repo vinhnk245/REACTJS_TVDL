@@ -1,5 +1,5 @@
 "use strict";
-const { debug, apiCode, IS_ACTIVE, ROLE, SALE_STATUS } = require("./constant");
+const { debug, API_CODE, IS_ACTIVE, ROLE, SALE_STATUS } = require("./constant");
 var compose = require("composable-middleware");
 const response = require("../commons/response");
 const Sequelize = require("sequelize");
@@ -29,13 +29,13 @@ module.exports = {
             req.auth = findUser;
             next();
             return;
-          } else return res.json(response.error(apiCode.UNAUTHORIZED));
+          } else return res.json(response.error(API_CODE.UNAUTHORIZED));
         } catch (error) {
           debug.error(error);
-          return res.json(response.error(apiCode.DB_ERROR, "Lỗi kết nối"));
+          return res.json(response.error(API_CODE.DB_ERROR, "Lỗi kết nối"));
         }
       } else {
-        return res.json(response.error(apiCode.INVALID_ACCESS_TOKEN));
+        return res.json(response.error(API_CODE.INVALID_ACCESS_TOKEN));
       }
     });
   },

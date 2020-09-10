@@ -1,4 +1,4 @@
-const { ROLE, apiCode } = require('@utils/constant');
+const { ROLE, API_CODE } = require('@utils/constant');
 
 module.exports = function (roles = []) {
   if (typeof roles === 'string') {
@@ -9,8 +9,8 @@ module.exports = function (roles = []) {
     if (req.auth && roles.length && !roles.includes(req.auth.role_id)) {
       return res.json({
         status: 0,
-        code: apiCode.UNAUTHORIZED.code,
-        msg: apiCode.UNAUTHORIZED.message,
+        code: API_CODE.UNAUTHORIZED.code,
+        msg: API_CODE.UNAUTHORIZED.message,
         ex: '',
         data: {},
       });

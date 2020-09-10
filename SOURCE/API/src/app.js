@@ -4,11 +4,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const response = require('./commons/response');
 
 var indexRouter = require('./routes');
-var usersRouter = require('./routes/usersRouter');
-var customerRouter = require('./routes/customerRouter');
-const response = require('./commons/response');
+var readerRouter = require('./routes/readerRouter');
+
 
 var app = express();
 
@@ -23,8 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/customer', customerRouter);
+app.use('/reader', readerRouter);
 
 
 

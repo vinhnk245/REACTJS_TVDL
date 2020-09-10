@@ -26,7 +26,7 @@ const sequelize = new Sequelize(env.database, env.user, env.password, {
   // },
   define: {
     // rejectOnEmpty: Promise.reject({
-    //   code: CONSTANT.apiCode.NOT_FOUND
+    //   code: CONSTANT.API_CODE.NOT_FOUND
     // })
     hooks: true
   }
