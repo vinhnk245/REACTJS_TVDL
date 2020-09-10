@@ -1,0 +1,40 @@
+{
+  "name": "source",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cross-env DEBUG=express-sequelize node ./bin/www",
+    "ws": "set DEBUG=express-base:*,app:* & nodemon ./bin/www",
+    "ds": "nodemon ./bin/www",
+    "devdebug": "DEBUG=express-base:*,app:* nodemon --inspect ./bin/www",
+    "devlog": "DEBUG=express-base:*,app:* nodemon ./bin/www",
+    "pm2dev": "DEBUG=express-base:*,app:* pm2 start ecosystem.config.js --env development",
+    "pm2prod": "pm2 start ecosystem.config.js --env production",
+    "sync": "node ./src/config/sync.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "composable-middleware": "^0.3.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "hat": "^0.0.3",
+    "http-errors": "~1.6.3",
+    "module-alias": "^2.2.2",
+    "morgan": "~1.9.1",
+    "mysql2": "^2.1.0",
+    "pug": "2.0.0-beta11",
+    "sequelize": "^5.21.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  },
+  "_moduleAliases": {
+    "@src": "./src",
+    "@controllers": "./src/controllers",
+    "@models": "./src/models",
+    "@utils": "./src/utils",
+    "@commons": "./src/commons",
+    "@config": "./src/config"
+  }
+}
