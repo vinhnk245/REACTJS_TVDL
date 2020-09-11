@@ -3,9 +3,9 @@ var models = require("@models");
 
 models.sequelize
   // thêm mới mà k xóa
-  // .sync({ force: true })
+  // .sync({ force: false })
   //
-  .sync({ force: true, alter: true })
+  .sync({ force: false, alter: true })
   // xóa hết rồi thêm lại
   // .sync({ force: true })
   .then((res) => {

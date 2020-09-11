@@ -51,6 +51,14 @@ book.init(
       type: Sequelize.STRING(200),
       allowNull: true,
     },
+    publishers: {
+      type: Sequelize.STRING(200),
+      allowNull: true,
+    },
+    publishingYear: {
+      type: Sequelize.INTEGER,
+      allowNull: true
+    },
     createdMemberId: {
       type: Sequelize.INTEGER,
       allowNull: true
