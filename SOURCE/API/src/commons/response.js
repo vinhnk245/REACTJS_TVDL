@@ -35,8 +35,7 @@ function wrapHandlerWithJSONResponse(handler) {
         ...result,
       });
     } catch (error) {
-      // next(error);
-      debug.error(error);
+      console.log(error);
       res.json(wrapErrorJSON(error));
     }
   };

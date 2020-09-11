@@ -23,6 +23,8 @@ module.exports = {
     NO_PERMISSION: { code: 7, message: 'Không có quyền thực hiện chức năng' },
     PAGE_ERROR: { code: 8, message: 'Lỗi truyền trang' },
     FAIL_CHANGE_PASS: { code: 9, message: 'Sai mật khẩu' },
+    REQUIRE_FIELD: { code: 10, message: 'Vui lòng nhập đầy đủ thông tin' },
+    ACCOUNT_DEACTIVATED: { code: 11, message: 'Tài khoản hiện đang bị khóa' },
   },
 
   CONFIG: {
@@ -53,14 +55,13 @@ module.exports = {
     ACTIVE: 1,
     INACTIVE: 0,
     DEACTIVATE: 2,
-    REACTIVATE: 3,
+    REJECT: 3,
   },
 
   ROLE: {
     MANAGERS: 1,
     HEAD_OF_BOARDS: 2,
     MEMBERS: 3,
-    SALE: 5,
   },
 
   GENDER: {

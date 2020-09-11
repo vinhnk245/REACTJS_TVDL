@@ -26,7 +26,6 @@ module.exports = {
               isActive: 1,
             },
           });
-          // console.log(findUser)
           if (!findUser)
             return res.json(response.error(API_CODE.UNAUTHORIZED)); 
 

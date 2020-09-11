@@ -65,6 +65,11 @@ reader.init(
       defaultValue: 0,
       allowNull: false,
     },
+    status: {
+      type: Sequelize.INTEGER,
+      defaultValue: 1,
+      allowNull: false,
+    },
     deviceId: {
       type: Sequelize.STRING(200),
       allowNull: true,
