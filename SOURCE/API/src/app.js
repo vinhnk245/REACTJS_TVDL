@@ -8,6 +8,7 @@ const response = require('./commons/response');
 
 var indexRouter = require('./routes');
 var readerRouter = require('./routes/readerRouter');
+var bookCategoryRouter = require('./routes/bookCategoryRouter');
 
 
 var app = express();
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/reader', readerRouter);
+app.use('/bookCategory', bookCategoryRouter);
 
 
 
