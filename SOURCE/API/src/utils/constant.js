@@ -26,14 +26,16 @@ module.exports = {
     REQUIRE_FIELD: { code: 10, message: 'Vui lòng nhập đầy đủ thông tin' },
     ACCOUNT_DEACTIVATED: { code: 11, message: 'Tài khoản hiện đang bị khóa' },
     PHONE_EXIST: { code: 12, message: 'Số điện thoại đã tồn tại' },
+    CARD_NUMBER_EXIST: { code: 13, message: 'Số thẻ đã tồn tại' },
   },
 
   CONFIG: {
     CRYPT_SALT: 10,
     PAGING_LIMIT: 20,
-    DEFAULT_PASSWORD: 'TVDL2013',
+    DEFAULT_PASSWORD: 'TVDL11092013',
     MAX_IMAGE: 5,
     PREFIX: 'TVDL',
+    FIRST_CARD_NUMBER: 1,
   },
 
   VALIDATE_PHONE: {

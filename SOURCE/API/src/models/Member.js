@@ -54,7 +54,8 @@ member.init(
     },
     status: {
       type: Sequelize.INTEGER,
-      allowNull: true,
+      defaultValue: 1,
+      allowNull: false,
     },
     note: {
       type: Sequelize.STRING(500),

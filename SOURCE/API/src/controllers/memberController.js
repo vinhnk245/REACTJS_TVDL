@@ -37,7 +37,7 @@ async function createMember(req, res) {
         !phone || 
         !address ||
         !dob ||
-        !role) return error(API_CODE.INVALID_PARAM)
+        !role) return error(API_CODE.REQUIRE_FIELD)
 
     let checkAccount = await member.findOne({
         where: {
@@ -79,7 +79,7 @@ async function updateMember(req, res) {
         !address ||
         !dob ||
         !status ||
-        !role) return error(API_CODE.INVALID_PARAM)
+        !role) return error(API_CODE.REQUIRE_FIELD)
 
     let memberUpdate = await member.findOne({
         where: {

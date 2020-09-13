@@ -1,4 +1,4 @@
-const { API_CODE, IS_ACTIVE, ROLE } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -18,8 +18,8 @@ async function getReaderDetail(readerId) {
       'id', 'token', 'account', 'name', 'address', 'dob', 'cardNumber', 'createdDate', 'parentName', 'parentPhone', 'lost', 'note'
     ],
     where: {
-      IS_ACTIVE: ACTIVE,
-      ID: readerId
+      isActive: ACTIVE,
+      id: readerId
     }
   })
   if(!readerDetail) return error(API_CODE.NOT_FOUND)
@@ -31,32 +31,35 @@ async function createReader(req, res) {
   if(!name || 
       !address || 
       !parentName || 
-      !parentPhone ||
-      !dob) return error(API_CODE.INVALID_PARAM)
+      !dob) return error(API_CODE.REQUIRE_FIELD)
 
-  let checkAccount = await reader.findOne({
-      where: {
-          isActive: ACTIVE,
-          [Op.or]: [
-              { account: account }, 
-              { phone: phone }
-          ]
-      }
+  let account, cardNumber
+  let lastReader = await reader.findAll({
+    where: {
+      isActive: ACTIVE
+    },
+    order: [
+      ['cardNumber', 'DESC']
+    ],
+    limit: 1
   })
-  if(checkAccount && checkAccount.account == account) return error(API_CODE.ACCOUNT_EXIST)
-  if(checkAccount && checkAccount.phone == phone) return error(API_CODE.PHONE_EXIST)
-
-  let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
+  if(!lastReader || lastReader.length === 0){
+    //khong co ban ghi reader trong db
+    cardNumber = CONFIG.FIRST_CARD_NUMBER
+  } else {
+    cardNumber = lastReader[0].cardNumber + 1
+  }
+  account = CONFIG.PREFIX + cardNumber
+  let hash = bcrypt.hashSync(account, CONFIG.CRYPT_SALT)
   let newReader = await reader.create({
       account: account,
       password: hash,
       name: name,
       address: address,
-      phone: phone,
-      email: email,
+      cardNumber: cardNumber,
+      parentName: parentName,
+      parentPhone: parentPhone,
       dob: dob,
-      joinedDate: joinedDate,
-      role: role,
       note: note,
       createdMemberId: req.auth.id
   })
@@ -64,34 +67,44 @@ async function createReader(req, res) {
 }
 
 async function updateReader(req, res) {
-  let { id, account, name, address, dob, joinedDate, phone, email, role, note, status } = req.body
-  if(!account || 
-      !name || 
-      !phone || 
-      !address ||
-      !dob ||
-      !status ||
-      !role) return error(API_CODE.INVALID_PARAM)
+  let { id, name, cardNumber, address, dob, parentName, parentPhone, note, status } = req.body
+  if(!name || 
+    !cardNumber || 
+    !address || 
+    !parentName || 
+    !status || 
+    !dob) return error(API_CODE.REQUIRE_FIELD)
 
   let readerUpdate = await reader.findOne({
-      where: {
-          isActive: ACTIVE,
-          id: id
-      }
+    where: {
+      isActive: ACTIVE,
+      id: id
+    }
   })
   if(!readerUpdate) return error(API_CODE.NOT_FOUND)
 
+  let newAccount = readerUpdate.account
+  if(readerUpdate.cardNumber != cardNumber){
+    let checkCardNumber = await reader.findOne({
+      where: {
+        isActive: ACTIVE,
+        cardNumber: cardNumber
+      }
+    })
+    if(checkCardNumber) return error(API_CODE.CARD_NUMBER_EXIST)
+
+    newAccount = CONFIG.PREFIX + cardNumber
+  }
   await readerUpdate.update({
-      account: account,
-      name: name,
-      address: address,
-      phone: phone,
-      email: email,
-      dob: dob,
-      joinedDate: joinedDate,
-      role: role,
-      status: status,
-      note: note
+    account: newAccount,
+    name: name,
+    address: address,
+    cardNumber: cardNumber,
+    parentName: parentName,
+    parentPhone: parentPhone,
+    dob: dob,
+    note: note,
+    status: status,
   })
   return await getReaderDetail(readerUpdate.id)
 }
