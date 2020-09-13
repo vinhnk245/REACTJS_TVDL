@@ -8,6 +8,7 @@ const response = require('./commons/response');
 
 var indexRouter = require('./routes');
 var readerRouter = require('./routes/readerRouter');
+var memberRouter = require('./routes/memberRouter');
 var bookCategoryRouter = require('./routes/bookCategoryRouter');
 var homeRouter = require('./routes/homeRouter');
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/reader', readerRouter);
+app.use('/member', memberRouter);
 app.use('/bookCategory', bookCategoryRouter);
 app.use('/home', homeRouter);
 

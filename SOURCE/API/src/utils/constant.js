@@ -25,13 +25,15 @@ module.exports = {
     FAIL_CHANGE_PASS: { code: 9, message: 'Sai mật khẩu' },
     REQUIRE_FIELD: { code: 10, message: 'Vui lòng nhập đầy đủ thông tin' },
     ACCOUNT_DEACTIVATED: { code: 11, message: 'Tài khoản hiện đang bị khóa' },
+    PHONE_EXIST: { code: 12, message: 'Số điện thoại đã tồn tại' },
   },
 
   CONFIG: {
     CRYPT_SALT: 10,
     PAGING_LIMIT: 20,
-    DEFAULT_PASSWORD: 'tvdl2013',
+    DEFAULT_PASSWORD: 'TVDL2013',
     MAX_IMAGE: 5,
+    PREFIX: 'TVDL',
   },
 
   VALIDATE_PHONE: {

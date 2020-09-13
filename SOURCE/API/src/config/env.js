@@ -14,16 +14,24 @@ const sequelize = new Sequelize(env.database, env.user, env.password, {
   host: env.host,
   dialect: "mysql",
   logging: console.log,
- //logging: false,
- // plain:true,
   query: { raw: false },
-  timezone: "+07:00",
-  // pool: {
-  //   max: 30,
-  //   min: 0,
-  //   acquire: 60000,
-  //   idle: 5000
-  // },
+  dialectOptions: {
+    dateStrings: true,
+    // typeCast: true,
+    typeCast: function (field, next) {
+      if (field.type == 'DATETIME' || field.type == 'TIMESTAMP') {
+        return new Date(field.string() + 'Z');
+      }
+      return next();
+    }
+  }, //for reading from database
+  timezone: "+07:00", //for writing to database
+  pool: {
+    max: 30,
+    min: 0,
+    acquire: 60000,
+    idle: 5000
+  },
   define: {
     // rejectOnEmpty: Promise.reject({
     //   code: CONSTANT.API_CODE.NOT_FOUND

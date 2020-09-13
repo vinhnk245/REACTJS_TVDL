@@ -6,5 +6,6 @@ const { isAuthenticated } = require("../middleware/Authenticated");
 var router = express.Router();
 
 router.post("/login", wrapHandlerWithJSONResponse(homeController.login));
+router.post("/logout", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.logout));
 
 module.exports = router;
