@@ -1,4 +1,4 @@
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -6,6 +6,53 @@ const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const { reader } = require("@models")
 const { success, error } = require("../commons/response")
+
+async function getListReader(req, res) {
+  let page = !req.query.page ? 0 : req.query.page - 1
+  let limit = parseInt(req.query.limit || LIMIT)
+  if (page < 0) return error(API_CODE.PAGE_ERROR)
+  let offset = page * limit
+  let text = (req.query.text || '').trim()
+  let querySearch = text.length > 0 
+    ? `name like '%${text}%' or parentName like '%${text}%' or parentPhone like '%${text}%'` 
+    : ''
+
+  let queryCardNumber = req.query.cardNumber ? `cardNumber = ${req.query.cardNumber}` : ``
+  let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
+
+  let queryOrderBy = 'id DESC'
+  if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_ASC)
+    queryOrderBy = 'cardNumber ASC'
+  if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_DESC)
+    queryOrderBy = 'cardNumber DESC'
+  if(req.query.orderBy == ORDER_BY.READER.DOB_ASC)
+    queryOrderBy = 'dob ASC'
+  if(req.query.orderBy == ORDER_BY.READER.DOB_DESC)
+    queryOrderBy = 'dob DESC'
+  if(req.query.orderBy == ORDER_BY.READER.LOST_ASC)
+    queryOrderBy = 'lost ASC'
+  if(req.query.orderBy == ORDER_BY.READER.LOST_DESC)
+    queryOrderBy = 'lost DESC'
+   
+  let listReader = await reader.findAndCountAll({
+    where: {
+      isActive: ACTIVE,
+      [Op.and]: [
+        sequelize.literal(queryCardNumber),
+        sequelize.literal(queryStatus),
+        sequelize.literal(querySearch)
+      ]
+    },
+    order: sequelize.literal(queryOrderBy),
+    offset: offset,
+    limit: limit
+  })
+
+  return {
+    totalPage: Math.ceil(listReader.count / limit),
+    items: listReader.rows
+  }
+}
 
 async function getReaderInfo(req, res) {
   if(!req.query.id) return error(API_CODE.INVALID_PARAM)
@@ -132,6 +179,7 @@ async function deleteReader(req, res) {
 
 
 module.exports = {
+  getListReader,
   getReaderInfo,
   getReaderDetail,
   createReader,

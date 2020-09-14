@@ -3,10 +3,56 @@ const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const hat = require("hat")
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
+const LIMIT = CONFIG.PAGING_LIMIT
 const { member } = require("@models")
 const { success, error } = require("../commons/response")
+
+async function getListMember(req, res) {
+    let page = !req.query.page ? 0 : req.query.page - 1
+    let limit = parseInt(req.query.limit || LIMIT)
+    if (page < 0) return error(API_CODE.PAGE_ERROR)
+    let offset = page * limit
+    let text = (req.query.text || '').trim()
+    let querySearch = text.length > 0 
+    ? `name like '%${text}%' or phone like '%${text}%'` 
+    : ''
+
+    let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
+
+    let queryOrderBy = 'role, id'
+    if(req.query.orderBy == ORDER_BY.MEMBER.ID_ASC)
+        queryOrderBy = 'id ASC'
+    if(req.query.orderBy == ORDER_BY.MEMBER.ID_DESC)
+        queryOrderBy = 'id DESC'
+    if(req.query.orderBy == ORDER_BY.MEMBER.DOB_ASC)
+        queryOrderBy = 'dob ASC'
+    if(req.query.orderBy == ORDER_BY.MEMBER.DOB_DESC)
+        queryOrderBy = 'dob DESC'
+    if(req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_ASC)
+        queryOrderBy = 'joinedDate ASC'
+    if(req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_DESC)
+        queryOrderBy = 'joinedDate DESC'
+
+    let listMember = await member.findAndCountAll({
+      where: {
+        isActive: ACTIVE,
+        [Op.and]: [
+            sequelize.literal(queryStatus),
+            sequelize.literal(querySearch)
+        ]
+      },
+      order: sequelize.literal(queryOrderBy),
+      offset: offset,
+      limit: limit
+    })
+
+    return {
+      totalPage: Math.ceil(listMember.count / limit),
+      items: listMember.rows
+    }
+}
 
 async function getMemberInfo(req, res) {
     if(!req.query.id) return error(API_CODE.INVALID_PARAM)
@@ -127,6 +173,7 @@ async function deleteMember(req, res) {
 
 
 module.exports = {
+    getListMember,
     getMemberInfo,
     getMemberDetail,
     createMember,

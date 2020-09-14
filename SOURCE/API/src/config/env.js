@@ -2,7 +2,6 @@ const Sequelize = require("sequelize");
 const { debug } = require("../utils/constant");
 const CONSTANT = require("../utils/constant");
 
-var db_name  = process.env.DB_NAME || "duonglieu_library";
 const env = {
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",

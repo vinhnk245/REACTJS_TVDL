@@ -38,6 +38,25 @@ module.exports = {
     FIRST_CARD_NUMBER: 1,
   },
 
+  ORDER_BY: { 
+    MEMBER: {
+      ID_ASC: 1,
+      ID_DESC: 2,
+      DOB_ASC: 3,
+      DOB_DESC: 4,
+      JOINED_DATE_ASC: 5,
+      JOINED_DATE_DESC: 6,
+    },
+    READER: {
+      CARD_NUMBER_ASC: 1,
+      CARD_NUMBER_DESC: 2,
+      DOB_ASC: 3,
+      DOB_DESC: 4,
+      LOST_ASC: 5,
+      LOST_DESC: 6,
+    },
+  },
+
   VALIDATE_PHONE: {
     MIN_CREATE_PHONE_LENGTH: 6,
     MAX_CREATE_PHONE_LENGTH: 15,

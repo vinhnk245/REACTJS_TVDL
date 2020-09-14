@@ -5,6 +5,7 @@ const { wrapHandlerWithJSONResponse } = response;
 const { isAuthenticated } = require("../middleware/Authenticated");
 var router = express.Router();
 
+router.get("/getListReader", isAuthenticated(), wrapHandlerWithJSONResponse(readerController.getListReader));
 router.get("/getReaderInfo", isAuthenticated(), wrapHandlerWithJSONResponse(readerController.getReaderInfo));
 router.post("/createReader", isAuthenticated(), wrapHandlerWithJSONResponse(readerController.createReader));
 router.post("/updateReader", isAuthenticated(), wrapHandlerWithJSONResponse(readerController.updateReader));

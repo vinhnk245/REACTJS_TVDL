@@ -5,6 +5,7 @@ const { wrapHandlerWithJSONResponse } = response;
 const { isAuthenticated } = require("../middleware/Authenticated");
 var router = express.Router();
 
+router.get("/getListMember", isAuthenticated(), wrapHandlerWithJSONResponse(memberController.getListMember));
 router.get("/getMemberInfo", isAuthenticated(), wrapHandlerWithJSONResponse(memberController.getMemberInfo));
 router.post("/createMember", isAuthenticated(), wrapHandlerWithJSONResponse(memberController.createMember));
 router.post("/updateMember", isAuthenticated(), wrapHandlerWithJSONResponse(memberController.updateMember));
