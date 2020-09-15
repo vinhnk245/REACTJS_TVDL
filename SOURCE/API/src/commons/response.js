@@ -35,7 +35,7 @@ function wrapHandlerWithJSONResponse(handler) {
         ...result,
       });
     } catch (error) {
-      // console.log(error)
+      console.log(error)
       // res.json(wrapErrorJSON(error.code ? error : API_CODE.DB_ERROR))
       res.json(wrapErrorJSON(error))
     }

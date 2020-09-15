@@ -6,7 +6,10 @@ const hat = require("hat")
 const response = require("@commons/response")
 const { success, error } = response
 const { API_CODE, IS_ACTIVE, ROLE } = require('@utils/constant')
-const { reader, member } = require('@models')
+const { 
+    reader: Reader, 
+    member: Member 
+} = require('@models')
 const memberController = require('@controllers/memberController')
 const readerController = require('@controllers/readerController')
 
@@ -15,14 +18,14 @@ async function login(req, res, next) {
     if(!account || !password)
         throw API_CODE.REQUIRE_FIELD
 
-    let readerLogin = await reader.findOne({
+    let readerLogin = await Reader.findOne({
         where: { 
             account: account,
             isActive: IS_ACTIVE.ACTIVE
         }
     })
     if(!readerLogin) {
-        let memberLogin = await member.findOne({
+        let memberLogin = await Member.findOne({
             where: {
                 account: account,
                 isActive: IS_ACTIVE.ACTIVE
@@ -74,9 +77,9 @@ async function logout(req, res, next) {
         }
     }
     if (req.auth.role) {
-        await member.update(update, where)
+        await Member.update(update, where)
     } else {
-        await reader.update(update, where)
+        await Reader.update(update, where)
     }
     return
 }

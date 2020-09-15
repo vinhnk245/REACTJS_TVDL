@@ -1,10 +1,11 @@
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
+const LIMIT = CONFIG.PAGING_LIMIT
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
-const { reader } = require("@models")
+const { reader: Reader } = require("@models")
 const { success, error } = require("../commons/response")
 
 async function getListReader(req, res) {
@@ -34,7 +35,7 @@ async function getListReader(req, res) {
   if(req.query.orderBy == ORDER_BY.READER.LOST_DESC)
     queryOrderBy = 'lost DESC'
    
-  let listReader = await reader.findAndCountAll({
+  let listReader = await Reader.findAndCountAll({
     where: {
       isActive: ACTIVE,
       [Op.and]: [
@@ -60,7 +61,7 @@ async function getReaderInfo(req, res) {
 }
 
 async function getReaderDetail(readerId) {
-  let readerDetail = await reader.findOne({
+  let readerDetail = await Reader.findOne({
     attributes: [
       'id', 'token', 'account', 'name', 'address', 'dob', 'cardNumber', 'createdDate', 'parentName', 'parentPhone', 'lost', 'note'
     ],
@@ -81,7 +82,7 @@ async function createReader(req, res) {
       !dob) throw API_CODE.REQUIRE_FIELD
 
   let account, cardNumber
-  let lastReader = await reader.findAll({
+  let lastReader = await Reader.findAll({
     where: {
       isActive: ACTIVE
     },
@@ -98,7 +99,7 @@ async function createReader(req, res) {
   }
   account = CONFIG.PREFIX + cardNumber
   let hash = bcrypt.hashSync(account, CONFIG.CRYPT_SALT)
-  let newReader = await reader.create({
+  let newReader = await Reader.create({
       account: account,
       password: hash,
       name: name,
@@ -122,7 +123,7 @@ async function updateReader(req, res) {
     !status || 
     !dob) throw API_CODE.REQUIRE_FIELD
 
-  let readerUpdate = await reader.findOne({
+  let readerUpdate = await Reader.findOne({
     where: {
       isActive: ACTIVE,
       id: id
@@ -132,7 +133,7 @@ async function updateReader(req, res) {
 
   let newAccount = readerUpdate.account
   if(readerUpdate.cardNumber != cardNumber){
-    let checkCardNumber = await reader.findOne({
+    let checkCardNumber = await Reader.findOne({
       where: {
         isActive: ACTIVE,
         cardNumber: cardNumber
@@ -162,7 +163,7 @@ async function deleteReader(req, res) {
 
   let id = req.body.id
   if(!id) throw API_CODE.INVALID_PARAM
-  let readerDelete = await reader.findOne({
+  let readerDelete = await Reader.findOne({
     where: {
         isActive: ACTIVE,
         id: id

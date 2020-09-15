@@ -27,6 +27,10 @@ module.exports = {
     ACCOUNT_DEACTIVATED: { code: 11, message: 'Tài khoản hiện đang bị khóa' },
     PHONE_EXIST: { code: 12, message: 'Số điện thoại đã tồn tại' },
     CARD_NUMBER_EXIST: { code: 13, message: 'Số thẻ đã tồn tại' },
+    CATEGORY_NOT_FOUND: { code: 14, message: 'Thể loại sách không tồn tại' },
+    BOOK_CODE_EXIST: { code: 15, message: 'Mã sách đã tồn tại' },
+    ERROR_QTY_LESS_AVAILABLE: { code: 16, message: 'Sách có sẵn không được phép lớn hơn số lượng' },
+    ERROR_QTY_LOST_AVAILABLE: { code: 17, message: 'Vui lòng kiểm tra lại số lượng, đã mất, có sẵn' },
   },
 
   CONFIG: {
@@ -54,6 +58,11 @@ module.exports = {
       DOB_DESC: 4,
       LOST_ASC: 5,
       LOST_DESC: 6,
+    },
+    BOOK: {
+      QTY_DESC: 1,
+      LOST_DESC: 2,
+      AVAILABLE_DESC: 3,
     },
   },
 

@@ -11,6 +11,7 @@ var readerRouter = require('./routes/readerRouter');
 var memberRouter = require('./routes/memberRouter');
 var bookCategoryRouter = require('./routes/bookCategoryRouter');
 var homeRouter = require('./routes/homeRouter');
+var bookRouter = require('./routes/bookRouter');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/reader', readerRouter);
 app.use('/member', memberRouter);
 app.use('/bookCategory', bookCategoryRouter);
 app.use('/home', homeRouter);
+app.use('/book', bookRouter);
 
 
 

@@ -6,7 +6,7 @@ const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
-const { member } = require("@models")
+const { member: Member } = require("@models")
 const { success, error } = require("../commons/response")
 
 async function getListMember(req, res) {
@@ -35,7 +35,7 @@ async function getListMember(req, res) {
     if(req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_DESC)
         queryOrderBy = 'joinedDate DESC'
 
-    let listMember = await member.findAndCountAll({
+    let listMember = await Member.findAndCountAll({
       where: {
         isActive: ACTIVE,
         [Op.and]: [
@@ -60,7 +60,7 @@ async function getMemberInfo(req, res) {
 }
 
 async function getMemberDetail(memberId) {
-    let memberDetail = await member.findOne({
+    let memberDetail = await Member.findOne({
         where: {
             isActive: ACTIVE,
             id: memberId
@@ -85,7 +85,7 @@ async function createMember(req, res) {
         !dob ||
         !role) throw API_CODE.REQUIRE_FIELD
 
-    let checkAccount = await member.findOne({
+    let checkAccount = await Member.findOne({
         where: {
             isActive: ACTIVE,
             [Op.or]: [
@@ -98,7 +98,7 @@ async function createMember(req, res) {
     if(checkAccount && checkAccount.phone == phone) throw API_CODE.PHONE_EXIST
 
     let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
-    let newMember = await member.create({
+    let newMember = await Member.create({
         account: account,
         password: hash,
         name: name,
@@ -127,7 +127,7 @@ async function updateMember(req, res) {
         !status ||
         !role) throw API_CODE.REQUIRE_FIELD
 
-    let memberUpdate = await member.findOne({
+    let memberUpdate = await Member.findOne({
         where: {
             isActive: ACTIVE,
             id: id
@@ -157,7 +157,7 @@ async function deleteMember(req, res) {
     let id = req.body.id
     if(!id) throw API_CODE.INVALID_PARAM
 
-    let memberDelete = await member.findOne({
+    let memberDelete = await Member.findOne({
         where: {
             isActive: ACTIVE,
             id: id
