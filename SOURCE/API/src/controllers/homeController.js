@@ -13,7 +13,7 @@ const readerController = require('@controllers/readerController')
 async function login(req, res, next) {
     const { account, password, deviceId } = req.body
     if(!account || !password)
-        return error(API_CODE.REQUIRE_FIELD)
+        throw API_CODE.REQUIRE_FIELD
 
     let readerLogin = await reader.findOne({
         where: { 
@@ -28,8 +28,8 @@ async function login(req, res, next) {
                 isActive: IS_ACTIVE.ACTIVE
             }
         })
-        if(!memberLogin) return error(API_CODE.LOGIN_FAIL)
-        if(memberLogin.status === IS_ACTIVE.DEACTIVATE) return error(API_CODE.ACCOUNT_DEACTIVATED)
+        if(!memberLogin) throw API_CODE.LOGIN_FAIL
+        if(memberLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
 
         let checkPass = await bcrypt.compareSync(
             password, 
@@ -37,7 +37,7 @@ async function login(req, res, next) {
             (err, res) => {
                 return res
             })
-        if(!checkPass) return error(API_CODE.LOGIN_FAIL)
+        if(!checkPass) throw API_CODE.LOGIN_FAIL
 
         await memberLogin.update({
             token: hat(),
@@ -45,7 +45,7 @@ async function login(req, res, next) {
         })
         return await memberController.getMemberDetail(memberLogin.id)
     } else {
-        if(readerLogin.status === IS_ACTIVE.DEACTIVATE) return error(API_CODE.ACCOUNT_DEACTIVATED)
+        if(readerLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
 
         let checkPasswordReader = await bcrypt.compareSync(
             password, 
@@ -53,7 +53,7 @@ async function login(req, res, next) {
             (err, res) => {
                 return res
             })
-        if(!checkPasswordReader) return error(API_CODE.LOGIN_FAIL)
+        if(!checkPasswordReader) throw API_CODE.LOGIN_FAIL
 
         await readerLogin.update({
             token: hat(),
@@ -64,26 +64,19 @@ async function login(req, res, next) {
 }
 
 async function logout(req, res, next) {
-    if(req.auth.role){
-        //update member
-        await member.update({
-            token: hat(),
-            deviceId: null
-        }, {
-            where: {
-                id: req.auth.id
-            }
-        })
+    let update = {
+        token: hat(),
+        deviceId: null
+    }
+    let where = {
+        where: {
+            id: req.auth.id
+        }
+    }
+    if (req.auth.role) {
+        await member.update(update, where)
     } else {
-        //update reader
-        await reader.update({
-            token: hat(),
-            deviceId: null
-        }, {
-            where: {
-                id: req.auth.id
-            }
-        })
+        await reader.update(update, where)
     }
     return
 }

@@ -24,6 +24,10 @@ book_category.init(
       type: Sequelize.STRING(200),
       allowNull: true,
     },
+    description: {
+      type: Sequelize.STRING(500),
+      allowNull: true,
+    },
     isActive: {
       type: Sequelize.INTEGER,
       allowNull: false,

@@ -10,7 +10,7 @@ const { success, error } = require("../commons/response")
 async function getListReader(req, res) {
   let page = !req.query.page ? 0 : req.query.page - 1
   let limit = parseInt(req.query.limit || LIMIT)
-  if (page < 0) return error(API_CODE.PAGE_ERROR)
+  if (page < 0) throw API_CODE.PAGE_ERROR
   let offset = page * limit
   let text = (req.query.text || '').trim()
   let querySearch = text.length > 0 
@@ -55,7 +55,7 @@ async function getListReader(req, res) {
 }
 
 async function getReaderInfo(req, res) {
-  if(!req.query.id) return error(API_CODE.INVALID_PARAM)
+  if(!req.query.id) throw API_CODE.INVALID_PARAM
   return await getReaderDetail(req.query.id)
 }
 
@@ -69,7 +69,7 @@ async function getReaderDetail(readerId) {
       id: readerId
     }
   })
-  if(!readerDetail) return error(API_CODE.NOT_FOUND)
+  if(!readerDetail) throw API_CODE.NOT_FOUND
   return readerDetail
 }
 
@@ -78,7 +78,7 @@ async function createReader(req, res) {
   if(!name || 
       !address || 
       !parentName || 
-      !dob) return error(API_CODE.REQUIRE_FIELD)
+      !dob) throw API_CODE.REQUIRE_FIELD
 
   let account, cardNumber
   let lastReader = await reader.findAll({
@@ -120,7 +120,7 @@ async function updateReader(req, res) {
     !address || 
     !parentName || 
     !status || 
-    !dob) return error(API_CODE.REQUIRE_FIELD)
+    !dob) throw API_CODE.REQUIRE_FIELD
 
   let readerUpdate = await reader.findOne({
     where: {
@@ -128,7 +128,7 @@ async function updateReader(req, res) {
       id: id
     }
   })
-  if(!readerUpdate) return error(API_CODE.NOT_FOUND)
+  if(!readerUpdate) throw API_CODE.NOT_FOUND
 
   let newAccount = readerUpdate.account
   if(readerUpdate.cardNumber != cardNumber){
@@ -138,7 +138,7 @@ async function updateReader(req, res) {
         cardNumber: cardNumber
       }
     })
-    if(checkCardNumber) return error(API_CODE.CARD_NUMBER_EXIST)
+    if(checkCardNumber) throw API_CODE.CARD_NUMBER_EXIST
 
     newAccount = CONFIG.PREFIX + cardNumber
   }
@@ -158,21 +158,20 @@ async function updateReader(req, res) {
 
 async function deleteReader(req, res) {
   if(req.auth.role == ROLE.MEMBERS)
-      return error(API_CODE.NO_PERMISSION)
+    throw API_CODE.NO_PERMISSION
 
   let id = req.body.id
-  if(!id) return error(API_CODE.INVALID_PARAM)
-
+  if(!id) throw API_CODE.INVALID_PARAM
   let readerDelete = await reader.findOne({
-      where: {
-          isActive: ACTIVE,
-          id: id
-      }
+    where: {
+        isActive: ACTIVE,
+        id: id
+    }
   })
-  if(!readerDelete) return error(API_CODE.NOT_FOUND)
+  if(!readerDelete) throw API_CODE.NOT_FOUND
   
   await readerDelete.update({
-      isActive: IS_ACTIVE.INACTIVE
+    isActive: IS_ACTIVE.INACTIVE
   })
   return
 }

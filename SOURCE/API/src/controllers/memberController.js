@@ -12,7 +12,7 @@ const { success, error } = require("../commons/response")
 async function getListMember(req, res) {
     let page = !req.query.page ? 0 : req.query.page - 1
     let limit = parseInt(req.query.limit || LIMIT)
-    if (page < 0) return error(API_CODE.PAGE_ERROR)
+    if (page < 0) throw API_CODE.PAGE_ERROR
     let offset = page * limit
     let text = (req.query.text || '').trim()
     let querySearch = text.length > 0 
@@ -55,7 +55,7 @@ async function getListMember(req, res) {
 }
 
 async function getMemberInfo(req, res) {
-    if(!req.query.id) return error(API_CODE.INVALID_PARAM)
+    if(!req.query.id) throw API_CODE.INVALID_PARAM
     return await getMemberDetail(req.query.id)
 }
 
@@ -69,13 +69,13 @@ async function getMemberDetail(memberId) {
             'id', 'token', 'account', 'name', 'address', 'dob', 'joinedDate', 'phone', 'email', 'role', 'note'
         ]
     })
-    if(!memberDetail) return error(API_CODE.NOT_FOUND)
+    if(!memberDetail) throw API_CODE.NOT_FOUND
     return memberDetail
 }
 
 async function createMember(req, res) {
     if(req.auth.role == ROLE.MEMBERS)
-        return error(API_CODE.NO_PERMISSION)
+    throw API_CODE.NO_PERMISSION
 
     let { account, name, address, dob, joinedDate, phone, email, role, note } = req.body
     if(!account || 
@@ -83,7 +83,7 @@ async function createMember(req, res) {
         !phone || 
         !address ||
         !dob ||
-        !role) return error(API_CODE.REQUIRE_FIELD)
+        !role) throw API_CODE.REQUIRE_FIELD
 
     let checkAccount = await member.findOne({
         where: {
@@ -94,8 +94,8 @@ async function createMember(req, res) {
             ]
         }
     })
-    if(checkAccount && checkAccount.account == account) return error(API_CODE.ACCOUNT_EXIST)
-    if(checkAccount && checkAccount.phone == phone) return error(API_CODE.PHONE_EXIST)
+    if(checkAccount && checkAccount.account == account) throw API_CODE.ACCOUNT_EXIST
+    if(checkAccount && checkAccount.phone == phone) throw API_CODE.PHONE_EXIST
 
     let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
     let newMember = await member.create({
@@ -116,7 +116,7 @@ async function createMember(req, res) {
 
 async function updateMember(req, res) {
     if(req.auth.role == ROLE.MEMBERS)
-        return error(API_CODE.NO_PERMISSION)
+        throw API_CODE.NO_PERMISSION
 
     let { id, account, name, address, dob, joinedDate, phone, email, role, note, status } = req.body
     if(!account || 
@@ -125,7 +125,7 @@ async function updateMember(req, res) {
         !address ||
         !dob ||
         !status ||
-        !role) return error(API_CODE.REQUIRE_FIELD)
+        !role) throw API_CODE.REQUIRE_FIELD
 
     let memberUpdate = await member.findOne({
         where: {
@@ -133,7 +133,7 @@ async function updateMember(req, res) {
             id: id
         }
     })
-    if(!memberUpdate) return error(API_CODE.NOT_FOUND)
+    if(!memberUpdate) throw API_CODE.NOT_FOUND
 
     await memberUpdate.update({
         account: account,
@@ -152,10 +152,10 @@ async function updateMember(req, res) {
 
 async function deleteMember(req, res) {
     if(req.auth.role == ROLE.MEMBERS)
-        return error(API_CODE.NO_PERMISSION)
+        throw API_CODE.NO_PERMISSION
 
     let id = req.body.id
-    if(!id) return error(API_CODE.INVALID_PARAM)
+    if(!id) throw API_CODE.INVALID_PARAM
 
     let memberDelete = await member.findOne({
         where: {
@@ -163,7 +163,7 @@ async function deleteMember(req, res) {
             id: id
         }
     })
-    if(!memberDelete) return error(API_CODE.NOT_FOUND)
+    if(!memberDelete) throw API_CODE.NOT_FOUND
 
     await memberDelete.update({
         isActive: IS_ACTIVE.INACTIVE

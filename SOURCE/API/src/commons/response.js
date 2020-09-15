@@ -1,6 +1,6 @@
 'use strict';
 const _ = require('lodash');
-const { config } = require('@utils/constant');
+const { CONFIG, API_CODE } = require('@utils/constant');
 const { debug } = require('@utils/constant');
 function wrapErrorJSON(error, message = null, ex = '') {
   return {
@@ -17,7 +17,7 @@ function wrapSuccessJSON(data, message = 'Thành công', count = null, page = 0)
     code: 1,
     msg: message,
     data: data,
-    paging: count ? { page: page, totalItemCount: count, limit: config.PAGING_LIMIT } : null,
+    paging: count ? { page: page, totalItemCount: count, limit: CONFIG.PAGING_LIMIT } : null,
   };
 }
 function wrapHandlerWithJSONResponse(handler) {
@@ -35,10 +35,11 @@ function wrapHandlerWithJSONResponse(handler) {
         ...result,
       });
     } catch (error) {
-      console.log(error);
-      res.json(wrapErrorJSON(error));
+      // console.log(error)
+      // res.json(wrapErrorJSON(error.code ? error : API_CODE.DB_ERROR))
+      res.json(wrapErrorJSON(error))
     }
-  };
+  }
 }
 
 module.exports = {
