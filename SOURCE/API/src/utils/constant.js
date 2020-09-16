@@ -37,7 +37,7 @@ module.exports = {
     CRYPT_SALT: 10,
     PAGING_LIMIT: 20,
     DEFAULT_PASSWORD: 'TVDL11092013',
-    MAX_IMAGE: 5,
+    PATH_IMAGE: 'upload/image/',
     PREFIX: 'TVDL',
     FIRST_CARD_NUMBER: 1,
   },
