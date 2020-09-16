@@ -7,8 +7,14 @@ module.exports = {
   },
   roundNumber: (num, scale) => {
     return round(num, scale);
-  }
+  },
+  regexPhone
 };
+
+function regexPhone(phone) {
+  var regex = new RegExp("^0[1-9]{1}[0-9]{8}$")
+  return regex.test(phone)
+}
 
 function round(num, scale) {
   let block = num % scale;

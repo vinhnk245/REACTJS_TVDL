@@ -36,21 +36,22 @@ async function getListMember(req, res) {
         queryOrderBy = 'joinedDate DESC'
 
     let listMember = await Member.findAndCountAll({
-      where: {
-        isActive: ACTIVE,
-        [Op.and]: [
-            sequelize.literal(queryStatus),
-            sequelize.literal(querySearch)
-        ]
-      },
-      order: sequelize.literal(queryOrderBy),
-      offset: offset,
-      limit: limit
+        where: {
+            isActive: ACTIVE,
+            [Op.and]: [
+                sequelize.literal(queryStatus),
+                sequelize.literal(querySearch)
+            ]
+        },
+        order: sequelize.literal(queryOrderBy),
+        offset: offset,
+        limit: limit
     })
 
     return {
-      totalPage: Math.ceil(listMember.count / limit),
-      items: listMember.rows
+        totalCount: listMember.count,
+        totalPage: Math.ceil(listMember.count / limit),
+        items: listMember.rows
     }
 }
 

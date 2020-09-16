@@ -50,6 +50,7 @@ async function getListReader(req, res) {
   })
 
   return {
+    totalCount: listReader.count,
     totalPage: Math.ceil(listReader.count / limit),
     items: listReader.rows
   }

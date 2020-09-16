@@ -33,21 +33,22 @@ async function getListBook(req, res) {
         queryOrderBy = 'available DESC'
 
     let listBook = await Book.findAndCountAll({
-      where: {
-        isActive: ACTIVE,
-        [Op.and]: [
-            sequelize.literal(queryBookCategory),
-            sequelize.literal(querySearch)
-        ]
-      },
-      order: sequelize.literal(queryOrderBy),
-      offset: offset,
-      limit: limit
+        where: {
+            isActive: ACTIVE,
+            [Op.and]: [
+                sequelize.literal(queryBookCategory),
+                sequelize.literal(querySearch)
+            ]
+        },
+        order: sequelize.literal(queryOrderBy),
+        offset: offset,
+        limit: limit
     })
 
     return {
-      totalPage: Math.ceil(listBook.count / limit),
-      items: listBook.rows
+        totalCount: listBook.count,
+        totalPage: Math.ceil(listBook.count / limit),
+        items: listBook.rows
     }
 }
 

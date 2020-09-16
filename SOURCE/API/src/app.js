@@ -12,6 +12,7 @@ var memberRouter = require('./routes/memberRouter');
 var bookCategoryRouter = require('./routes/bookCategoryRouter');
 var homeRouter = require('./routes/homeRouter');
 var bookRouter = require('./routes/bookRouter');
+var volunteerRouter = require('./routes/volunteerRouter');
 
 var app = express();
 
@@ -32,6 +33,7 @@ app.use('/member', memberRouter);
 app.use('/bookCategory', bookCategoryRouter);
 app.use('/home', homeRouter);
 app.use('/book', bookRouter);
+app.use('/volunteer', volunteerRouter);
 
 
 

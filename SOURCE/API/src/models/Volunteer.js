@@ -28,6 +28,10 @@ volunteer.init(
       type: Sequelize.STRING(100),
       allowNull: true,
     },
+    address: {
+      type: Sequelize.STRING(200),
+      allowNull: true,
+    },
     dob: {
       type: Sequelize.DATE,
       allowNull: true

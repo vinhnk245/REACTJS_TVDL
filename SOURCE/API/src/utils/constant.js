@@ -31,6 +31,11 @@ module.exports = {
     BOOK_CODE_EXIST: { code: 15, message: 'Mã sách đã tồn tại' },
     ERROR_QTY_LESS_AVAILABLE: { code: 16, message: 'Sách có sẵn không được phép lớn hơn số lượng' },
     ERROR_QTY_LOST_AVAILABLE: { code: 17, message: 'Vui lòng kiểm tra lại số lượng, đã mất, có sẵn' },
+    INVALID_PHONE: { code: 18, message: 'Vui lòng nhập đúng định dạng số điện thoại' },
+    VOLUNTEER_REGISTRATION_EXIST: { code: 19, message: 'Số điện thoại đã được đăng ký' },
+    REJECT_VOLUNTEER_REQUIRE_NOTE: { code: 20, message: 'Vui lòng nhập lý do từ chối' },
+    VOLUNTEER_REGISTRATION_ACCEPTED: { code: 21, message: 'Không thể từ chối những yêu cầu đã được phê duyệt' },
+    VOLUNTEER_REGISTRATION_REJECTED: { code: 22, message: 'Yêu cầu này đã bị từ chối từ trước' },
   },
 
   CONFIG: {
@@ -40,6 +45,12 @@ module.exports = {
     PATH_IMAGE: 'upload/image/',
     PREFIX: 'TVDL',
     FIRST_CARD_NUMBER: 1,
+  },
+
+  VOLUNTEER_STATUS: { 
+    PENDING: 0,
+    ACCEPT: 1,
+    REJECT: 2,
   },
 
   ORDER_BY: { 
@@ -63,6 +74,12 @@ module.exports = {
       QTY_DESC: 1,
       LOST_DESC: 2,
       AVAILABLE_DESC: 3,
+    },
+    VOLUNTEER: {
+      CREATED_DATE_ASC: 1,
+      CREATED_DATE_DESC: 2,
+      DOB_ASC: 3,
+      DOB_DESC: 4,
     },
   },
 

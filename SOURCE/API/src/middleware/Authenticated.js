@@ -20,6 +20,9 @@ module.exports = {
     return compose().use(async function (req, res, next) {
       if (req.headers && req.headers.token) {
         try {
+          const URL_REQUEST = req.protocol + '://' + req.get('host') + '/'
+          req.url = URL_REQUEST
+          
           let readerCheck = await reader.findOne({
             where: {
               token: req.headers.token,
