@@ -10,5 +10,6 @@ router.get("/getBookInfo", isAuthenticated(), wrapHandlerWithJSONResponse(bookCo
 router.post("/createBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.createBook));
 router.post("/updateBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.updateBook));
 router.post("/deleteBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.deleteBook));
+router.post("/uploadImage", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.uploadImage));
 
 module.exports = router;

@@ -36,13 +36,15 @@ module.exports = {
     REJECT_VOLUNTEER_REQUIRE_NOTE: { code: 20, message: 'Vui lòng nhập lý do từ chối' },
     VOLUNTEER_REGISTRATION_ACCEPTED: { code: 21, message: 'Không thể từ chối những yêu cầu đã được phê duyệt' },
     VOLUNTEER_REGISTRATION_REJECTED: { code: 22, message: 'Yêu cầu này đã bị từ chối từ trước' },
+    REQUIRE_IMAGE: { code: 23, message: 'Vui lòng tải ảnh lên' },
   },
 
   CONFIG: {
     CRYPT_SALT: 10,
     PAGING_LIMIT: 20,
     DEFAULT_PASSWORD: 'TVDL11092013',
-    PATH_IMAGE: 'upload/image/',
+    PATH_IMAGE: 'uploads/images/',
+    PATH_UPLOAD_IMAGE: './public/uploads/images/',
     PREFIX: 'TVDL',
     FIRST_CARD_NUMBER: 1,
   },

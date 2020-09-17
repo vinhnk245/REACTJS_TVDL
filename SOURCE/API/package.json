@@ -14,10 +14,14 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
     "composable-middleware": "^0.3.0",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "express-fileupload": "^1.2.0",
+    "fs": "0.0.1-security",
     "hat": "^0.0.3",
     "http-errors": "~1.6.3",
     "module-alias": "^2.2.2",
@@ -30,6 +34,7 @@
     "nodemon": "^2.0.3"
   },
   "_moduleAliases": {
+    "@root": ".",
     "@src": "./src",
     "@controllers": "./src/controllers",
     "@models": "./src/models",

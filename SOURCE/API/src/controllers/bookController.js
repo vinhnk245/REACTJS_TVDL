@@ -3,6 +3,8 @@ const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const hat = require("hat")
+const fs = require('fs')
+const path = require('path')
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
@@ -208,6 +210,20 @@ async function deleteBook(req, res) {
     // return
 }
 
+async function uploadImage(req, res) {
+    const imageUpload = req.files.image
+    if(!imageUpload) throw API_CODE.REQUIRE_IMAGE
+    return req.url + await uploadFile(imageUpload)
+}
+
+async function uploadFile(file){
+    const fileType = file.mimetype.replace('image/', '')
+    const fileName = `${hat()}.${fileType}`
+    //Use the mv() method to place the file in upload directory
+    file.mv(CONFIG.PATH_UPLOAD_IMAGE + fileName)
+    return CONFIG.PATH_IMAGE + fileName
+}
+
 
 module.exports = {
     getListBook,
@@ -216,4 +232,6 @@ module.exports = {
     createBook,
     updateBook,
     deleteBook,
+    uploadImage,
+    uploadFile,
 }
