@@ -1,20 +1,22 @@
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
-const bcrypt = require("bcrypt")
 const hat = require("hat")
-const fs = require('fs')
-const path = require('path')
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { 
     book: Book, 
-    book_category: BookCategory
+    book_category: BookCategory,
+    book_image: BookImage
 } = require("@models")
 const { success, error } = require("../commons/response")
 
+
 async function getListBook(req, res) {
+    //neu trong router co check isAuthenticated thi urlRequest = req.url
+    const urlRequest = req.protocol + '://' + req.get('host') + '/'
+
     let page = !req.query.page ? 0 : req.query.page - 1
     let limit = parseInt(req.query.limit || LIMIT)
     if (page < 0) throw API_CODE.PAGE_ERROR
@@ -42,10 +44,32 @@ async function getListBook(req, res) {
                 sequelize.literal(querySearch)
             ]
         },
+        include: [
+            {
+                model: BookCategory,
+                require: false,
+                attributes: []
+            }
+        ],
+        attributes: [
+            'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
+            [sequelize.col("book_category.name"), "bookCategoryName"],
+            [sequelize.col("book_category.code"), "bookCategoryCode"],
+            [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
+        ],
         order: sequelize.literal(queryOrderBy),
         offset: offset,
         limit: limit
     })
+
+    await Promise.all(
+        listBook.rows.map(async book => {
+            book.dataValues.image = await getBookImages(book.id, urlRequest)
+        })
+    )
+    // for (let book of listBook.rows) {
+    //     book.dataValues.image = await getBookImages(book.id, urlRequest)
+    // }
 
     return {
         totalCount: listBook.count,
@@ -56,10 +80,11 @@ async function getListBook(req, res) {
 
 async function getBookInfo(req, res) {
     if(!req.query.id) throw API_CODE.INVALID_PARAM
-    return await getBookDetail(req.query.id)
+    const urlRequest = req.protocol + '://' + req.get('host') + '/'
+    return await getBookDetail(req.query.id, urlRequest)
 }
 
-async function getBookDetail(bookId) {
+async function getBookDetail(bookId, urlRequest) {
     let bookDetail = await Book.findOne({
         where: {
             isActive: ACTIVE,
@@ -76,11 +101,30 @@ async function getBookDetail(bookId) {
             'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
             [sequelize.col("book_category.name"), "bookCategoryName"],
             [sequelize.col("book_category.code"), "bookCategoryCode"],
-            [sequelize.col("book_category.logo"), "bookCategoryLogo"]
+            [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
         ]
     })
     if(!bookDetail) throw API_CODE.NOT_FOUND
+
+    bookDetail.dataValues.image = await getBookImages(bookId, urlRequest)
     return bookDetail
+}
+
+async function getBookImages(bookId, urlRequest) {
+    try {
+        const bookImages = await BookImage.findAll({
+            where: {
+                isActive: ACTIVE,
+                bookId: bookId
+            },
+            attributes: [
+                [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+            ]
+        })
+        return bookImages.map(item => { return item.dataValues.image})
+    } catch (error) {
+        return []
+    }
 }
 
 async function createBook(req, res) {
@@ -90,8 +134,8 @@ async function createBook(req, res) {
     if(!bookCategoryId || 
         !name || 
         !code || 
-        typeof qty != 'number' ||
-        typeof available != 'number') throw API_CODE.REQUIRE_FIELD
+        !qty ||
+        !available) throw API_CODE.REQUIRE_FIELD
 
     if(qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
 
@@ -125,7 +169,16 @@ async function createBook(req, res) {
         publishingYear: publishingYear,
         createdMemberId: req.auth.id
     })
-    return await getBookDetail(newBook.id)
+
+    if(req.files.image) {
+        const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
+        await BookImage.create({
+            bookId: newBook.id,
+            image: urlImage,
+            createdMemberId: req.auth.id
+        })
+    }
+    return await getBookDetail(newBook.id, req.url)
 }
 
 async function updateBook(req, res) {
@@ -213,15 +266,16 @@ async function deleteBook(req, res) {
 async function uploadImage(req, res) {
     const imageUpload = req.files.image
     if(!imageUpload) throw API_CODE.REQUIRE_IMAGE
-    return req.url + await uploadFile(imageUpload)
+    return req.url + await uploadFile(imageUpload, CONFIG.PATH_IMAGE_BOOK)
 }
 
-async function uploadFile(file){
+async function uploadFile(file, pathImage) {
+    console.log(file)
     const fileType = file.mimetype.replace('image/', '')
     const fileName = `${hat()}.${fileType}`
     //Use the mv() method to place the file in upload directory
-    file.mv(CONFIG.PATH_UPLOAD_IMAGE + fileName)
-    return CONFIG.PATH_IMAGE + fileName
+    file.mv(`./public/${pathImage}` + fileName)
+    return pathImage + fileName
 }
 
 
