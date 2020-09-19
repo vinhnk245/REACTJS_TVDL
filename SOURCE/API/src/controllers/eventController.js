@@ -12,6 +12,7 @@ const {
 const { success, error } = require("../commons/response")
 
 async function getListEvent(req, res) {
+    const urlRequest = req.protocol + '://' + req.get('host') + '/'
     let page = !req.query.page ? 0 : req.query.page - 1
     let limit = parseInt(req.query.limit || LIMIT)
     if (page < 0) throw API_CODE.PAGE_ERROR
@@ -27,7 +28,11 @@ async function getListEvent(req, res) {
         },
         order: sequelize.literal(queryOrderBy),
         offset: offset,
-        limit: limit
+        limit: limit,
+        attributes: [
+            'id', 'name', 'content', 'linkGoogleForm', 'eventDate', 'createdMemberId', 'createdDate',
+            [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+        ]
     })
 
     return {
@@ -38,15 +43,20 @@ async function getListEvent(req, res) {
 
 async function getEventInfo(req, res) {
     if (!req.query.id) throw API_CODE.INVALID_PARAM
-    return await getEventDetail(req.query.id)
+    const urlRequest = req.protocol + '://' + req.get('host') + '/'
+    return await getEventDetail(req.query.id, urlRequest)
 }
 
-async function getEventDetail(eventId) {
+async function getEventDetail(eventId, urlRequest) {
     let eventDetail = await Event.findOne({
         where: {
             isActive: ACTIVE,
             id: eventId
-        }
+        },
+        attributes: [
+            'id', 'name', 'content', 'linkGoogleForm', 'eventDate', 'createdMemberId', 'createdDate',
+            [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+        ]
     })
     if (!eventDetail) throw API_CODE.NOT_FOUND
     return eventDetail
