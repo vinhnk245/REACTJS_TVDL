@@ -16,6 +16,7 @@ var bookCategoryRouter = require('./routes/bookCategoryRouter');
 var homeRouter = require('./routes/homeRouter');
 var bookRouter = require('./routes/bookRouter');
 var volunteerRouter = require('./routes/volunteerRouter');
+var eventRouter = require('./routes/eventRouter')
 
 var app = express();
 
@@ -43,7 +44,7 @@ app.use('/bookCategory', bookCategoryRouter);
 app.use('/home', homeRouter);
 app.use('/book', bookRouter);
 app.use('/volunteer', volunteerRouter);
-
+app.use('/event', eventRouter);
 
 
 // error handler

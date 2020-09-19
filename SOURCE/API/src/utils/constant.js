@@ -83,6 +83,9 @@ module.exports = {
       DOB_ASC: 3,
       DOB_DESC: 4,
     },
+    EVENT: {
+      EVENT_DATE_DESC: 1,
+    },
   },
 
   VALIDATE_PHONE: {
