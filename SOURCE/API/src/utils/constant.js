@@ -84,7 +84,8 @@ module.exports = {
       DOB_DESC: 4,
     },
     EVENT: {
-      EVENT_DATE_DESC: 1,
+      EVENT_DATE_ASC: 1,
+      EVENT_DATE_DESC: 2,
     },
   },
 

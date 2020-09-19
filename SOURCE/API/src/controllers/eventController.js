@@ -1,7 +1,6 @@
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
-const bcrypt = require("bcrypt")
 const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
@@ -10,6 +9,7 @@ const {
     event: Event
 } = require("@models")
 const { success, error } = require("../commons/response")
+const bookController = require('@controllers/bookController')
 
 async function getListEvent(req, res) {
     const urlRequest = req.protocol + '://' + req.get('host') + '/'
@@ -19,6 +19,8 @@ async function getListEvent(req, res) {
     let offset = page * limit
 
     let queryOrderBy = 'id DESC'
+    if (req.query.orderBy == ORDER_BY.EVENT.EVENT_DATE_ASC)
+        queryOrderBy = 'eventDate ASC'
     if (req.query.orderBy == ORDER_BY.EVENT.EVENT_DATE_DESC)
         queryOrderBy = 'eventDate DESC'
 
@@ -30,12 +32,13 @@ async function getListEvent(req, res) {
         offset: offset,
         limit: limit,
         attributes: [
-            'id', 'name', 'content', 'linkGoogleForm', 'eventDate', 'createdMemberId', 'createdDate',
+            'id', 'name', 'content', 'linkGoogleForm', 'eventDate',
             [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
         ]
     })
 
     return {
+        totalCount: listEvent.count,
         totalPage: Math.ceil(listEvent.count / limit),
         items: listEvent.rows
     }
@@ -54,7 +57,7 @@ async function getEventDetail(eventId, urlRequest) {
             id: eventId
         },
         attributes: [
-            'id', 'name', 'content', 'linkGoogleForm', 'eventDate', 'createdMemberId', 'createdDate',
+            'id', 'name', 'content', 'linkGoogleForm', 'eventDate',
             [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
         ]
     })
@@ -63,7 +66,6 @@ async function getEventDetail(eventId, urlRequest) {
 }
 
 async function createEvent(req, res) {
-    console.log("Test " + req.auth.role)
     if (req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
 
     let { name, content, linkGoogleForm, eventDate } = req.body
@@ -73,7 +75,7 @@ async function createEvent(req, res) {
         !req.files.image ||
         !eventDate) throw API_CODE.REQUIRE_FIELD
 
-    const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_EVENT)
+    const urlImage = await bookController.uploadFile(req.files.image, CONFIG.PATH_IMAGE_EVENT)
 
     let newEvent = await Event.create({
         name: name,
@@ -83,7 +85,7 @@ async function createEvent(req, res) {
         createdMemberId: req.auth.id,
         image: urlImage
     })
-    return await getEventDetail(newEvent.id)
+    return await getEventDetail(newEvent.id, req.url)
 }
 
 async function updateEvent(req, res) {
@@ -105,33 +107,25 @@ async function updateEvent(req, res) {
 
     if (!eventUpdate) throw API_CODE.NOT_FOUND
 
-    var urlImage = null
+    let urlImage = null
     if (req.files && req.files.image)
-        urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_EVENT)
+        urlImage = await bookController.uploadFile(req.files.image, CONFIG.PATH_IMAGE_EVENT)
 
-    if (urlImage) {
-        await eventUpdate.update({
-            name: name,
-            content: content,
-            linkGoogleForm: linkGoogleForm,
-            eventDate: Number(eventDate),
-            image: urlImage
-        })
-    } else {
-        await eventUpdate.update({
-            name: name,
-            content: content,
-            linkGoogleForm: linkGoogleForm,
-            eventDate: Number(eventDate)
-        })
+    let dataUpdate = {
+        name: name,
+        content: content,
+        linkGoogleForm: linkGoogleForm,
+        eventDate: Number(eventDate)
     }
+    if (urlImage) dataUpdate.image = urlImage
+        
+    await eventUpdate.update(dataUpdate)
 
-    return await getEventDetail(eventUpdate.id)
+    return await getEventDetail(id, req.url)
 }
 
 async function deleteEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBERS)
-        throw API_CODE.NO_PERMISSION
+    if (req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
 
     let id = req.body.id
     if (!id) throw API_CODE.INVALID_PARAM
@@ -150,20 +144,13 @@ async function deleteEvent(req, res) {
     return
 }
 
-async function uploadImage(req, res) {
-    const imageUpload = req.files.image
-    if (!imageUpload) throw API_CODE.REQUIRE_IMAGE
-    return req.url + await uploadFile(imageUpload, CONFIG.PATH_IMAGE_BOOK)
-}
-
-async function uploadFile(file, pathImage) {
-    console.log(file)
-    const fileType = file.mimetype.replace('image/', '')
-    const fileName = `${hat()}.${fileType}`
-    //Use the mv() method to place the file in upload directory
-    file.mv(`./public/${pathImage}` + fileName)
-    return pathImage + fileName
-}
+// async function uploadFile(file, pathImage) {
+//     const fileType = file.mimetype.replace('image/', '')
+//     const fileName = `${hat()}.${fileType}`
+//     //Use the mv() method to place the file in upload directory
+//     file.mv(`./public/${pathImage}` + fileName)
+//     return pathImage + fileName
+// }
 
 module.exports = {
     getListEvent,

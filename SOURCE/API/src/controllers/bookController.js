@@ -67,9 +67,6 @@ async function getListBook(req, res) {
             book.dataValues.image = await getBookImages(book.id, urlRequest)
         })
     )
-    // for (let book of listBook.rows) {
-    //     book.dataValues.image = await getBookImages(book.id, urlRequest)
-    // }
 
     return {
         totalCount: listBook.count,
@@ -170,7 +167,7 @@ async function createBook(req, res) {
         createdMemberId: req.auth.id
     })
 
-    if(req.files.image) {
+    if(req.files && req.files.image) {
         const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
         await BookImage.create({
             bookId: newBook.id,
@@ -270,7 +267,6 @@ async function uploadImage(req, res) {
 }
 
 async function uploadFile(file, pathImage) {
-    console.log(file)
     const fileType = file.mimetype.replace('image/', '')
     const fileName = `${hat()}.${fileType}`
     //Use the mv() method to place the file in upload directory
@@ -282,7 +278,6 @@ async function uploadFile(file, pathImage) {
 module.exports = {
     getListBook,
     getBookInfo,
-    getBookDetail,
     createBook,
     updateBook,
     deleteBook,
