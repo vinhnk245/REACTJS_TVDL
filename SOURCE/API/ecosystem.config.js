@@ -15,7 +15,7 @@ module.exports = {
             script    : './bin/www',
             env_production : {
                 NODE_ENV: 'production',
-                DB_HOST : "58.186.123.84",
+                DB_HOST : "13.212.67.7",
                 DB_USER : "root",
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:error,app:error",
@@ -25,7 +25,7 @@ module.exports = {
             },
             env_development: {
                 NODE_ENV: 'development',
-                DB_HOST : "58.186.123.84",
+                DB_HOST : "13.212.67.7",
                 DB_USER : "root",
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:*,app:*",
