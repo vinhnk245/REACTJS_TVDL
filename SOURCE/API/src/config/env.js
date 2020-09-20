@@ -6,7 +6,7 @@ const env = {
   host: process.env.DB_HOST || "13.212.67.7",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "V21official",
-  database: process.env.DB_NAME || "duonglieu_library"
+  database: process.env.DB_NAME || "duonglieu_library_test"
 }
 
 const sequelize = new Sequelize(env.database, env.user, env.password, {

@@ -19,7 +19,7 @@ module.exports = {
                 DB_USER : "root",
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:error,app:error",
-                PORT : 9496,
+                PORT : 2013,
                 DB_NAME: "duonglieu_library",
                 autorestart: true
             },
@@ -30,7 +30,7 @@ module.exports = {
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:*,app:*",
                 PORT : 9496,
-                DB_NAME: "duonglieu_library",
+                DB_NAME: "duonglieu_library_test",
                 autorestart: true
             }
         },
