@@ -125,7 +125,7 @@ async function getBookImages(bookId, urlRequest) {
 }
 
 async function createBook(req, res) {
-    if(req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    // if(req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
 
     let { bookCategoryId, name, code, qty, available, note, description, author, publishers, publishingYear } = req.body
     if(!bookCategoryId || 
@@ -153,29 +153,33 @@ async function createBook(req, res) {
     })
     if(findBook) throw API_CODE.BOOK_CODE_EXIST
 
-    let newBook = await Book.create({
-        bookCategoryId: bookCategoryId,
-        code: code,
-        name: name,
-        qty: qty,
-        available: available,
-        note: note,
-        description: description,
-        author: author,
-        publishers: publishers,
-        publishingYear: publishingYear,
-        createdMemberId: req.auth.id
-    })
-
-    if(req.files && req.files.image) {
-        const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
-        await BookImage.create({
-            bookId: newBook.id,
-            image: urlImage,
+    let data = await sequelize.transaction(async transaction => {
+        let newBook = await Book.create({
+            bookCategoryId: bookCategoryId,
+            code: code,
+            name: name,
+            qty: qty,
+            available: available,
+            note: note,
+            description: description,
+            author: author,
+            publishers: publishers,
+            publishingYear: publishingYear,
             createdMemberId: req.auth.id
-        })
-    }
-    return await getBookDetail(newBook.id, req.url)
+        },{ transaction })
+    
+        if(req.files && req.files.image) {
+            const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
+            await BookImage.create({
+                bookId: newBook.id,
+                image: urlImage,
+                createdMemberId: req.auth.id
+            },{ transaction })
+        }
+        return newBook
+    });
+    return await getBookDetail(data.id, req.url)
+    
 }
 
 async function updateBook(req, res) {
@@ -267,11 +271,15 @@ async function uploadImage(req, res) {
 }
 
 async function uploadFile(file, pathImage) {
-    const fileType = file.mimetype.replace('image/', '')
-    const fileName = `${hat()}.${fileType}`
-    //Use the mv() method to place the file in upload directory
-    file.mv(`./public/${pathImage}` + fileName)
-    return pathImage + fileName
+    try {
+        const fileType = file.mimetype.replace('image/', '')
+        const fileName = `${hat()}.${fileType}`
+        //Use the mv() method to place the file in upload directory
+        file.mv(`./public/${pathImage}` + fileName)
+        return pathImage + fileName
+    } catch (error) {
+        return ''
+    }
 }
 
 
