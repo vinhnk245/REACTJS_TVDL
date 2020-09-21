@@ -55,6 +55,14 @@ module.exports = {
     REJECT: 2,
   },
 
+  RENTED_BOOK_STATUS: { 
+    PENDING: 0,
+    BORROWED: 1,
+    RETURNED: 2,
+    OUT_OF_DATE: 3,
+    CANCEL: 4,
+  },
+
   ORDER_BY: { 
     MEMBER: {
       ID_ASC: 1,
@@ -89,13 +97,20 @@ module.exports = {
     },
   },
 
-  VALIDATE_PHONE: {
-    MIN_CREATE_PHONE_LENGTH: 6,
-    MAX_CREATE_PHONE_LENGTH: 15,
-  },
-
-  FIREBASE: {
-    ACCOUNT: '',
+  CATEGORY: {
+    SĐB: 1,
+    SCSQ: 2,
+    TSTN: 3,
+    VHC: 4,
+    KTC: 5,
+    VHTN: 6,
+    SNN: 7,
+    PTTH: 8,
+    KTTN: 9,
+    MGTH: 10,
+    LSVH: 11,
+    KĐ: 12,
+    TT: 13,
   },
 
   debug: {
@@ -122,6 +137,11 @@ module.exports = {
   GENDER: {
     WOMAN: 1,
     MAN: 2,
+  },
+
+  YES_OR_NO: {
+    YES: 1,
+    NO: 0,
   },
 
 };

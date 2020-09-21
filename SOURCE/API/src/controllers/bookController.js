@@ -48,14 +48,14 @@ async function getListBook(req, res) {
             {
                 model: BookCategory,
                 require: false,
-                attributes: []
+                attributes: [
+                    'id', 'name', 'code', 'description',
+                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo']
+                ]
             }
         ],
         attributes: [
-            'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
-            [sequelize.col("book_category.name"), "bookCategoryName"],
-            [sequelize.col("book_category.code"), "bookCategoryCode"],
-            [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
+            'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear', 'createdDate'
         ],
         order: sequelize.literal(queryOrderBy),
         offset: offset,
@@ -91,15 +91,15 @@ async function getBookDetail(bookId, urlRequest) {
             {
                 model: BookCategory,
                 require: false,
-                attributes: []
+                attributes: [
+                    'id', 'name', 'code', 'description',
+                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo']
+                ]
             }
         ],
         attributes: [
-            'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
-            [sequelize.col("book_category.name"), "bookCategoryName"],
-            [sequelize.col("book_category.code"), "bookCategoryCode"],
-            [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
-        ]
+            'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear', 'createdDate'
+        ],
     })
     if(!bookDetail) throw API_CODE.NOT_FOUND
 
@@ -240,7 +240,7 @@ async function updateBook(req, res) {
         updatedDate: Date.now()
     })
 
-    return await getBookDetail(bookUpdate.id)
+    return await getBookDetail(bookUpdate.id, req.url)
 }
 
 async function deleteBook(req, res) {
