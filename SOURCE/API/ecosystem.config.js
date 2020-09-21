@@ -15,8 +15,8 @@ module.exports = {
             script    : './bin/www',
             env_production : {
                 NODE_ENV: 'production',
-                DB_HOST : "13.212.67.7",
-                DB_USER : "root",
+                DB_HOST : "13.212.122.124",
+                DB_USER : "vinhnk",
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:error,app:error",
                 PORT : 2013,
@@ -25,8 +25,8 @@ module.exports = {
             },
             env_development: {
                 NODE_ENV: 'development',
-                DB_HOST : "13.212.67.7",
-                DB_USER : "root",
+                DB_HOST : "13.212.122.124",
+                DB_USER : "vinhnk",
                 DB_PASSWORD : "V21official",
                 DEBUG: "tvdl-api:*,app:*",
                 PORT : 9496,

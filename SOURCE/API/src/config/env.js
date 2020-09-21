@@ -3,8 +3,8 @@ const { debug } = require("../utils/constant");
 const CONSTANT = require("../utils/constant");
 
 const env = {
-  host: process.env.DB_HOST || "13.212.67.7",
-  user: process.env.DB_USER || "root",
+  host: process.env.DB_HOST || "13.212.122.124",
+  user: process.env.DB_USER || "vinhnk",
   password: process.env.DB_PASSWORD || "V21official",
   database: process.env.DB_NAME || "duonglieu_library_test"
 }
