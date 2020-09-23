@@ -1,5 +1,4 @@
-const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js');
 const response = require("@commons/response");
 const { success, error } = response;
@@ -20,12 +19,12 @@ async function getListCategory(req, res, next) {
     where: { 
       isActive: IS_ACTIVE.ACTIVE,
       [Op.and]: [
-        sequelize.literal(querySearch)
+        literal(querySearch)
       ]
     },
     attributes: [
       'id', 'name', 'code', 'description',
-      [sequelize.fn('CONCAT', urlRequest, sequelize.col('logo')), 'logo'],
+      [fn('CONCAT', urlRequest, col('logo')), 'logo'],
     ]
   })
   return categories

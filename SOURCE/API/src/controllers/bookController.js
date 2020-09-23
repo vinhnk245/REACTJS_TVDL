@@ -1,5 +1,6 @@
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
+const { Sequelize, Op, fn, col, literal } = require('sequelize')
+// const Sequelize = require('sequelize')
+// const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
 const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
@@ -23,50 +24,55 @@ async function getListBook(req, res) {
     let offset = page * limit
     let text = (req.query.text || '').trim()
     let querySearch = text.length > 0 
-        ? `name like '%${text}%' or code like '%${text}%' or author like '%${text}%' or publishers like '%${text}%'` 
+        ? `book.name like '%${text}%' or book.code like '%${text}%' or book.author like '%${text}%' or book.publishers like '%${text}%'` 
         : ''
     
     let queryBookCategory = req.query.bookCategoryId ? `bookCategoryId = ${req.query.bookCategoryId}` : ``
 
     let queryOrderBy = 'id DESC'
     if(req.query.orderBy == ORDER_BY.BOOK.QTY_DESC)
-        queryOrderBy = 'qty DESC'
+        queryOrderBy = 'qty DESC, id DESC'
     if(req.query.orderBy == ORDER_BY.BOOK.LOST_DESC)
-        queryOrderBy = 'lost DESC'
+        queryOrderBy = 'lost DESC, id DESC'
     if(req.query.orderBy == ORDER_BY.BOOK.AVAILABLE_DESC)
-        queryOrderBy = 'available DESC'
+        queryOrderBy = 'available DESC, id DESC'
 
     let listBook = await Book.findAndCountAll({
         where: {
             isActive: ACTIVE,
             [Op.and]: [
-                sequelize.literal(queryBookCategory),
-                sequelize.literal(querySearch)
+                literal(queryBookCategory),
+                literal(querySearch)
             ]
         },
         include: [
             {
                 model: BookCategory,
-                require: false,
                 attributes: [
                     'id', 'name', 'code', 'description',
-                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo']
+                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo'],
+                ]
+            },
+            {
+                model: BookImage,
+                attributes: [
+                    [fn('CONCAT', urlRequest, col('image')), 'image']
                 ]
             }
         ],
         attributes: [
             'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear', 'createdDate'
         ],
-        order: sequelize.literal(queryOrderBy),
+        order: literal(queryOrderBy),
         offset: offset,
         limit: limit
     })
 
-    await Promise.all(
-        listBook.rows.map(async book => {
-            book.dataValues.image = await getBookImages(book.id, urlRequest)
-        })
-    )
+    // await Promise.all(
+    //     listBook.rows.map(async book => {
+    //         book.dataValues.image = await getBookImages(book.id, urlRequest)
+    //     })
+    // )
 
     return {
         totalCount: listBook.count,
@@ -90,10 +96,15 @@ async function getBookDetail(bookId, urlRequest) {
         include: [
             {
                 model: BookCategory,
-                require: false,
                 attributes: [
                     'id', 'name', 'code', 'description',
-                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo']
+                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo'],
+                ]
+            },
+            {
+                model: BookImage,
+                attributes: [
+                    [fn('CONCAT', urlRequest, col('image')), 'image']
                 ]
             }
         ],
@@ -103,7 +114,7 @@ async function getBookDetail(bookId, urlRequest) {
     })
     if(!bookDetail) throw API_CODE.NOT_FOUND
 
-    bookDetail.dataValues.image = await getBookImages(bookId, urlRequest)
+    // bookDetail.dataValues.image = await getBookImages(bookId, urlRequest)
     return bookDetail
 }
 
@@ -125,7 +136,8 @@ async function getBookImages(bookId, urlRequest) {
 }
 
 async function createBook(req, res) {
-    // if(req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    //khong co role => reader
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { bookCategoryId, name, code, qty, available, note, description, author, publishers, publishingYear } = req.body
     if(!bookCategoryId || 
@@ -183,7 +195,7 @@ async function createBook(req, res) {
 }
 
 async function updateBook(req, res) {
-    if(req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id, bookCategoryId, name, code, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
     if(!id ||

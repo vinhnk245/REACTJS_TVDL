@@ -1,5 +1,4 @@
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
+const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const hat = require("hat")
@@ -39,11 +38,11 @@ async function getListMember(req, res) {
         where: {
             isActive: ACTIVE,
             [Op.and]: [
-                sequelize.literal(queryStatus),
-                sequelize.literal(querySearch)
+                literal(queryStatus),
+                literal(querySearch)
             ]
         },
-        order: sequelize.literal(queryOrderBy),
+        order: literal(queryOrderBy),
         offset: offset,
         limit: limit
     })

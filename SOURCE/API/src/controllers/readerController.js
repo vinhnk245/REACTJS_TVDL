@@ -1,8 +1,7 @@
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
+const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const { reader: Reader } = require("@models")
@@ -23,28 +22,28 @@ async function getListReader(req, res) {
 
   let queryOrderBy = 'id DESC'
   if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_ASC)
-    queryOrderBy = 'cardNumber ASC'
+    queryOrderBy = 'cardNumber ASC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_DESC)
-    queryOrderBy = 'cardNumber DESC'
+    queryOrderBy = 'cardNumber DESC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.DOB_ASC)
-    queryOrderBy = 'dob ASC'
+    queryOrderBy = 'dob ASC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.DOB_DESC)
-    queryOrderBy = 'dob DESC'
+    queryOrderBy = 'dob DESC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.LOST_ASC)
-    queryOrderBy = 'lost ASC'
+    queryOrderBy = 'lost ASC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.LOST_DESC)
-    queryOrderBy = 'lost DESC'
+    queryOrderBy = 'lost DESC, id DESC'
    
   let listReader = await Reader.findAndCountAll({
     where: {
       isActive: ACTIVE,
       [Op.and]: [
-        sequelize.literal(queryCardNumber),
-        sequelize.literal(queryStatus),
-        sequelize.literal(querySearch)
+        literal(queryCardNumber),
+        literal(queryStatus),
+        literal(querySearch)
       ]
     },
-    order: sequelize.literal(queryOrderBy),
+    order: literal(queryOrderBy),
     offset: offset,
     limit: limit
   })

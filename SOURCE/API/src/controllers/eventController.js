@@ -1,5 +1,4 @@
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
+const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
@@ -28,12 +27,12 @@ async function getListEvent(req, res) {
         where: {
             isActive: ACTIVE
         },
-        order: sequelize.literal(queryOrderBy),
+        order: literal(queryOrderBy),
         offset: offset,
         limit: limit,
         attributes: [
             'id', 'name', 'content', 'linkGoogleForm', 'eventDate',
-            [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+            [fn('CONCAT', urlRequest, col('image')), 'image'],
         ]
     })
 
@@ -58,7 +57,7 @@ async function getEventDetail(eventId, urlRequest) {
         },
         attributes: [
             'id', 'name', 'content', 'linkGoogleForm', 'eventDate',
-            [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+            [fn('CONCAT', urlRequest, col('image')), 'image'],
         ]
     })
     if (!eventDetail) throw API_CODE.NOT_FOUND
