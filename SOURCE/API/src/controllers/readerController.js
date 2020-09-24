@@ -158,7 +158,7 @@ async function updateReader(req, res) {
 }
 
 async function deleteReader(req, res) {
-  if(req.auth.role == ROLE.MEMBERS)
+  if(req.auth.role == ROLE.MEMBER)
     throw API_CODE.NO_PERMISSION
 
   let id = req.body.id

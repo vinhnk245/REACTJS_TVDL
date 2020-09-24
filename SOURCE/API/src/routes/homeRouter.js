@@ -7,5 +7,7 @@ var router = express.Router();
 
 router.post("/login", wrapHandlerWithJSONResponse(homeController.login));
 router.post("/logout", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.logout));
+router.post("/changePassword", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.changePassword));
+router.post("/resetPassword", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.resetPassword));
 
 module.exports = router;

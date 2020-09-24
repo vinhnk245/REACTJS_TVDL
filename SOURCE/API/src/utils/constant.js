@@ -12,7 +12,7 @@ module.exports = {
   },
 
   API_CODE: {
-    UNAUTHORIZED: { code: 403, message: 'Không có quyền truy cập' },
+    UNAUTHORIZED: { code: 403, message: 'Phiên đăng nhập hết hạn' },
     INVALID_ACCESS_TOKEN: { code: 404, message: 'Token không hợp lệ' },
     SUCCESS: { code: 1, message: 'Thành công' },
     DB_ERROR: { code: 2, message: 'Truy vấn lỗi' },
@@ -37,6 +37,8 @@ module.exports = {
     VOLUNTEER_REGISTRATION_ACCEPTED: { code: 21, message: 'Không thể từ chối những yêu cầu đã được phê duyệt' },
     VOLUNTEER_REGISTRATION_REJECTED: { code: 22, message: 'Yêu cầu này đã bị từ chối từ trước' },
     REQUIRE_IMAGE: { code: 23, message: 'Vui lòng tải ảnh lên' },
+    WRONG_PASSWORD: { code: 24, message: 'Mật khẩu hiện tại không đúng' },
+    CANT_RESET_PASSWORD: { code: 25, message: 'Tài khoản của bạn không được phép reset mật khẩu thành viên Thư viện' },
   },
 
   CONFIG: {
@@ -53,6 +55,11 @@ module.exports = {
     PENDING: 0,
     ACCEPT: 1,
     REJECT: 2,
+  },
+
+  USER_TYPE: { 
+    MEMBER: 1,
+    READER: 2,
   },
 
   RENTED_BOOK_STATUS: { 
@@ -129,9 +136,9 @@ module.exports = {
   },
 
   ROLE: {
-    MANAGERS: 1,
-    HEAD_OF_BOARDS: 2,
-    MEMBERS: 3,
+    MANAGER: 1,
+    HEAD_OF_BOARD: 2,
+    MEMBER: 3,
   },
 
   GENDER: {

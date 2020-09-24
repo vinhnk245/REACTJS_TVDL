@@ -50,7 +50,7 @@ async function getListBook(req, res) {
                 model: BookCategory,
                 attributes: [
                     'id', 'name', 'code', 'description',
-                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo'],
+                    [fn('CONCAT', urlRequest, col("logo")), 'logo'],
                 ]
             },
             {
@@ -98,7 +98,7 @@ async function getBookDetail(bookId, urlRequest) {
                 model: BookCategory,
                 attributes: [
                     'id', 'name', 'code', 'description',
-                    [sequelize.fn('CONCAT', urlRequest, sequelize.col("logo")), 'logo'],
+                    [fn('CONCAT', urlRequest, col("logo")), 'logo'],
                 ]
             },
             {
@@ -126,7 +126,7 @@ async function getBookImages(bookId, urlRequest) {
                 bookId: bookId
             },
             attributes: [
-                [sequelize.fn('CONCAT', urlRequest, sequelize.col('image')), 'image'],
+                [fn('CONCAT', urlRequest, col('image')), 'image'],
             ]
         })
         return bookImages.map(item => { return item.dataValues.image})
@@ -256,7 +256,7 @@ async function updateBook(req, res) {
 }
 
 async function deleteBook(req, res) {
-    // if(req.auth.role == ROLE.MEMBERS)
+    // if(req.auth.role == ROLE.MEMBER)
     //     throw API_CODE.NO_PERMISSION
 
     // let id = req.body.id

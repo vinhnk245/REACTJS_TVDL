@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt")
 const hat = require("hat")
 const response = require("@commons/response")
 const { success, error } = response
-const { API_CODE, IS_ACTIVE, ROLE } = require('@utils/constant')
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, USER_TYPE } = require('@utils/constant')
 const { 
     reader: Reader, 
     member: Member 
@@ -84,8 +84,55 @@ async function logout(req, res, next) {
     return
 }
 
+async function changePassword(req, res, next) {
+    const { currentPassword, newPassword } = req.body
+    if(!currentPassword || !newPassword) throw API_CODE.REQUIRE_FIELD
+
+    let checkPass = await bcrypt.compareSync(
+        currentPassword, 
+        req.auth.password, 
+        (err, res) => {
+            return res
+        })
+    if(!checkPass) throw API_CODE.WRONG_PASSWORD
+
+    let hash = bcrypt.hashSync(newPassword, CONFIG.CRYPT_SALT)
+    await req.auth.update({ password: hash })
+    return
+}
+
+async function resetPassword(req, res, next) {
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    const { id, userType } = req.body
+    if(!id || !userType || ![USER_TYPE.MEMBER, USER_TYPE.READER].includes(userType)) throw API_CODE.INVALID_PARAM
+
+    if(userType === USER_TYPE.MEMBER) {
+        if(req.auth.role === ROLE.MEMBER) throw API_CODE.CANT_RESET_PASSWORD
+        
+        let findMember = await Member.findOne({
+            where: { id, isActive: IS_ACTIVE.ACTIVE }
+        })
+        if(!findMember) throw API_CODE.NOT_FOUND
+
+        let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
+        await findMember.update({ password: hash })
+    } else {
+        let findReader = await Reader.findOne({
+            where: { id, isActive: IS_ACTIVE.ACTIVE }
+        })
+        if(!findReader) throw API_CODE.NOT_FOUND
+
+        let hash = bcrypt.hashSync(findReader.account, CONFIG.CRYPT_SALT)
+        await findReader.update({ password: hash })
+    }
+    return
+}
+
 
 module.exports = {
     login,
     logout,
+    changePassword,
+    resetPassword,
 };

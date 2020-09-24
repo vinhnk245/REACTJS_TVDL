@@ -87,7 +87,7 @@ async function volunteerRegistration(req, res) {
 }
 
 async function acceptRequestVolunteer(req, res) {
-    if(req.auth.role == ROLE.MEMBERS)
+    if(req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     const { id, note } = req.body
@@ -97,7 +97,7 @@ async function acceptRequestVolunteer(req, res) {
 }
 
 async function rejectRequestVolunteer(req, res) {
-    if(req.auth.role == ROLE.MEMBERS)
+    if(req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     const { id, note } = req.body

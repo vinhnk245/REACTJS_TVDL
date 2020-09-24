@@ -65,7 +65,7 @@ async function getEventDetail(eventId, urlRequest) {
 }
 
 async function createEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { name, content, linkGoogleForm, eventDate } = req.body
     if (!name ||
@@ -88,7 +88,7 @@ async function createEvent(req, res) {
 }
 
 async function updateEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { id, name, content, linkGoogleForm, eventDate } = req.body
     if (!id ||
@@ -124,7 +124,7 @@ async function updateEvent(req, res) {
 }
 
 async function deleteEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBERS) throw API_CODE.NO_PERMISSION
+    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let id = req.body.id
     if (!id) throw API_CODE.INVALID_PARAM
@@ -142,14 +142,6 @@ async function deleteEvent(req, res) {
     })
     return
 }
-
-// async function uploadFile(file, pathImage) {
-//     const fileType = file.mimetype.replace('image/', '')
-//     const fileName = `${hat()}.${fileType}`
-//     //Use the mv() method to place the file in upload directory
-//     file.mv(`./public/${pathImage}` + fileName)
-//     return pathImage + fileName
-// }
 
 module.exports = {
     getListEvent,

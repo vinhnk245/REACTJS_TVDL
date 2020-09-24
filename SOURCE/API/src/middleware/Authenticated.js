@@ -29,7 +29,7 @@ module.exports = {
               isActive: IS_ACTIVE.ACTIVE,
             },
             attributes: [
-              'id', 'rank', 'lost', 'status'
+              'id', 'rank', 'lost', 'status', 'password',
             ]
           })
           if (!readerCheck) {
@@ -39,7 +39,7 @@ module.exports = {
                 isActive: IS_ACTIVE.ACTIVE,
               },
               attributes: [
-                'id', 'role', 'status'
+                'id', 'role', 'status', 'password'
               ]
             })
             if (!memberCheck) 
