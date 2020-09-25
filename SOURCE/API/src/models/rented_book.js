@@ -16,10 +16,10 @@ rented_book.init(
       type: Sequelize.INTEGER,
       allowNull: true,
     },
-    memberId: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
+    // memberId: {
+    //   type: Sequelize.INTEGER,
+    //   allowNull: true,
+    // },
     status: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -86,11 +86,11 @@ rented_book.associate = (db) => {
   });
 
   //member
-  db.rented_book.belongsTo(db.member, {
-    foreignKey: {
-      name: "memberId",
-    },
-  });
+  // db.rented_book.belongsTo(db.member, {
+  //   foreignKey: {
+  //     name: "memberId",
+  //   },
+  // });
   db.rented_book.belongsTo(db.member, {
     foreignKey: {
       name: "borrowedConfirmMemberId",

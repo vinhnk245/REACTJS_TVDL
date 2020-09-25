@@ -75,7 +75,7 @@ async function getMemberDetail(memberId) {
 
 async function createMember(req, res) {
     if(req.auth.role == ROLE.MEMBER)
-    throw API_CODE.NO_PERMISSION
+        throw API_CODE.NO_PERMISSION
 
     let { account, name, address, dob, joinedDate, phone, email, role, note } = req.body
     if(!account || 

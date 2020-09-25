@@ -139,14 +139,11 @@ async function createBook(req, res) {
     //khong co role => reader
     if(!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { bookCategoryId, name, code, qty, available, note, description, author, publishers, publishingYear } = req.body
+    let { bookCategoryId, name, code, qty, note, description, author, publishers, publishingYear } = req.body
     if(!bookCategoryId || 
         !name || 
         !code || 
-        !qty ||
-        !available) throw API_CODE.REQUIRE_FIELD
-
-    if(qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
+        !qty) throw API_CODE.REQUIRE_FIELD
 
     let findCategory = await BookCategory.findOne({
         where: {
@@ -171,7 +168,7 @@ async function createBook(req, res) {
             code: code,
             name: name,
             qty: qty,
-            available: available,
+            available: qty,
             note: note,
             description: description,
             author: author,
@@ -189,9 +186,8 @@ async function createBook(req, res) {
             },{ transaction })
         }
         return newBook
-    });
+    })
     return await getBookDetail(data.id, req.url)
-    
 }
 
 async function updateBook(req, res) {

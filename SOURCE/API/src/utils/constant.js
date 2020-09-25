@@ -39,6 +39,8 @@ module.exports = {
     REQUIRE_IMAGE: { code: 23, message: 'Vui lòng tải ảnh lên' },
     WRONG_PASSWORD: { code: 24, message: 'Mật khẩu hiện tại không đúng' },
     CANT_RESET_PASSWORD: { code: 25, message: 'Tài khoản của bạn không được phép reset mật khẩu thành viên Thư viện' },
+    REQUIRE_READER_RENTED_BOOK: { code: 26, message: 'Vui lòng chọn bạn đọc' },
+    REQUIRE_LIST_BOOK_RENTED_BOOK: { code: 27, message: 'Vui lòng chọn sách' },
   },
 
   CONFIG: {
@@ -55,6 +57,11 @@ module.exports = {
     PENDING: 0,
     ACCEPT: 1,
     REJECT: 2,
+  },
+
+  USER_TYPE: { 
+    MEMBER: 1,
+    READER: 2,
   },
 
   USER_TYPE: { 
