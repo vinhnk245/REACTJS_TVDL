@@ -13,7 +13,7 @@ module.exports = {
 
   API_CODE: {
     UNAUTHORIZED: { code: 403, message: 'Phiên đăng nhập hết hạn' },
-    INVALID_ACCESS_TOKEN: { code: 404, message: 'Token không hợp lệ' },
+    INVALID_ACCESS_TOKEN: { code: 401, message: 'Token không hợp lệ' },
     SUCCESS: { code: 1, message: 'Thành công' },
     DB_ERROR: { code: 2, message: 'Truy vấn lỗi' },
     ACCOUNT_EXIST: { code: 3, message: 'Tài khoản đã tồn tại' },
@@ -41,6 +41,9 @@ module.exports = {
     CANT_RESET_PASSWORD: { code: 25, message: 'Tài khoản của bạn không được phép reset mật khẩu thành viên Thư viện' },
     REQUIRE_READER_RENTED_BOOK: { code: 26, message: 'Vui lòng chọn bạn đọc' },
     REQUIRE_LIST_BOOK_RENTED_BOOK: { code: 27, message: 'Vui lòng chọn sách' },
+    DUPLICATE_BOOK_RENTED_BOOK: { code: 28, message: 'Không được phép mượn 2 quyển giống nhau' },
+    DUPLICATE_COMICS_CATEGORY: { code: 29, message: 'Không được phép mượn 2 quyển truyện tranh' },
+    READER_NOT_FOUND: { code: 30, message: 'Không tìm thấy thông tin bạn đọc' },
   },
 
   CONFIG: {
@@ -57,11 +60,6 @@ module.exports = {
     PENDING: 0,
     ACCEPT: 1,
     REJECT: 2,
-  },
-
-  USER_TYPE: { 
-    MEMBER: 1,
-    READER: 2,
   },
 
   USER_TYPE: { 

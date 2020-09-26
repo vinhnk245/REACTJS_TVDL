@@ -128,9 +128,19 @@ member.associate = (db) => {
   });
 
   //rented_book_detail
+  // db.member.hasMany(db.rented_book_detail, {
+  //   foreignKey: {
+  //     name: "updatedMemberId",
+  //   },
+  // });
   db.member.hasMany(db.rented_book_detail, {
     foreignKey: {
-      name: "updatedMemberId",
+      name: "borrowedConfirmMemberId",
+    },
+  });
+  db.member.hasMany(db.rented_book_detail, {
+    foreignKey: {
+      name: "returnedConfirmMemberId",
     },
   });
 

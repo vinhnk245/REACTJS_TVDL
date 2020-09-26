@@ -24,10 +24,10 @@ rented_book.init(
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    noteReder: {
-      type: Sequelize.STRING(500),
-      allowNull: true,
-    },
+    // noteReader: {
+    //   type: Sequelize.STRING(500),
+    //   allowNull: true,
+    // },
     noteMember: {
       type: Sequelize.STRING(500),
       allowNull: true,
@@ -95,11 +95,13 @@ rented_book.associate = (db) => {
     foreignKey: {
       name: "borrowedConfirmMemberId",
     },
+    as: 'borrowedConfirmMember'
   });
   db.rented_book.belongsTo(db.member, {
     foreignKey: {
       name: "returnedConfirmMemberId",
     },
+    as: 'returnedConfirmMember'
   });
 
   //rented_book_detail

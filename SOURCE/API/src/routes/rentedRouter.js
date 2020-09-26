@@ -6,5 +6,6 @@ const { isAuthenticated } = require("../middleware/Authenticated");
 var router = express.Router();
 
 router.post("/createRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.createRentedBook));
+router.get("/getRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getRentedBookDetail));
 
 module.exports = router;

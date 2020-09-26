@@ -1,7 +1,7 @@
 const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const hat = require("hat")
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, YES_OR_NO } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, YES_OR_NO, CATEGORY, RENTED_BOOK_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { 
@@ -74,34 +74,49 @@ async function getListRentedBook(req, res) {
     // }
 }
 
-async function getRentedBookInfo(req, res) {
+async function getRentedBookDetail(req, res) {
     if(!req.query.id) throw API_CODE.INVALID_PARAM
-    return await getRentedBookDetail(req.query.id, req.url)
+    return await rentedDetail(req.query.id, req.url)
 }
 
-async function getRentedBookDetail(bookId, urlRequest) {
-    // let bookDetail = await Book.findOne({
-    //     where: {
-    //         isActive: ACTIVE,
-    //         id: bookId
-    //     },
-    //     include: [
-    //         {
-    //             model: BookCategory,
-    //             attributes: []
-    //         }
-    //     ],
-    //     attributes: [
-    //         'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
-    //         [sequelize.col("book_category.name"), "bookCategoryName"],
-    //         [sequelize.col("book_category.code"), "bookCategoryCode"],
-    //         [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
-    //     ]
-    // })
-    // if(!bookDetail) throw API_CODE.NOT_FOUND
+async function rentedDetail(id, urlRequest) {
+    let detail = await RentedBook.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        },
+        attributes: [
+            'id', 'readerId', 'status', 'noteReder', 'noteMember', 'borrowedDate', 'borrowedConfirmMemberId', 'returnedDate', 'returnedConfirmMemberId',
+            [col("reader.name"), "readerName"],
+            [col("borrowedConfirmMember.name"), "borrowedConfirmMemberName"],
+            [col("returnedConfirmMember.name"), "returnedConfirmMemberName"],
+            // [fn('CONCAT', urlRequest, col("book_category.logo")), 'bookCategoryLogo']
+        ],
+        include: [
+            {
+                model: RentedBookDetail,
+                attributes: []
+            },
+            {
+                model: Reader,
+                attributes: []
+            },
+            {
+                model: Member,
+                as: 'borrowedConfirmMember',
+                attributes: []
+            },
+            {
+                model: Member,
+                as: 'returnedConfirmMember',
+                attributes: []
+            }
+        ]
+    })
+    if(!detail) throw API_CODE.NOT_FOUND
 
-    // bookDetail.dataValues.image = await getBookImages(bookId, urlRequest)
-    // return bookDetail
+    // detail.dataValues.image = await getBookImages(bookId, urlRequest)
+    return detail
 }
 
 async function createRentedBook(req, res) {
@@ -111,34 +126,62 @@ async function createRentedBook(req, res) {
     if(!readerId) throw API_CODE.REQUIRE_READER_RENTED_BOOK
     if(!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
 
-    // let data = await sequelize.transaction(async transaction => {
-    //     let newBook = await Book.create({
-    //         bookCategoryId: bookCategoryId,
-    //         code: code,
-    //         name: name,
-    //         qty: qty,
-    //         available: available,
-    //         note: note,
-    //         description: description,
-    //         author: author,
-    //         publishers: publishers,
-    //         publishingYear: publishingYear,
-    //         createdMemberId: req.auth.id
-    //     },{ transaction })
-    
-    //     if(req.files && req.files.image) {
-    //         const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
-    //         await BookImage.create({
-    //             bookId: newBook.id,
-    //             image: urlImage,
-    //             createdMemberId: req.auth.id
-    //         },{ transaction })
+    let findReader = await Reader.findOne({
+        id: readerId,
+        isActive: ACTIVE
+    })
+    if(!findReader) throw API_CODE.READER_NOT_FOUND
+
+    // let checkDuplicateBookId = []
+    // let checkComicsCategory = []
+    // let uniqueArray = listBook.filter(function(elem) {
+    //     //check khong cho muon 2 quyen giong nhau
+    //     if (checkDuplicateBookId.indexOf(elem.bookId) === -1) {
+
+    //         //check neu co 2 quyen the loai truyen tranh
+    //         if(elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT)) throw API_CODE.DUPLICATE_COMICS_CATEGORY
+
+    //         checkDuplicateBookId.push(elem.bookId)
+    //         checkComicsCategory.push(elem.bookCategoryId)
+    //         return true
     //     }
-    //     return newBook
+    //     throw API_CODE.DUPLICATE_BOOK_RENTED_BOOK
+    // })
+
+    let checkComicsCategory = []
+    listBook = listBook.filter(function(elem) {
+        //check khong cho muon 2 quyen truyen tranh
+        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT)) 
+            throw API_CODE.DUPLICATE_COMICS_CATEGORY
+
+        checkComicsCategory.push(elem.bookCategoryId)
+        return true
+    })
+    console.log(listBook)
+
+    // let data = await sequelize.transaction(async transaction => {
+    //     let newRentedBook = await RentedBook.create({
+    //         readerId,
+    //         status: RENTED_BOOK_STATUS.BORROWED,
+    //         noteMember,
+    //         borrowedDate: Date.now(),
+    //         borrowedConfirmMemberId: req.auth.id,
+    //         isCreatedByMember: YES_OR_NO.YES,
+    //         createdObjectId: req.auth.id
+    //     },{ transaction })
+
+    //     let arrayInsert = uniqueArray.map(item => {
+    //         return  { rentedBookId: 1, bookId: item.bookId }
+    //     })
+
+    //     await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
+    //     return newRentedBook
     // });
+    // return data
     // return await getRentedBookDetail(data.id, req.url)
     
 }
+
 
 async function updateRentedBook(req, res) {
     // if(req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
@@ -204,7 +247,7 @@ async function updateRentedBook(req, res) {
 
 module.exports = {
     getListRentedBook,
-    getRentedBookInfo,
+    getRentedBookDetail,
     createRentedBook,
     updateRentedBook,
 }

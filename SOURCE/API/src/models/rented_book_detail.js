@@ -20,6 +20,10 @@ rented_book_detail.init(
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    status: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
     qty: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -30,18 +34,34 @@ rented_book_detail.init(
       allowNull: false,
       defaultValue: 0,
     },
+    borrowedDate: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
+    borrowedConfirmMemberId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    },
+    returnedDate: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
+    returnedConfirmMemberId: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    },
     note: {
       type: Sequelize.STRING(500),
       allowNull: true,
     },
-    updatedDate: {
-      type: Sequelize.DATE,
-      allowNull: true,
-    },
-    updatedMemberId: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
+    // updatedDate: {
+    //   type: Sequelize.DATE,
+    //   allowNull: true,
+    // },
+    // updatedMemberId: {
+    //   type: Sequelize.INTEGER,
+    //   allowNull: true,
+    // },
     isActive: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -67,10 +87,22 @@ rented_book_detail.associate = (db) => {
   });
 
   //member
+  // db.rented_book_detail.belongsTo(db.member, {
+  //   foreignKey: {
+  //     name: "updatedMemberId",
+  //   },
+  // });
   db.rented_book_detail.belongsTo(db.member, {
     foreignKey: {
-      name: "updatedMemberId",
+      name: "borrowedConfirmMemberId",
     },
+    as: 'borrowedConfirmMemberRentedDetail'
+  });
+  db.rented_book_detail.belongsTo(db.member, {
+    foreignKey: {
+      name: "returnedConfirmMemberId",
+    },
+    as: 'returnedConfirmMemberRentedDetail'
   });
 
   //book
