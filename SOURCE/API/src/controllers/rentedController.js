@@ -76,26 +76,46 @@ async function getListRentedBook(req, res) {
 
 async function getRentedBookDetail(req, res) {
     if(!req.query.id) throw API_CODE.INVALID_PARAM
-    return await rentedDetail(req.query.id, req.url)
+    return await rentedDetail(req.query.id)
 }
 
-async function rentedDetail(id, urlRequest) {
+async function rentedDetail(id) {
     let detail = await RentedBook.findOne({
+        subQuery: false,
         where: {
             isActive: ACTIVE,
             id
         },
         attributes: [
-            'id', 'readerId', 'status', 'noteReder', 'noteMember', 'borrowedDate', 'borrowedConfirmMemberId', 'returnedDate', 'returnedConfirmMemberId',
+            'id', 'status', 'noteMember', 'readerId',
+            [col("reader.cardNumber"), "readerCardNumber"],
             [col("reader.name"), "readerName"],
+            'borrowedDate', 'borrowedConfirmMemberId',
             [col("borrowedConfirmMember.name"), "borrowedConfirmMemberName"],
-            [col("returnedConfirmMember.name"), "returnedConfirmMemberName"],
-            // [fn('CONCAT', urlRequest, col("book_category.logo")), 'bookCategoryLogo']
         ],
         include: [
             {
                 model: RentedBookDetail,
-                attributes: []
+                include: [
+                    {
+                        model: Book,
+                        attributes: []
+                    },
+                    {
+                        model: Member,
+                        as: 'returnedConfirmMemberRentedDetail',
+                        attributes: []
+                    }
+                ],
+                attributes: [
+                    ['id', 'rentedBookDetailId'],
+                    'status', 'lost', 'note', 'outOfDate', 'returnedDate', 'returnedConfirmMemberId',
+                    [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`account`"), "returnedConfirmMemberCode"],
+                    [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
+                    [literal("`rented_book_details->book`.`id`"), "bookId"],
+                    [literal("`rented_book_details->book`.`code`"), "bookCode"],
+                    [literal("`rented_book_details->book`.`name`"), "bookName"],
+                ]
             },
             {
                 model: Reader,
@@ -132,6 +152,15 @@ async function createRentedBook(req, res) {
     })
     if(!findReader) throw API_CODE.READER_NOT_FOUND
 
+    let checkBorrowed = await RentedBookDetail.count({
+        where: {
+            isActive: ACTIVE,
+            readerId,
+            returnedDate: null
+        }
+    })
+    if (checkBorrowed > 0) throw API_CODE.RETURNED_BEFORE_BORROWED
+
     // let checkDuplicateBookId = []
     // let checkComicsCategory = []
     // let uniqueArray = listBook.filter(function(elem) {
@@ -157,29 +186,33 @@ async function createRentedBook(req, res) {
         checkComicsCategory.push(elem.bookCategoryId)
         return true
     })
-    console.log(listBook)
 
-    // let data = await sequelize.transaction(async transaction => {
-    //     let newRentedBook = await RentedBook.create({
-    //         readerId,
-    //         status: RENTED_BOOK_STATUS.BORROWED,
-    //         noteMember,
-    //         borrowedDate: Date.now(),
-    //         borrowedConfirmMemberId: req.auth.id,
-    //         isCreatedByMember: YES_OR_NO.YES,
-    //         createdObjectId: req.auth.id
-    //     },{ transaction })
+    let data = await sequelize.transaction(async transaction => {
+        let newRentedBook = await RentedBook.create({
+            readerId,
+            status: RENTED_BOOK_STATUS.BORROWED,
+            noteMember,
+            borrowedDate: Date.now(),
+            borrowedConfirmMemberId: req.auth.id,
+            isCreatedByMember: YES_OR_NO.YES,
+            createdObjectId: req.auth.id
+        },{ transaction })
 
-    //     let arrayInsert = uniqueArray.map(item => {
-    //         return  { rentedBookId: 1, bookId: item.bookId }
-    //     })
+        let arrayInsert = listBook.map(item => {
+            return  { 
+                readerId,
+                rentedBookId: newRentedBook.id, 
+                bookId: item.bookId,
+                status: RENTED_BOOK_STATUS.BORROWED,
+                borrowedDate: Date.now(),
+                borrowedConfirmMemberId: req.auth.id,
+            }
+        })
 
-    //     await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
-    //     return newRentedBook
-    // });
-    // return data
-    // return await getRentedBookDetail(data.id, req.url)
-    
+        await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
+        return newRentedBook
+    });
+    return await rentedDetail(data.id)
 }
 
 

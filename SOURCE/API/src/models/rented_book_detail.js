@@ -16,6 +16,10 @@ rented_book_detail.init(
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    readerId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
     bookId: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -54,6 +58,11 @@ rented_book_detail.init(
       type: Sequelize.STRING(500),
       allowNull: true,
     },
+    outOfDate: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
     // updatedDate: {
     //   type: Sequelize.DATE,
     //   allowNull: true,
@@ -78,6 +87,13 @@ rented_book_detail.init(
 
 //add reference foreign key
 rented_book_detail.associate = (db) => {
+
+  //reader
+  db.rented_book_detail.belongsTo(db.reader, {
+    foreignKey: {
+      name: "readerId",
+    },
+  });
 
   //rented_book
   db.rented_book_detail.belongsTo(db.rented_book, {

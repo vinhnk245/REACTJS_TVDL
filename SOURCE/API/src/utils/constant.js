@@ -44,6 +44,7 @@ module.exports = {
     DUPLICATE_BOOK_RENTED_BOOK: { code: 28, message: 'Không được phép mượn 2 quyển giống nhau' },
     DUPLICATE_COMICS_CATEGORY: { code: 29, message: 'Không được phép mượn 2 quyển truyện tranh' },
     READER_NOT_FOUND: { code: 30, message: 'Không tìm thấy thông tin bạn đọc' },
+    RETURNED_BEFORE_BORROWED: { code: 31, message: 'Không được phép mượn khi chưa trả hết sách' },
   },
 
   CONFIG: {

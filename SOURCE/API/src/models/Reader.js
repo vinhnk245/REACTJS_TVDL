@@ -114,6 +114,13 @@ reader.associate = (db) => {
     },
   });
 
+  //rented_book_detail
+  db.reader.hasMany(db.rented_book_detail, {
+    foreignKey: {
+      name: "readerId",
+    },
+  });
+
   //lost_book
   db.reader.hasMany(db.lost_book, {
     foreignKey: {
