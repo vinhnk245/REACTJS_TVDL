@@ -45,6 +45,8 @@ module.exports = {
     DUPLICATE_COMICS_CATEGORY: { code: 29, message: 'Không được phép mượn 2 quyển truyện tranh' },
     READER_NOT_FOUND: { code: 30, message: 'Không tìm thấy thông tin bạn đọc' },
     RETURNED_BEFORE_BORROWED: { code: 31, message: 'Không được phép mượn khi chưa trả hết sách' },
+    BORROWED_MAX_THREE: { code: 32, message: 'Chỉ được mượn tối đa 3 quyển' },
+    BOOK_HAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
   },
 
   CONFIG: {
@@ -55,6 +57,7 @@ module.exports = {
     PATH_IMAGE_EVENT: 'uploads/images/events/',
     PREFIX: 'TVDL',
     FIRST_CARD_NUMBER: 1,
+    LIMIT_TOP_BORROWED_BOOK: 10,
   },
 
   VOLUNTEER_STATUS: { 

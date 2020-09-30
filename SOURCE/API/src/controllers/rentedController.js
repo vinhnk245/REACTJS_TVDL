@@ -14,21 +14,28 @@ const {
 const { success, error } = require("../commons/response")
 
 
-async function getListRentedBook(req, res) {
-    // const urlRequest = req.protocol + '://' + req.get('host') + '/'
+async function getRentedBookHistory(req, res) {
+    let page = !req.query.page ? 0 : req.query.page - 1
+    let limit = parseInt(req.query.limit || LIMIT)
+    if (page < 0) throw API_CODE.PAGE_ERROR
+    let offset = page * limit
 
-    // let page = !req.query.page ? 0 : req.query.page - 1
-    // let limit = parseInt(req.query.limit || LIMIT)
-    // if (page < 0) throw API_CODE.PAGE_ERROR
-    // let offset = page * limit
-    // let text = (req.query.text || '').trim()
-    // let querySearch = text.length > 0 
-    //     ? `name like '%${text}%' or code like '%${text}%' or author like '%${text}%' or publishers like '%${text}%'` 
-    //     : ''
+    let cardNumber = (req.query.cardNumber || '').trim()
+    let readerName = (req.query.readerName || '').trim()
+    let bookCode = (req.query.bookCode || '').trim()
+    let bookName = (req.query.bookName || '').trim()
+    let searchCardNumber = cardNumber.length > 0  ? `reader.cardNumber = '${cardNumber}'` : ''
+    let searchReaderName = readerName.length > 0  ? `reader.name like '%${readerName}%'` : ''
+    let searchBookCode = bookCode.length > 0  ? `code = '${bookCode}'` : ''
+    let searchBookName = bookName.length > 0  ? `name like '%${bookName}%'` : ''
+
+    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : ''
+    let searchFromDate = req.query.fromDate  ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
+    let searchToDate = req.query.toDate  ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
+
+    let searchByReader = !req.auth.role ? `reader.id = ${req.auth.id}` : ''
     
-    // let queryBookCategory = req.query.bookCategoryId ? `bookCategoryId = ${req.query.bookCategoryId}` : ``
-
-    // let queryOrderBy = 'id DESC'
+    let queryOrderBy = 'rented_book.id DESC'
     // if(req.query.orderBy == ORDER_BY.BOOK.QTY_DESC)
     //     queryOrderBy = 'qty DESC'
     // if(req.query.orderBy == ORDER_BY.BOOK.LOST_DESC)
@@ -36,42 +43,87 @@ async function getListRentedBook(req, res) {
     // if(req.query.orderBy == ORDER_BY.BOOK.AVAILABLE_DESC)
     //     queryOrderBy = 'available DESC'
 
-    // let listBook = await Book.findAndCountAll({
-    //     where: {
-    //         isActive: ACTIVE,
-    //         [Op.and]: [
-    //             sequelize.literal(queryBookCategory),
-    //             sequelize.literal(querySearch)
-    //         ]
-    //     },
-    //     include: [
-    //         {
-    //             model: BookCategory,
-    //             attributes: []
-    //         }
-    //     ],
-    //     attributes: [
-    //         'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear',
-    //         [sequelize.col("book_category.name"), "bookCategoryName"],
-    //         [sequelize.col("book_category.code"), "bookCategoryCode"],
-    //         [sequelize.fn('CONCAT', urlRequest, sequelize.col("book_category.logo")), 'bookCategoryLogo']
-    //     ],
-    //     order: sequelize.literal(queryOrderBy),
-    //     offset: offset,
-    //     limit: limit
-    // })
+    let history = await RentedBook.findAndCountAll({
+        subQuery: false,
+        order: literal(queryOrderBy),
+        offset,
+        limit,
+        //count distinct id
+        distinct: true,
+        col: 'id',
+        where: {
+            isActive: ACTIVE,
+            [Op.and]: [
+                literal(searchByReader),
+                literal(searchCardNumber),
+                literal(searchReaderName),
+                literal(searchStatus),
+                literal(searchFromDate),
+                literal(searchToDate),
+            ]
+        },
+        attributes: [
+            'id', 'status', 'noteMember', 'readerId',
+            [col("reader.cardNumber"), "readerCardNumber"],
+            [col("reader.name"), "readerName"],
+            'borrowedDate', 'borrowedConfirmMemberId',
+            [col("borrowedConfirmMember.name"), "borrowedConfirmMemberName"],
+        ],
+        include: [
+            {
+                required: true,
+                model: RentedBookDetail,
+                include: [
+                    {
+                        model: Book,
+                        attributes: [],
+                        where: {
+                            isActive: ACTIVE,
+                            [Op.and]: [
+                                literal(searchBookCode),
+                                literal(searchBookName)
+                            ]
+                        }
+                    },
+                    {
+                        model: Member,
+                        as: 'returnedConfirmMemberRentedDetail',
+                        attributes: []
+                    }
+                ],
+                attributes: [
+                    ['id', 'rentedBookDetailId'],
+                    'status', 'lost', 'note', 'outOfDate', 'returnedDate', 'returnedConfirmMemberId',
+                    [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
+                    [literal("`rented_book_details->book`.`id`"), "bookId"],
+                    [literal("`rented_book_details->book`.`code`"), "bookCode"],
+                    [literal("`rented_book_details->book`.`name`"), "bookName"],
+                ]
+            },
+            {
+                model: Reader,
+                attributes: [],
+                // where: {
+                //     isActive: ACTIVE,
+                //     // [Op.and]: [
+                //     //     literal(searchCardNumber),
+                //     //     literal(searchReaderName)
+                //     // ]
+                // }
+            },
+            {
+                model: Member,
+                as: 'borrowedConfirmMember',
+                attributes: []
+            }
+        ]
+    })
 
-    // await Promise.all(
-    //     listBook.rows.map(async book => {
-    //         book.dataValues.image = await getBookImages(book.id, urlRequest)
-    //     })
-    // )
-
-    // return {
-    //     totalCount: listBook.count,
-    //     totalPage: Math.ceil(listBook.count / limit),
-    //     items: listBook.rows
-    // }
+    return {
+        totalCount: history.count,
+        totalPage: Math.ceil(history.count / limit),
+        items: history.rows
+    }
 }
 
 async function getRentedBookDetail(req, res) {
@@ -110,7 +162,6 @@ async function rentedDetail(id) {
                 attributes: [
                     ['id', 'rentedBookDetailId'],
                     'status', 'lost', 'note', 'outOfDate', 'returnedDate', 'returnedConfirmMemberId',
-                    [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`account`"), "returnedConfirmMemberCode"],
                     [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
                     [literal("`rented_book_details->book`.`id`"), "bookId"],
                     [literal("`rented_book_details->book`.`code`"), "bookCode"],
@@ -125,18 +176,26 @@ async function rentedDetail(id) {
                 model: Member,
                 as: 'borrowedConfirmMember',
                 attributes: []
-            },
-            {
-                model: Member,
-                as: 'returnedConfirmMember',
-                attributes: []
             }
         ]
     })
     if(!detail) throw API_CODE.NOT_FOUND
 
-    // detail.dataValues.image = await getBookImages(bookId, urlRequest)
     return detail
+}
+
+async function getTopBorrowedBook(req, res) {
+   const topBorrowedBook = await sequelize.query(`
+   select count(bookId) as count, bookId, book.name as bookName
+   from rented_book_detail
+   join book on book.id = rented_book_detail.bookId
+   where rented_book_detail.isActive = 1
+   group by bookId
+   order by count desc, bookId desc limit ${CONFIG.LIMIT_TOP_BORROWED_BOOK};`)
+
+   if (!topBorrowedBook || topBorrowedBook.length === 0) return []
+  
+   return topBorrowedBook[0]
 }
 
 async function createRentedBook(req, res) {
@@ -145,6 +204,7 @@ async function createRentedBook(req, res) {
     let { readerId, noteMember, listBook } = req.body
     if(!readerId) throw API_CODE.REQUIRE_READER_RENTED_BOOK
     if(!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
+    if(listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
 
     let findReader = await Reader.findOne({
         id: readerId,
@@ -211,76 +271,51 @@ async function createRentedBook(req, res) {
 
         await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
         return newRentedBook
-    });
+    })
     return await rentedDetail(data.id)
 }
 
 
 async function updateRentedBook(req, res) {
-    // if(req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    // let { id, bookCategoryId, name, code, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
-    // if(!id ||
-    //     !bookCategoryId || 
-    //     !name || 
-    //     !code || 
-    //     typeof qty != 'number' ||
-    //     typeof lost != 'number' ||
-    //     typeof available != 'number') throw API_CODE.REQUIRE_FIELD
+    let { id } = req.body
+    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
 
-    // if(qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
-    // if(qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
+    let rentedBookUpdate = await RentedBook.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        }
+    })
+    if (!rentedBookUpdate) throw API_CODE.NOT_FOUND
+    if (rentedBookUpdate.status === RENTED_BOOK_STATUS.RETURNED) throw API_CODE.BOOK_HAS_RETURNED
 
-    // let bookUpdate = await Book.findOne({
-    //     where: {
-    //         isActive: ACTIVE,
-    //         id: id
-    //     }
-    // })
-    // if(!bookUpdate) throw API_CODE.NOT_FOUND
+    let dataUpdate = {
+        status: RENTED_BOOK_STATUS.RETURNED,
+        returnedDate: Date.now(),
+        returnedConfirmMemberId: req.auth.id
+    }
 
-    // let findCategory = await BookCategory.findOne({
-    //     where: {
-    //         isActive: ACTIVE,
-    //         id: bookCategoryId
-    //     }
-    // })
-    // if(!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
-    
-    // code = findCategory.code + code
-    // if (bookUpdate.code != code) {
-    //     let findBook = await Book.findOne({
-    //         where: {
-    //             isActive: ACTIVE,
-    //             code: code
-    //         }
-    //     })
-    //     if(findBook) throw API_CODE.BOOK_CODE_EXIST
-    // }
-
-    // await bookUpdate.update({
-    //     bookCategoryId: bookCategoryId,
-    //     code: code,
-    //     name: name,
-    //     qty: qty,
-    //     lost: lost,
-    //     available: available,
-    //     note: note,
-    //     description: description,
-    //     author: author,
-    //     publishers: publishers,
-    //     publishingYear: publishingYear,
-    //     updatedMemberId: req.auth.id,
-    //     updatedDate: Date.now()
-    // })
-
-    return await getRentedBookDetail(bookUpdate.id)
+    let data = await sequelize.transaction(async transaction => {
+        await rentedBookUpdate.update(dataUpdate, { transaction })
+        await RentedBookDetail.update(dataUpdate, {
+            transaction,
+            where: {
+                isActive: ACTIVE,
+                rentedBookId: id,
+                returnedDate: null
+            }
+        })
+    })
+    return await rentedDetail(id)
 }
 
 
 module.exports = {
-    getListRentedBook,
+    getRentedBookHistory,
     getRentedBookDetail,
     createRentedBook,
     updateRentedBook,
+    getTopBorrowedBook,
 }
