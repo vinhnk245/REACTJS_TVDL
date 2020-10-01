@@ -8,8 +8,9 @@ const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { 
     book: Book, 
-    book_category: BookCategory,
-    book_image: BookImage
+    BookCategory: book_category,
+    book_image: BookImage,
+    rented_book_detail: RentedBookDetail,
 } = require("@models")
 const { success, error } = require("../commons/response")
 
@@ -252,24 +253,33 @@ async function updateBook(req, res) {
 }
 
 async function deleteBook(req, res) {
-    // if(req.auth.role == ROLE.MEMBER)
-    //     throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
-    // let id = req.body.id
-    // if(!id) throw API_CODE.INVALID_PARAM
+    let id = req.body.id
+    if (!id) throw API_CODE.INVALID_PARAM
 
-    // let memberDelete = await member.findOne({
-    //     where: {
-    //         isActive: ACTIVE,
-    //         id: id
-    //     }
-    // })
-    // if(!memberDelete) throw API_CODE.NOT_FOUND
+    let bookDelete = await Book.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        }
+    })
+    if (!bookDelete) throw API_CODE.BOOK_NOT_FOUND
 
-    // await memberDelete.update({
-    //     isActive: IS_ACTIVE.INACTIVE
-    // })
-    // return
+    let checkBookWasBorrowed = await RentedBookDetail.count({
+        where: {
+            isActive: ACTIVE,
+            bookId: id
+        }
+    })
+    if (checkBookWasBorrowed && checkBookWasBorrowed > 0) throw API_CODE.BOOK_WAS_BORROWED
+
+    await bookDelete.update({
+        isActive: IS_ACTIVE.INACTIVE,
+        updatedMemberId: req.auth.id,
+        updatedDate: Date.now()
+    })
+    return
 }
 
 async function uploadImage(req, res) {

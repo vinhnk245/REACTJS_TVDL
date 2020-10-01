@@ -10,5 +10,6 @@ router.get("/getRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONRespons
 router.get("/getTopBorrowedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getTopBorrowedBook));
 router.post("/createRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.createRentedBook));
 router.post("/updateRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBook));
+router.post("/updateRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBookDetail));
 
 module.exports = router;

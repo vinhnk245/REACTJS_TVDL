@@ -46,7 +46,8 @@ module.exports = {
     READER_NOT_FOUND: { code: 30, message: 'Không tìm thấy thông tin bạn đọc' },
     RETURNED_BEFORE_BORROWED: { code: 31, message: 'Không được phép mượn khi chưa trả hết sách' },
     BORROWED_MAX_THREE: { code: 32, message: 'Chỉ được mượn tối đa 3 quyển' },
-    BOOK_HAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
+    RENTED_BOOK_WAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
+    BOOK_WAS_BORROWED: { code: 34, message: 'Không thể xóa vì sách đã từng được mượn' },
   },
 
   CONFIG: {
@@ -57,7 +58,7 @@ module.exports = {
     PATH_IMAGE_EVENT: 'uploads/images/events/',
     PREFIX: 'TVDL',
     FIRST_CARD_NUMBER: 1,
-    LIMIT_TOP_BORROWED_BOOK: 10,
+    LIMIT_TOP: 10,
   },
 
   VOLUNTEER_STATUS: { 
@@ -75,8 +76,7 @@ module.exports = {
     PENDING: 0,
     BORROWED: 1,
     RETURNED: 2,
-    OUT_OF_DATE: 3,
-    CANCEL: 4,
+    CANCEL: 3,
   },
 
   ORDER_BY: { 
