@@ -72,6 +72,9 @@ async function getRentedBookHistory(req, res) {
         include: [
             {
                 required: true,
+                where: {
+                    isActive: ACTIVE
+                },
                 model: RentedBookDetail,
                 include: [
                     {
@@ -149,7 +152,11 @@ async function rentedDetail(id) {
         ],
         include: [
             {
+                required: false,
                 model: RentedBookDetail,
+                where: {
+                    isActive: ACTIVE
+                },
                 include: [
                     {
                         model: Book,
@@ -374,11 +381,35 @@ async function updateRentedBookDetail(req, res) {
 }
 
 
+async function deleteRentedBookDetail(req, res) {
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { id } = req.body
+    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
+
+    let rentedBookDetailDelete = await RentedBookDetail.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        }
+    })
+    if (!rentedBookDetailDelete) throw API_CODE.NOT_FOUND
+    if (rentedBookDetailDelete.status !== RENTED_BOOK_STATUS.PENDING) throw API_CODE.CAN_NOT_DELETE_RENTED_DETAIL
+
+    await rentedBookDetailDelete.update({
+        isActive: IS_ACTIVE.INACTIVE
+    })
+    
+    return await rentedDetail(rentedBookDetailDelete.rentedBookId)
+}
+
+
 module.exports = {
     getRentedBookHistory,
     getRentedBookDetail,
     createRentedBook,
     updateRentedBook,
     updateRentedBookDetail,
+    deleteRentedBookDetail,
     getTopBorrowedBook,
 }

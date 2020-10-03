@@ -129,10 +129,25 @@ async function resetPassword(req, res, next) {
     return
 }
 
+async function checkTokenForApp(req, res, next) {
+    if (req.headers && req.headers.token) {
+        let readerCheck = await Reader.findOne({
+            where: {
+                token: req.headers.token,
+                isActive: IS_ACTIVE.ACTIVE,
+            }
+        })
+        if (!readerCheck) throw API_CODE.UNAUTHORIZED
+    } else {
+        throw API_CODE.INVALID_ACCESS_TOKEN
+    }
+}
+
 
 module.exports = {
     login,
     logout,
     changePassword,
     resetPassword,
+    checkTokenForApp,
 };

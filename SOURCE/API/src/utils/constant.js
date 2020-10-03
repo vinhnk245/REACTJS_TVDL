@@ -48,6 +48,7 @@ module.exports = {
     BORROWED_MAX_THREE: { code: 32, message: 'Chỉ được mượn tối đa 3 quyển' },
     RENTED_BOOK_WAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
     BOOK_WAS_BORROWED: { code: 34, message: 'Không thể xóa vì sách đã từng được mượn' },
+    CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả' },
   },
 
   CONFIG: {

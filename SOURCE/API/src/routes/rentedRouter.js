@@ -11,5 +11,6 @@ router.get("/getTopBorrowedBook", isAuthenticated(), wrapHandlerWithJSONResponse
 router.post("/createRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.createRentedBook));
 router.post("/updateRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBook));
 router.post("/updateRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBookDetail));
+router.post("/deleteRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.deleteRentedBookDetail));
 
 module.exports = router;
