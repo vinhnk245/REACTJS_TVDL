@@ -8,7 +8,7 @@ const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { 
     book: Book, 
-    BookCategory: book_category,
+    book_category: BookCategory,
     book_image: BookImage,
     rented_book_detail: RentedBookDetail,
 } = require("@models")
