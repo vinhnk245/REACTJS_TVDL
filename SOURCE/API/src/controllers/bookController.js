@@ -309,4 +309,5 @@ module.exports = {
     deleteBook,
     uploadImage,
     uploadFile,
+    getBookImages,
 }

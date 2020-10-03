@@ -12,6 +12,7 @@ const {
     member: Member,
 } = require("@models")
 const { success, error } = require("../commons/response")
+const bookController = require('@controllers/bookController')
 
 
 async function getRentedBookHistory(req, res) {
@@ -195,17 +196,34 @@ async function rentedDetail(id) {
 
 
 async function getTopBorrowedBook(req, res) {
-   const topBorrowedBook = await sequelize.query(`
-   select count(bookId) as count, bookId, book.name as bookName
-   from rented_book_detail
-   join book on book.id = rented_book_detail.bookId
-   where rented_book_detail.isActive = 1
-   group by bookId
-   order by count desc, bookId desc limit ${CONFIG.LIMIT_TOP};`)
+    const topBorrowedBook = await sequelize.query(`
+    select count(bookId) as count, 
+    bookId, 
+    book.name as bookName,
+    book.code as bookCode,
+    book.description as bookDescription,
+    book.author,
+    book.publishers,
+    book.publishingYear,
+    book_category.name as categoryName,
+    book_category.code as categoryCode,
+    book_category.description as categoryDescription,
+    CONCAT('${req.url}', book_category.logo) as categoryLogo
+    from rented_book_detail
+    join book on book.id = rented_book_detail.bookId
+    join book_category on book_category.id = book.bookCategoryId
+    where rented_book_detail.isActive = 1
+    group by bookId
+    order by count desc, bookId desc limit ${CONFIG.LIMIT_TOP};`)
 
-   if (!topBorrowedBook || topBorrowedBook.length === 0) return []
-  
-   return topBorrowedBook[0]
+    if (!topBorrowedBook || topBorrowedBook.length === 0) return []
+    let data = topBorrowedBook[0]
+    await Promise.all(
+        data.map(async book => {
+            book.bookImage = await bookController.getBookImages(book.bookId, req.url)
+        })
+    )
+    return data
 }
 
 
@@ -277,6 +295,65 @@ async function createRentedBook(req, res) {
                 status: RENTED_BOOK_STATUS.BORROWED,
                 borrowedDate: Date.now(),
                 borrowedConfirmMemberId: req.auth.id,
+            }
+        })
+
+        await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
+        return newRentedBook
+    })
+    return await rentedDetail(data.id)
+}
+
+
+async function requestRentBook(req, res) {
+    if (req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { listBook } = req.body
+    if(!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
+    if(listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
+
+    let checkBorrowed = await RentedBookDetail.count({
+        where: {
+            isActive: ACTIVE,
+            readerId: req.auth.id,
+            status: RENTED_BOOK_STATUS.BORROWED,
+        }
+    })
+    if (checkBorrowed && checkBorrowed > 0) throw API_CODE.RETURNED_BEFORE_BORROWED
+
+    let checkRequested = await RentedBookDetail.count({
+        where: {
+            isActive: ACTIVE,
+            readerId: req.auth.id,
+            status: RENTED_BOOK_STATUS.PENDING,
+        }
+    })
+    if (checkRequested && checkRequested > 0) throw API_CODE.EXIST_REQUEST_RENT_BOOK_PENDING
+
+    let checkComicsCategory = []
+    listBook = listBook.filter(function(elem) {
+        //check khong cho muon 2 quyen truyen tranh
+        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT)) 
+            throw API_CODE.DUPLICATE_COMICS_CATEGORY
+
+        checkComicsCategory.push(elem.bookCategoryId)
+        return true
+    })
+
+    let data = await sequelize.transaction(async transaction => {
+        let newRentedBook = await RentedBook.create({
+            readerId: req.auth.id,
+            status: RENTED_BOOK_STATUS.PENDING,
+            isCreatedByMember: YES_OR_NO.NO,
+            createdObjectId: req.auth.id
+        },{ transaction })
+
+        let arrayInsert = listBook.map(item => {
+            return  { 
+                readerId: req.auth.id,
+                rentedBookId: newRentedBook.id, 
+                bookId: item.bookId,
+                status: RENTED_BOOK_STATUS.PENDING,
             }
         })
 
@@ -412,4 +489,5 @@ module.exports = {
     updateRentedBookDetail,
     deleteRentedBookDetail,
     getTopBorrowedBook,
+    requestRentBook,
 }

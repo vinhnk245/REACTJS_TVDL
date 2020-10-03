@@ -49,6 +49,7 @@ module.exports = {
     RENTED_BOOK_WAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
     BOOK_WAS_BORROWED: { code: 34, message: 'Không thể xóa vì sách đã từng được mượn' },
     CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả' },
+    EXIST_REQUEST_RENT_BOOK_PENDING: { code: 36, message: 'Bạn đang có 1 yêu cầu mượn sách. Vui lòng không gửi yêu cầu thêm' },
   },
 
   CONFIG: {
