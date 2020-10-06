@@ -7,6 +7,7 @@ var router = express.Router();
 
 router.get("/getListBook", wrapHandlerWithJSONResponse(bookController.getListBook));
 router.get("/getBookInfo", wrapHandlerWithJSONResponse(bookController.getBookInfo));
+router.get("/getLostBooksByReaderId", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.getLostBooksByReaderId));
 router.post("/createBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.createBook));
 router.post("/updateBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.updateBook));
 router.post("/deleteBook", isAuthenticated(), wrapHandlerWithJSONResponse(bookController.deleteBook));

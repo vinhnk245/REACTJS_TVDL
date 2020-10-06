@@ -50,6 +50,7 @@ module.exports = {
     BOOK_WAS_BORROWED: { code: 34, message: 'Không thể xóa vì sách đã từng được mượn' },
     CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả' },
     EXIST_REQUEST_RENT_BOOK_PENDING: { code: 36, message: 'Bạn đang có 1 yêu cầu mượn sách. Vui lòng không gửi yêu cầu thêm' },
+    REQUIRE_NOTE_MEMBER_CANCEL_REQUEST: { code: 37, message: 'Vui lòng điền lý do hủy' },
   },
 
   CONFIG: {
@@ -95,8 +96,7 @@ module.exports = {
       CARD_NUMBER_DESC: 2,
       DOB_ASC: 3,
       DOB_DESC: 4,
-      LOST_ASC: 5,
-      LOST_DESC: 6,
+      LOST_DESC: 5,
     },
     BOOK: {
       QTY_DESC: 1,

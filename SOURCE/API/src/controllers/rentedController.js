@@ -32,7 +32,7 @@ async function getRentedBookHistory(req, res) {
     let searchBookCode = bookCode.length > 0  ? `code = '${bookCode}'` : ''
     let searchBookName = bookName.length > 0  ? `name like '%${bookName}%'` : ''
 
-    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : ''
+    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})`
     let searchFromDate = req.query.fromDate  ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
     let searchToDate = req.query.toDate  ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
 
@@ -263,7 +263,7 @@ async function getTopBorrowedBook(req, res) {
     from rented_book_detail
     join book on book.id = rented_book_detail.bookId
     join book_category on book_category.id = book.bookCategoryId
-    where rented_book_detail.isActive = 1
+    where rented_book_detail.isActive = 1 and rented_book_detail.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})
     group by bookId
     order by count desc, bookId desc limit ${CONFIG.LIMIT_TOP};`)
 
@@ -274,6 +274,29 @@ async function getTopBorrowedBook(req, res) {
             book.bookImage = await bookController.getBookImages(book.bookId, urlRequest)
         })
     )
+    return data
+}
+
+
+async function getTopBorrowedReader(req, res) {
+    const topBorrowedReader = await sequelize.query(`
+    select count(readerId) as totalBorrowed,
+    readerId,
+    reader.name as readerName,
+    reader.cardNumber,
+    reader.address,
+    reader.dob,
+    reader.parentName,
+    reader.parentPhone,
+    reader.lost as totalLost
+    from rented_book_detail
+    join reader on reader.id = rented_book_detail.readerId
+    where rented_book_detail.isActive = 1 and rented_book_detail.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})
+    group by readerId
+    order by totalBorrowed desc, readerId desc limit ${CONFIG.LIMIT_TOP};`)
+
+    if (!topBorrowedReader || topBorrowedReader.length === 0) return []
+    let data = topBorrowedReader[0]
     return data
 }
 
@@ -502,7 +525,7 @@ async function updateRentedBookDetail(req, res) {
             returnedDate: null
         }
     })
-    if (checkRentedFinish && checkRentedFinish == 0) {
+    if (checkRentedFinish == 0) {
         await findRentedBook.update({ status: RENTED_BOOK_STATUS.RETURNED })
     }
     return await rentedDetail(rentedBookDetailUpdate.rentedBookId, req.url)
@@ -532,13 +555,179 @@ async function deleteRentedBookDetail(req, res) {
 }
 
 
+async function getListRequestRentBook(req, res) {
+    let page = !req.query.page ? 0 : req.query.page - 1
+    let limit = parseInt(req.query.limit || LIMIT)
+    if (page < 0) throw API_CODE.PAGE_ERROR
+    let offset = page * limit
+
+    let cardNumber = (req.query.cardNumber || '').trim()
+    let readerName = (req.query.readerName || '').trim()
+    let bookCode = (req.query.bookCode || '').trim()
+    let bookName = (req.query.bookName || '').trim()
+    let searchCardNumber = cardNumber.length > 0  ? `reader.cardNumber = '${cardNumber}'` : ''
+    let searchReaderName = readerName.length > 0  ? `reader.name like '%${readerName}%'` : ''
+    let searchBookCode = bookCode.length > 0  ? `code = '${bookCode}'` : ''
+    let searchBookName = bookName.length > 0  ? `name like '%${bookName}%'` : ''
+
+    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.PENDING}, ${RENTED_BOOK_STATUS.CANCEL})`
+    let searchFromDate = req.query.fromDate  ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
+    let searchToDate = req.query.toDate  ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
+
+    let history = await RentedBook.findAndCountAll({
+        subQuery: false,
+        order: [ ['id', 'DESC'] ],
+        offset,
+        limit,
+        distinct: true,
+        col: 'id',
+        where: {
+            isActive: ACTIVE,
+            [Op.and]: [
+                literal(searchCardNumber),
+                literal(searchReaderName),
+                literal(searchStatus),
+                literal(searchFromDate),
+                literal(searchToDate),
+            ]
+        },
+        attributes: [
+            'id', 'status', 'readerId',
+            [col("reader.cardNumber"), "readerCardNumber"],
+            [col("reader.name"), "readerName"]
+        ],
+        include: [
+            {
+                required: true,
+                where: {
+                    isActive: ACTIVE
+                },
+                model: RentedBookDetail,
+                include: [
+                    {
+                        model: Book,
+                        attributes: [],
+                        where: {
+                            isActive: ACTIVE,
+                            [Op.and]: [
+                                literal(searchBookCode),
+                                literal(searchBookName)
+                            ]
+                        }
+                    }
+                ],
+                attributes: [
+                    ['id', 'rentedBookDetailId'],
+                    [literal("`rented_book_details->book`.`id`"), "bookId"],
+                    [literal("`rented_book_details->book`.`code`"), "bookCode"],
+                    [literal("`rented_book_details->book`.`name`"), "bookName"]
+                ]
+            },
+            {
+                model: Reader,
+                attributes: []
+            }
+        ]
+    })
+
+    return {
+        totalCount: history.count,
+        totalPage: Math.ceil(history.count / limit),
+        items: history.rows
+    }
+}
+
+
+async function cancelRequestRentBook(req, res) {
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { id, noteMember } = req.body
+    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
+    if (!noteMember || noteMember.length == 0) throw API_CODE.REQUIRE_NOTE_MEMBER_CANCEL_REQUEST
+
+    let rentedBook = await RentedBook.findOne({
+        where: {
+            isActive: ACTIVE,
+            id,
+            status: RENTED_BOOK_STATUS.PENDING
+        }
+    })
+    if (!rentedBook) throw API_CODE.NOT_FOUND
+
+    let data = await sequelize.transaction(async transaction => {
+        await Promise.all([
+            rentedBook.update({ 
+                status: RENTED_BOOK_STATUS.CANCEL,
+                noteMember,
+                borrowedDate: Date.now(),
+                borrowedConfirmMemberId: req.auth.id,
+            }, { transaction }),
+            RentedBookDetail.update({
+                status: RENTED_BOOK_STATUS.CANCEL,
+                borrowedDate: Date.now(),
+                borrowedConfirmMemberId: req.auth.id,
+            }, {
+                transaction,
+                where: {
+                    isActive: ACTIVE,
+                    rentedBookId: id
+                }
+            })
+        ])
+    })
+    return
+}
+
+
+async function confirmRequestRentBook(req, res) {
+    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { id } = req.body
+    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
+
+    let rentedBookUpdate = await RentedBook.findOne({
+        where: {
+            isActive: ACTIVE,
+            id,
+            status: RENTED_BOOK_STATUS.PENDING
+        }
+    })
+    if (!rentedBookUpdate) throw API_CODE.NOT_FOUND
+
+    let dataUpdate = {
+        status: RENTED_BOOK_STATUS.BORROWED,
+        borrowedDate: Date.now(),
+        borrowedConfirmMemberId: req.auth.id,
+    }
+
+    let data = await sequelize.transaction(async transaction => {
+        await Promise.all([
+            rentedBookUpdate.update(dataUpdate, { transaction }),
+            RentedBookDetail.update(dataUpdate, {
+                transaction,
+                where: {
+                    isActive: ACTIVE,
+                    rentedBookId: id,
+                    status: RENTED_BOOK_STATUS.PENDING
+                }
+            })
+        ])
+    })
+    return
+}
+
+
 module.exports = {
     getRentedBookHistory,
     getRentedBookDetail,
     createRentedBook,
     updateRentedBook,
     updateRentedBookDetail,
-    deleteRentedBookDetail,
+    getTopBorrowedReader,
     getTopBorrowedBook,
     requestRentBook,
+    getListRequestRentBook,
+    cancelRequestRentBook,
+    confirmRequestRentBook,
+    deleteRentedBookDetail,
 }

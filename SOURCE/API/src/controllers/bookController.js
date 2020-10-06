@@ -3,11 +3,12 @@ const { Sequelize, Op, fn, col, literal } = require('sequelize')
 // const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
 const hat = require("hat")
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, RENTED_BOOK_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { 
     book: Book, 
+    reader: Reader,
     book_category: BookCategory,
     book_image: BookImage,
     rented_book_detail: RentedBookDetail,
@@ -282,6 +283,51 @@ async function deleteBook(req, res) {
     return
 }
 
+
+async function getLostBooksByReaderId(req, res) {
+    const id = req.query.id
+    if (!id) throw API_CODE.INVALID_PARAM
+
+    const findReader = await Reader.findOne({
+        where: { isActive: ACTIVE, id }
+    })
+    if (!findReader) throw API_CODE.NOT_FOUND
+
+    let listBookId = await RentedBookDetail.findAll({
+        where: { 
+            isActive: ACTIVE, 
+            readerId: id,
+            lost: 1,
+            status: { [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED] }
+        }
+    })
+    if (listBookId.length == 0) return []
+
+    listBookId = listBookId.map(item => item.bookId)
+    
+    let listBook = await Book.findAll({
+        where: {
+            isActive: ACTIVE,
+            id: { [Op.in]: listBookId }
+        },
+        include: [
+            {
+                model: BookImage,
+                attributes: [
+                    [fn('CONCAT', req.url, col('image')), 'image']
+                ]
+            }
+        ],
+        attributes: [
+            'id', 'name', 'code', 'note', 'description', 'author', 'publishers', 'publishingYear'
+        ],
+        order: [['id', 'DESC']],
+    })
+
+    return listBook
+}
+
+
 async function uploadImage(req, res) {
     const imageUpload = req.files.image
     if(!imageUpload) throw API_CODE.REQUIRE_IMAGE
@@ -310,4 +356,5 @@ module.exports = {
     uploadImage,
     uploadFile,
     getBookImages,
+    getLostBooksByReaderId,
 }

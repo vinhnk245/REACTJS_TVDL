@@ -1,10 +1,13 @@
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY } = require("@utils/constant")
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, RENTED_BOOK_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
 const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
-const { reader: Reader } = require("@models")
+const { 
+  reader: Reader,
+  member: Member,
+} = require("@models")
 const { success, error } = require("../commons/response")
 
 async function getListReader(req, res) {
@@ -29,12 +32,16 @@ async function getListReader(req, res) {
     queryOrderBy = 'dob ASC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.DOB_DESC)
     queryOrderBy = 'dob DESC, id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.LOST_ASC)
-    queryOrderBy = 'lost ASC, id DESC'
   if(req.query.orderBy == ORDER_BY.READER.LOST_DESC)
     queryOrderBy = 'lost DESC, id DESC'
    
   let listReader = await Reader.findAndCountAll({
+    subQuery: false,
+    attributes: [
+      'id', 'name', 'address', 'dob', 'cardNumber', 'parentName', 'parentPhone', 'lost', 'createdDate',
+      [col(`member.name`), 'createdMemberName'],
+      [col(`member.account`), 'createdMemberAccount'],
+    ],
     where: {
       isActive: ACTIVE,
       [Op.and]: [
@@ -43,6 +50,16 @@ async function getListReader(req, res) {
         literal(querySearch)
       ]
     },
+    include: [
+      {
+        required: false,
+        model: Member,
+        where: {
+          isActive: ACTIVE
+        },
+        attributes: []
+      }
+    ],
     order: literal(queryOrderBy),
     offset: offset,
     limit: limit
