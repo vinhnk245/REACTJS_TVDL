@@ -8,6 +8,8 @@ const {
     rented_book: RentedBook,
     rented_book_detail: RentedBookDetail,
     book: Book,
+    book_category: BookCategory,
+    book_image: BookImage,
     reader: Reader,
     member: Member,
 } = require("@models")
@@ -87,7 +89,13 @@ async function getRentedBookHistory(req, res) {
                                 literal(searchBookCode),
                                 literal(searchBookName)
                             ]
-                        }
+                        },
+                        include: [
+                            {
+                                model: BookCategory,
+                                attributes: []
+                            }
+                        ],
                     },
                     {
                         model: Member,
@@ -102,6 +110,14 @@ async function getRentedBookHistory(req, res) {
                     [literal("`rented_book_details->book`.`id`"), "bookId"],
                     [literal("`rented_book_details->book`.`code`"), "bookCode"],
                     [literal("`rented_book_details->book`.`name`"), "bookName"],
+                    [literal("`rented_book_details->book`.`description`"), "bookDescription"],
+                    [literal("`rented_book_details->book`.`author`"), "author"],
+                    [literal("`rented_book_details->book`.`publishers`"), "publishers"],
+                    [literal("`rented_book_details->book`.`publishingYear`"), "publishingYear"],
+                    [literal("`rented_book_details->book->book_category`.`name`"), "categoryName"],
+                    [literal("`rented_book_details->book->book_category`.`code`"), "categoryCode"],
+                    [literal("`rented_book_details->book->book_category`.`description`"), "categoryDescription"],
+                    [fn('CONCAT', req.url, col('`rented_book_details->book->book_category`.`logo`')), 'categoryLogo']
                 ]
             },
             {
@@ -123,6 +139,18 @@ async function getRentedBookHistory(req, res) {
         ]
     })
 
+    await Promise.all(
+        history.rows.map(async rented => {
+            if (rented.rented_book_details.length > 0) {
+                await Promise.all(
+                    rented.rented_book_details.map(async rentedDetail => {
+                        rentedDetail.dataValues.bookImage = await bookController.getBookImages(rentedDetail.bookId, req.url)
+                    })
+                )
+            }
+        })
+    )
+
     return {
         totalCount: history.count,
         totalPage: Math.ceil(history.count / limit),
@@ -133,11 +161,11 @@ async function getRentedBookHistory(req, res) {
 
 async function getRentedBookDetail(req, res) {
     if(!req.query.id) throw API_CODE.INVALID_PARAM
-    return await rentedDetail(req.query.id)
+    return await rentedDetail(req.query.id, req.url)
 }
 
 
-async function rentedDetail(id) {
+async function rentedDetail(id, urlRequest) {
     let detail = await RentedBook.findOne({
         subQuery: false,
         where: {
@@ -161,7 +189,13 @@ async function rentedDetail(id) {
                 include: [
                     {
                         model: Book,
-                        attributes: []
+                        attributes: [],
+                        include: [
+                            {
+                                model: BookCategory,
+                                attributes: []
+                            }
+                        ]
                     },
                     {
                         model: Member,
@@ -176,6 +210,14 @@ async function rentedDetail(id) {
                     [literal("`rented_book_details->book`.`id`"), "bookId"],
                     [literal("`rented_book_details->book`.`code`"), "bookCode"],
                     [literal("`rented_book_details->book`.`name`"), "bookName"],
+                    [literal("`rented_book_details->book`.`description`"), "bookDescription"],
+                    [literal("`rented_book_details->book`.`author`"), "author"],
+                    [literal("`rented_book_details->book`.`publishers`"), "publishers"],
+                    [literal("`rented_book_details->book`.`publishingYear`"), "publishingYear"],
+                    [literal("`rented_book_details->book->book_category`.`name`"), "categoryName"],
+                    [literal("`rented_book_details->book->book_category`.`code`"), "categoryCode"],
+                    [literal("`rented_book_details->book->book_category`.`description`"), "categoryDescription"],
+                    [fn('CONCAT', urlRequest, col('`rented_book_details->book->book_category`.`logo`')), 'categoryLogo']
                 ]
             },
             {
@@ -191,11 +233,20 @@ async function rentedDetail(id) {
     })
     if(!detail) throw API_CODE.NOT_FOUND
 
+    if (detail.rented_book_details.length > 0) {
+        await Promise.all(
+            detail.rented_book_details.map(async rentedDetail => {
+                rentedDetail.dataValues.bookImage = await bookController.getBookImages(rentedDetail.bookId, urlRequest)
+            })
+        )
+    }
+
     return detail
 }
 
 
 async function getTopBorrowedBook(req, res) {
+    const urlRequest = req.protocol + '://' + req.get('host') + '/'
     const topBorrowedBook = await sequelize.query(`
     select count(bookId) as count, 
     bookId, 
@@ -208,7 +259,7 @@ async function getTopBorrowedBook(req, res) {
     book_category.name as categoryName,
     book_category.code as categoryCode,
     book_category.description as categoryDescription,
-    CONCAT('${req.url}', book_category.logo) as categoryLogo
+    CONCAT('${urlRequest}', book_category.logo) as categoryLogo
     from rented_book_detail
     join book on book.id = rented_book_detail.bookId
     join book_category on book_category.id = book.bookCategoryId
@@ -220,7 +271,7 @@ async function getTopBorrowedBook(req, res) {
     let data = topBorrowedBook[0]
     await Promise.all(
         data.map(async book => {
-            book.bookImage = await bookController.getBookImages(book.bookId, req.url)
+            book.bookImage = await bookController.getBookImages(book.bookId, urlRequest)
         })
     )
     return data
@@ -301,7 +352,7 @@ async function createRentedBook(req, res) {
         await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
         return newRentedBook
     })
-    return await rentedDetail(data.id)
+    return await rentedDetail(data.id, req.url)
 }
 
 
@@ -360,7 +411,7 @@ async function requestRentBook(req, res) {
         await RentedBookDetail.bulkCreate(arrayInsert, { transaction })
         return newRentedBook
     })
-    return await rentedDetail(data.id)
+    return await rentedDetail(data.id, req.url)
 }
 
 
@@ -398,7 +449,7 @@ async function updateRentedBook(req, res) {
             })
         ])
     })
-    return await rentedDetail(id)
+    return await rentedDetail(id, req.url)
 }
 
 
@@ -451,10 +502,10 @@ async function updateRentedBookDetail(req, res) {
             returnedDate: null
         }
     })
-    if (checkRentedFinish && checkRentedFinish === 0) {
-        await findRentedBook.update({ status: RENTED_BOOK_STATUS.RETURNED }, { transaction })
+    if (checkRentedFinish && checkRentedFinish == 0) {
+        await findRentedBook.update({ status: RENTED_BOOK_STATUS.RETURNED })
     }
-    return await rentedDetail(rentedBookDetailUpdate.rentedBookId)
+    return await rentedDetail(rentedBookDetailUpdate.rentedBookId, req.url)
 }
 
 
@@ -477,7 +528,7 @@ async function deleteRentedBookDetail(req, res) {
         isActive: IS_ACTIVE.INACTIVE
     })
     
-    return await rentedDetail(rentedBookDetailDelete.rentedBookId)
+    return await rentedDetail(rentedBookDetailDelete.rentedBookId, req.url)
 }
 
 

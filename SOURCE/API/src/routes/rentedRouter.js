@@ -7,7 +7,7 @@ var router = express.Router();
 
 router.get("/getRentedBookHistory", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getRentedBookHistory));
 router.get("/getRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getRentedBookDetail));
-router.get("/getTopBorrowedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getTopBorrowedBook));
+router.get("/getTopBorrowedBook", wrapHandlerWithJSONResponse(rentedController.getTopBorrowedBook));
 router.post("/createRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.createRentedBook));
 router.post("/updateRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBook));
 router.post("/updateRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.updateRentedBookDetail));
