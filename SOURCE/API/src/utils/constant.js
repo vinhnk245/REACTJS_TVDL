@@ -51,6 +51,9 @@ module.exports = {
     CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả' },
     EXIST_REQUEST_RENT_BOOK_PENDING: { code: 36, message: 'Bạn đang có 1 yêu cầu mượn sách. Vui lòng không gửi yêu cầu thêm' },
     REQUIRE_NOTE_MEMBER_CANCEL_REQUEST: { code: 37, message: 'Vui lòng điền lý do hủy' },
+    ACCEPT_VOLUNTEER_REQUIRE_ACCOUNT: { code: 38, message: 'Vui lòng điền mã TNV để tạo tài khoản' },
+    VOLUNTEER_HAS_BEEN_MEMBER: { code: 39, message: 'Yêu cầu này đã từng được duyệt thành TNV' },
+    ACCOUNT_EXIST: { code: 40, message: 'Mã TNV đã tồn tại' },
   },
 
   CONFIG: {

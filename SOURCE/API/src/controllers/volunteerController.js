@@ -5,7 +5,7 @@ const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, VOLUNTEER_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
-const { volunteer: Volunteer } = require("@models")
+const { volunteer: Volunteer, member: Member} = require("@models")
 const { regexPhone } = require("@utils/utils")
 
 async function getListVolunteerRegistration(req, res) {
@@ -15,7 +15,7 @@ async function getListVolunteerRegistration(req, res) {
     let offset = page * limit
     let text = (req.query.text || '').trim()
     let querySearch = text.length > 0 
-        ? `name like '%${text}%' or phone like '%${text}%' or email like '%${text}%' or address like '%${text}%'` 
+        ? `(name like '%${text}%' or phone like '%${text}%' or email like '%${text}%' or address like '%${text}%')` 
         : ''
 
     let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
@@ -87,13 +87,56 @@ async function volunteerRegistration(req, res) {
 }
 
 async function acceptRequestVolunteer(req, res) {
-    if(req.auth.role == ROLE.MEMBER)
+    if(!req.auth.role || req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
-    const { id, note } = req.body
-    if(!id) throw API_CODE.REQUIRE_FIELD
+    const { id, account } = req.body
+    if(typeof id != 'number') throw API_CODE.INVALID_PARAM
+    if(!account) throw API_CODE.ACCEPT_VOLUNTEER_REQUIRE_ACCOUNT
 
-    return
+    let findVolunteer = await Volunteer.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        }
+    })
+    if (!findVolunteer) throw API_CODE.NOT_FOUND
+    if (findVolunteer.status == VOLUNTEER_STATUS.ACCEPT) throw API_CODE.VOLUNTEER_HAS_BEEN_MEMBER
+    if (findVolunteer.status == VOLUNTEER_STATUS.REJECT) throw API_CODE.VOLUNTEER_REGISTRATION_REJECTED
+
+    let checkAccount = await Member.findOne({
+        where: {
+            isActive: ACTIVE,
+            account
+        }
+    })
+    if (checkAccount) throw API_CODE.ACCOUNT_EXIST
+
+    let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
+    let newMember = null
+    let data = await sequelize.transaction(async transaction => {
+        await Promise.all([
+            newMember = await Member.create({
+                account,
+                password: hash,
+                name: findVolunteer.name,
+                address: findVolunteer.address,
+                phone: findVolunteer.phone,
+                email: findVolunteer.email,
+                dob: findVolunteer.dob,
+                joinedDate: Date.now(),
+                role: ROLE.MEMBER,
+                createdMemberId: req.auth.id
+            }, { transaction }),
+            findVolunteer.update({ 
+                status: VOLUNTEER_STATUS.ACCEPT,
+                updatedDate: Date.now(),
+                updatedMemberId: req.auth.id,
+            }, { transaction })
+        ])
+        return newMember
+    })
+    return data
 }
 
 async function rejectRequestVolunteer(req, res) {

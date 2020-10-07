@@ -15,7 +15,7 @@ async function getListMember(req, res) {
     let offset = page * limit
     let text = (req.query.text || '').trim()
     let querySearch = text.length > 0 
-    ? `name like '%${text}%' or phone like '%${text}%'` 
+    ? `(name like '%${text}%' or phone like '%${text}%')` 
     : ''
 
     let queryStatus = req.query.status ? `status = ${req.query.status}` : ``

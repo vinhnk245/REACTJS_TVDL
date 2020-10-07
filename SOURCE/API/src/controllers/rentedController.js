@@ -517,6 +517,13 @@ async function updateRentedBookDetail(req, res) {
             dataUpdate.returnedConfirmMemberId = req.auth.id
         }
         await rentedBookDetailUpdate.update(dataUpdate, { transaction })
+
+        if (lost == 1) {
+            let findReader = await Reader.findOne({ id: rentedBookDetailUpdate.readerId, isActive: ACTIVE })
+            if (!findReader) throw API_CODE.NOT_FOUND
+
+            await findReader.update({ lost: literal(`lost + 1`) }, { transaction })
+        }
     })
     let checkRentedFinish = await RentedBookDetail.count({
         where: {

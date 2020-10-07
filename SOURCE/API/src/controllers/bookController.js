@@ -26,7 +26,7 @@ async function getListBook(req, res) {
     let offset = page * limit
     let text = (req.query.text || '').trim()
     let querySearch = text.length > 0 
-        ? `book.name like '%${text}%' or book.code like '%${text}%' or book.author like '%${text}%' or book.publishers like '%${text}%'` 
+        ? `(book.name like '%${text}%' or book.code like '%${text}%' or book.author like '%${text}%' or book.publishers like '%${text}%')` 
         : ''
     
     let queryBookCategory = req.query.bookCategoryId ? `bookCategoryId = ${req.query.bookCategoryId}` : ``

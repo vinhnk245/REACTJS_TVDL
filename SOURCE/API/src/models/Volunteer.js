@@ -48,6 +48,10 @@ volunteer.init(
       type: Sequelize.INTEGER,
       allowNull: true
     },
+    note: {
+      type: Sequelize.STRING(500),
+      allowNull: true
+    },
     createdDate: {
       type: Sequelize.DATE,
       allowNull: false,
