@@ -13,7 +13,6 @@ import Notification from '@src/components/Notification'
 import { validateForm } from '@src/utils/helper'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
-import io from 'socket.io-client'
 import { toDateString } from '@src/utils/helper'
 
 class Header extends Component {

@@ -1,5 +1,5 @@
 import React from 'react'
-import '../../styles/Login.css'
+import '@styles/Login.css'
 import { Link, Redirect } from 'react-router-dom'
 import { STRING } from '@constants/Constant';
 import { requestLogin } from '@constants/Api'
