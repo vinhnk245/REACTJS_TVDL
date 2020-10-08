@@ -4,7 +4,7 @@ const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, YES_OR_NO, CATEGORY, RENTED_BOOK_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
-const { 
+const {
     rented_book: RentedBook,
     rented_book_detail: RentedBookDetail,
     book: Book,
@@ -27,17 +27,17 @@ async function getRentedBookHistory(req, res) {
     let readerName = (req.query.readerName || '').trim()
     let bookCode = (req.query.bookCode || '').trim()
     let bookName = (req.query.bookName || '').trim()
-    let searchCardNumber = cardNumber.length > 0  ? `reader.cardNumber = '${cardNumber}'` : ''
-    let searchReaderName = readerName.length > 0  ? `reader.name like '%${readerName}%'` : ''
-    let searchBookCode = bookCode.length > 0  ? `code = '${bookCode}'` : ''
-    let searchBookName = bookName.length > 0  ? `name like '%${bookName}%'` : ''
+    let searchCardNumber = cardNumber.length > 0 ? `reader.cardNumber = '${cardNumber}'` : ''
+    let searchReaderName = readerName.length > 0 ? `reader.name like '%${readerName}%'` : ''
+    let searchBookCode = bookCode.length > 0 ? `code = '${bookCode}'` : ''
+    let searchBookName = bookName.length > 0 ? `name like '%${bookName}%'` : ''
 
-    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})`
-    let searchFromDate = req.query.fromDate  ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
-    let searchToDate = req.query.toDate  ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
+    let searchStatus = req.query.status ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})`
+    let searchFromDate = req.query.fromDate ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
+    let searchToDate = req.query.toDate ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
 
     let searchByReader = !req.auth.role ? `reader.id = ${req.auth.id}` : ''
-    
+
     let queryOrderBy = 'rented_book.id DESC'
     // if(req.query.orderBy == ORDER_BY.BOOK.QTY_DESC)
     //     queryOrderBy = 'qty DESC'
@@ -160,7 +160,7 @@ async function getRentedBookHistory(req, res) {
 
 
 async function getRentedBookDetail(req, res) {
-    if(!req.query.id) throw API_CODE.INVALID_PARAM
+    if (!req.query.id) throw API_CODE.INVALID_PARAM
     return await rentedDetail(req.query.id, req.url)
 }
 
@@ -231,7 +231,7 @@ async function rentedDetail(id, urlRequest) {
             }
         ]
     })
-    if(!detail) throw API_CODE.NOT_FOUND
+    if (!detail) throw API_CODE.NOT_FOUND
 
     if (detail.rented_book_details.length > 0) {
         await Promise.all(
@@ -302,18 +302,18 @@ async function getTopBorrowedReader(req, res) {
 
 
 async function createRentedBook(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { readerId, noteMember, listBook } = req.body
-    if(!readerId) throw API_CODE.REQUIRE_READER_RENTED_BOOK
-    if(!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
-    if(listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
+    if (!readerId) throw API_CODE.REQUIRE_READER_RENTED_BOOK
+    if (!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
+    if (listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
 
     let findReader = await Reader.findOne({
         id: readerId,
         isActive: ACTIVE
     })
-    if(!findReader) throw API_CODE.READER_NOT_FOUND
+    if (!findReader) throw API_CODE.READER_NOT_FOUND
 
     let checkBorrowed = await RentedBookDetail.count({
         where: {
@@ -341,9 +341,9 @@ async function createRentedBook(req, res) {
     // })
 
     let checkComicsCategory = []
-    listBook = listBook.filter(function(elem) {
+    listBook = listBook.filter(function (elem) {
         //check khong cho muon 2 quyen truyen tranh
-        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT)) 
+        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT))
             throw API_CODE.DUPLICATE_COMICS_CATEGORY
 
         checkComicsCategory.push(elem.bookCategoryId)
@@ -359,12 +359,12 @@ async function createRentedBook(req, res) {
             borrowedConfirmMemberId: req.auth.id,
             isCreatedByMember: YES_OR_NO.YES,
             createdObjectId: req.auth.id
-        },{ transaction })
+        }, { transaction })
 
         let arrayInsert = listBook.map(item => {
-            return  { 
+            return {
                 readerId,
-                rentedBookId: newRentedBook.id, 
+                rentedBookId: newRentedBook.id,
                 bookId: item.bookId,
                 status: RENTED_BOOK_STATUS.BORROWED,
                 borrowedDate: Date.now(),
@@ -383,8 +383,8 @@ async function requestRentBook(req, res) {
     if (req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { listBook } = req.body
-    if(!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
-    if(listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
+    if (!Array.isArray(listBook) || listBook.length === 0) throw API_CODE.REQUIRE_LIST_BOOK_RENTED_BOOK
+    if (listBook.length > 3) throw API_CODE.BORROWED_MAX_THREE
 
     let checkBorrowed = await RentedBookDetail.count({
         where: {
@@ -405,9 +405,9 @@ async function requestRentBook(req, res) {
     if (checkRequested && checkRequested > 0) throw API_CODE.EXIST_REQUEST_RENT_BOOK_PENDING
 
     let checkComicsCategory = []
-    listBook = listBook.filter(function(elem) {
+    listBook = listBook.filter(function (elem) {
         //check khong cho muon 2 quyen truyen tranh
-        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT)) 
+        if (elem.bookCategoryId === CATEGORY.TT && checkComicsCategory.includes(CATEGORY.TT))
             throw API_CODE.DUPLICATE_COMICS_CATEGORY
 
         checkComicsCategory.push(elem.bookCategoryId)
@@ -420,12 +420,12 @@ async function requestRentBook(req, res) {
             status: RENTED_BOOK_STATUS.PENDING,
             isCreatedByMember: YES_OR_NO.NO,
             createdObjectId: req.auth.id
-        },{ transaction })
+        }, { transaction })
 
         let arrayInsert = listBook.map(item => {
-            return  { 
+            return {
                 readerId: req.auth.id,
-                rentedBookId: newRentedBook.id, 
+                rentedBookId: newRentedBook.id,
                 bookId: item.bookId,
                 status: RENTED_BOOK_STATUS.PENDING,
             }
@@ -439,7 +439,7 @@ async function requestRentBook(req, res) {
 
 
 async function updateRentedBook(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id } = req.body
     if (!id || id <= 0) throw API_CODE.INVALID_PARAM
@@ -477,7 +477,7 @@ async function updateRentedBook(req, res) {
 
 
 async function updateRentedBookDetail(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id, status, lost, note } = req.body
     if (!id || id <= 0) throw API_CODE.INVALID_PARAM
@@ -504,15 +504,15 @@ async function updateRentedBookDetail(req, res) {
     }
 
     let data = await sequelize.transaction(async transaction => {
-        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.RETURNED && status === RENTED_BOOK_STATUS.BORROWED) {
+        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.RETURNED && status == RENTED_BOOK_STATUS.BORROWED) {
             dataUpdate.returnedDate = null
             dataUpdate.returnedConfirmMemberId = null
-    
+
             if (findRentedBook.status === RENTED_BOOK_STATUS.RETURNED) {
                 await findRentedBook.update({ status: RENTED_BOOK_STATUS.BORROWED }, { transaction })
             }
         }
-        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.BORROWED && status === RENTED_BOOK_STATUS.RETURNED) {
+        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.BORROWED && status == RENTED_BOOK_STATUS.RETURNED) {
             dataUpdate.returnedDate = Date.now()
             dataUpdate.returnedConfirmMemberId = req.auth.id
         }
@@ -540,7 +540,7 @@ async function updateRentedBookDetail(req, res) {
 
 
 async function deleteRentedBookDetail(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id } = req.body
     if (!id || id <= 0) throw API_CODE.INVALID_PARAM
@@ -557,7 +557,7 @@ async function deleteRentedBookDetail(req, res) {
     await rentedBookDetailDelete.update({
         isActive: IS_ACTIVE.INACTIVE
     })
-    
+
     return await rentedDetail(rentedBookDetailDelete.rentedBookId, req.url)
 }
 
@@ -572,18 +572,18 @@ async function getListRequestRentBook(req, res) {
     let readerName = (req.query.readerName || '').trim()
     let bookCode = (req.query.bookCode || '').trim()
     let bookName = (req.query.bookName || '').trim()
-    let searchCardNumber = cardNumber.length > 0  ? `reader.cardNumber = '${cardNumber}'` : ''
-    let searchReaderName = readerName.length > 0  ? `reader.name like '%${readerName}%'` : ''
-    let searchBookCode = bookCode.length > 0  ? `code = '${bookCode}'` : ''
-    let searchBookName = bookName.length > 0  ? `name like '%${bookName}%'` : ''
+    let searchCardNumber = cardNumber.length > 0 ? `reader.cardNumber = '${cardNumber}'` : ''
+    let searchReaderName = readerName.length > 0 ? `reader.name like '%${readerName}%'` : ''
+    let searchBookCode = bookCode.length > 0 ? `code = '${bookCode}'` : ''
+    let searchBookName = bookName.length > 0 ? `name like '%${bookName}%'` : ''
 
-    let searchStatus = req.query.status  ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.PENDING}, ${RENTED_BOOK_STATUS.CANCEL})`
-    let searchFromDate = req.query.fromDate  ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
-    let searchToDate = req.query.toDate  ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
+    let searchStatus = req.query.status ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.PENDING}, ${RENTED_BOOK_STATUS.CANCEL})`
+    let searchFromDate = req.query.fromDate ? `rented_book.borrowedDate >= FROM_UNIXTIME(${parseInt(req.query.fromDate.slice(0, 10))})` : ''
+    let searchToDate = req.query.toDate ? `rented_book.borrowedDate <= FROM_UNIXTIME(${parseInt(req.query.toDate.slice(0, 10))})` : ''
 
     let history = await RentedBook.findAndCountAll({
         subQuery: false,
-        order: [ ['id', 'DESC'] ],
+        order: [['id', 'DESC']],
         offset,
         limit,
         distinct: true,
@@ -646,7 +646,7 @@ async function getListRequestRentBook(req, res) {
 
 
 async function cancelRequestRentBook(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id, noteMember } = req.body
     if (!id || id <= 0) throw API_CODE.INVALID_PARAM
@@ -663,7 +663,7 @@ async function cancelRequestRentBook(req, res) {
 
     let data = await sequelize.transaction(async transaction => {
         await Promise.all([
-            rentedBook.update({ 
+            rentedBook.update({
                 status: RENTED_BOOK_STATUS.CANCEL,
                 noteMember,
                 borrowedDate: Date.now(),
@@ -687,7 +687,7 @@ async function cancelRequestRentBook(req, res) {
 
 
 async function confirmRequestRentBook(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id } = req.body
     if (!id || id <= 0) throw API_CODE.INVALID_PARAM
