@@ -6,8 +6,7 @@ const ROUTER = {
 }
 const STRING = {
   emptyData: 'Không có dữ liệu',
-  System_overView: 'Tổng Quan Hệ Thống',
-  overView: 'Tổng Quan',
+  overView: 'Tổng quan',
   transport: 'Xe',
   numericalOrder: 'STT',
   user: 'Người dùng',
@@ -25,24 +24,16 @@ const STRING = {
   save: 'Lưu',
   exit: 'Thoát',
   fullname: 'Họ và tên',
-  licensePlate: 'Biển số',
-  transportProvider: 'Nhà xe',
-  brand: 'Hãng xe',
-  route: 'Tuyến xe',
   allow: 'Duyệt',
   reject: 'Từ chối',
-  carType: 'Loại xe',
-  weight: 'Khối lượng(kg)',
-  volume: 'Số kiện',
-  address: 'Địa chỉ',
-  transportType: 'Loại vận chuyển',
   clearSearch: 'Xóa tìm kiếm',
   changePassword: 'Đổi mật khẩu',
-  newPassword: 'mật khẩu mới',
-  password: 'mật khẩu cũ',
+  newPassword: 'Mật khẩu mới',
+  currentPassword: 'Mật khẩu hiện tại',
+  password: 'Mật khẩu',
   unActive: 'Ngừng hoạt động',
   actived: 'Kích hoạt',
-  account : 'Tài khoản'
+  account: 'Tài khoản'
 }
 
 const NUMBER = {

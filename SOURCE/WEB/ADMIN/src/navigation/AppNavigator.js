@@ -18,8 +18,6 @@ export class AppNavigator extends Component {
         <Switch>
           <Route path="/Login" exact component={LoginScreen} />
           <PrivateRoute path="/" Component={MainNavigator} />
-          {/* <Route path="/nguoi-dung" exact component={UserScreen} /> */}
-
         </Switch>
       </Router>
     )

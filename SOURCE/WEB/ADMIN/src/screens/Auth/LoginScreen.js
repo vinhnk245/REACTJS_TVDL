@@ -1,5 +1,8 @@
 import React from 'react'
 import '@styles/Login.css'
+import '@styles/lunar.css'
+import '@styles/demo.css'
+import '@styles/animate.min.css'
 import { Link, Redirect } from 'react-router-dom'
 import { STRING } from '@constants/Constant';
 import { requestLogin } from '@constants/Api'
@@ -77,37 +80,30 @@ class LoginScreen extends React.Component {
         {loadingAction && <LoadingAction />}
         <div style={{ width: this.state.width, height: this.state.height, backgroundColor: 'white' }}>
           <div className="bodyLogin">
-            <div className="container-fluid form">
-              <div className="loginForm form" style={{ backgroundColor: 'white' }}>
-                <img src={require('../../assets/img_logo.png')} alt="logoVitrans" />
+            <div className="row width-100">
+              <div className="col-md-7 col-sm-6 bg-img d-none d-sm-flex align-items-end">
+              </div>
+              <div className="col-md-5 col-sm-6 col-12 style-form-login">
+                <h2 className="color-tvdl mb-5">Quản lý Thư viện</h2>
                 <form>
                   <div className="form-group">
-                    <input
-                      // type="number"
-                      placeholder={STRING.account}
+                    <input placeholder={STRING.account}
                       autoComplete="on"
                       className="form-control"
                       value={username}
                       onChange={(e) => this.handleTextChange('username', e)}
-                      required
-                    />
+                      required />
                   </div>
                   <div className="form-group">
-                    <input
-                      type="password"
-                      placeholder="Mật khẩu"
+                    <input type="password"
+                      placeholder={STRING.password}
                       className="form-control"
                       value={password}
                       onChange={(e) => this.handleTextChange('password', e)}
-                      required
-                    />
+                      required />
                   </div>
                   <Link>
-                    <button type="submit" className="btn btn-danger" onClick={this.login}>
-                      <div className="login-button-content">
-                        <span>Đăng nhập</span>
-                      </div>
-                    </button>
+                    <button type="submit" className="btn btn-success" onClick={this.login}>ĐĂNG NHẬP</button>
                   </Link>
                 </form>
               </div>

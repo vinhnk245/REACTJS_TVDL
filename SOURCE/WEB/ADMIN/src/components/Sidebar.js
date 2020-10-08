@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import '@styles/SideBar.css'
 import { withRouter, NavLink } from 'react-router-dom'
 import { ROUTER, STRING } from '@constants/Constant'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo_white.png'
 import Reactotron from 'reactotron-react-js'
 
 class Sidebar extends Component {

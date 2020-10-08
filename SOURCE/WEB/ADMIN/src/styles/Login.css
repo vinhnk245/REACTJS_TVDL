@@ -26,9 +26,6 @@ body {
 }
 
 .loginForm {
-  border: 1px #333 solid;
-  border-radius: 7px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,11 +36,9 @@ body {
   right: 0;
   margin: auto;
   position: absolute;
-  height: 75%;
-  width: 75%;
-  max-width: 500px;
-  border: 1px solid;
-  box-shadow: 5px 8px 15px gray;
+  height: 100%;
+  width: 100%;
+  /* max-width: 500px; */
 }
 form {
   width: 75%;
@@ -98,8 +93,37 @@ form {
   margin-right: 3px;
 }
 
-/* .bodyLogin {
+.bg-img {
+  background-image: url('../assets/7th.jpg');
+  background-repeat: no-repeat;
+  background-size: auto;
+}
+
+.color-tvdl {
+  color: #00cc7a !important;
+}
+
+.bodyLogin {
   width: 100%;
   height: 100%;
-  background-color: red !important;
-} */
+  font-family: Nunito,Helvetica Neue,Helvetica,Arial,sans-serif !important;
+}
+
+.width-100 {
+  width: 100%;
+  height: 100%;
+}
+
+.style-form-login {
+  margin: auto auto;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 1px #00cc7a !important;
+  border: none !important;
+}
+
+::selection {
+  color: white !important;
+  background:#00cc7a !important
+}
