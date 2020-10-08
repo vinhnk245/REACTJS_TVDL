@@ -1,0 +1,301 @@
+.loader-containerr {
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* .my-loader {
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+} */
+/* .loaderr {
+  border: 1rem solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 1rem solid #3498db;
+  width: 10rem;
+  height: 10rem;
+  -webkit-animation: spin 3s linear infinite;
+  animation: spin 2s linear infinite;
+} 
+
+ @-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} */
+.load {
+  position: relative;
+  width: 10em;
+  height: 10em;
+  border-radius: 50%;
+  -webkit-clip-path: circle(calc(50% - 1px));
+  clip-path: circle(calc(50% - 1px));
+  /* fix for non-high dpi browsers */
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+}
+.load::before,
+.load::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: inherit;
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+}
+#load-13 {
+  background: HSL(var(--hue, 0deg), 85%, 100%);
+  --mask: conic-Gradient(
+      from calc(var(--a, 0deg) - 15deg),
+      RGBA(0, 0, 0, 0) 30deg,
+      RGBA(0, 0, 0, 0.09091) 0deg 60deg,
+      RGBA(0, 0, 0, 0.18182) 0deg 90deg,
+      RGBA(0, 0, 0, 0.27273) 0deg 120deg,
+      RGBA(0, 0, 0, 0.36364) 0deg 150deg,
+      RGBA(0, 0, 0, 0.45455) 0deg 180deg,
+      RGBA(0, 0, 0, 0.54545) 0deg 210deg,
+      RGBA(0, 0, 0, 0.63636) 0deg 240deg,
+      RGBA(0, 0, 0, 0.72727) 0deg 270deg,
+      RGBA(0, 0, 0, 0.81818) 0deg 300deg,
+      RGBA(0, 0, 0, 0.90909) 0deg 330deg,
+      RGBA(0, 0, 0, 1) 0deg
+    ),
+    radial-Gradient(
+      circle at calc(50% + 1.97169em) calc(50% + 0em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 1.70753em) calc(50% + 0.98584em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 0.98584em) calc(50% + 1.70753em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 0em) calc(50% + 1.97169em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + -0.98584em) calc(50% + 1.70753em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + -1.70753em) calc(50% + 0.98584em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + -1.97169em) calc(50% + 0em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + -1.70753em) calc(50% + -0.98584em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + -0.98584em) calc(50% + -1.70753em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 0em) calc(50% + -1.97169em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 0.98584em) calc(50% + -1.70753em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    ),
+    radial-Gradient(
+      circle at calc(50% + 1.70753em) calc(50% + -0.98584em),
+      red calc(0.52831em - 2px),
+      transparent calc(0.52831em - 1px)
+    );
+  -webkit-mask-composite: source-in, source-over, source-over, source-over, source-over, source-over, source-over,
+    source-over, source-over, source-over, source-over, source-over, source-over, xor;
+  mask-composite: intersect, add, add, add, add, add, add, add, add, add, add, add, add;
+  -webkit-animation: hue 12s linear infinite, a 1s steps(12) infinite;
+  animation: hue 12s linear infinite, a 1s steps(12) infinite;
+}
+
+@-webkit-keyframes hue {
+  to {
+    --hue: 360deg;
+  }
+}
+
+@keyframes hue {
+  to {
+    --hue: 360deg;
+  }
+}
+@-webkit-keyframes a {
+  to {
+    --a: 360deg;
+  }
+}
+@keyframes a {
+  to {
+    --a: 360deg;
+  }
+}
+@-webkit-keyframes alpha0 {
+  50% {
+    --alpha0: 1;
+  }
+}
+@keyframes alpha0 {
+  50% {
+    --alpha0: 1;
+  }
+}
+@-webkit-keyframes alpha1 {
+  50% {
+    --alpha1: 1;
+  }
+}
+@keyframes alpha1 {
+  50% {
+    --alpha1: 1;
+  }
+}
+@-webkit-keyframes alpha2 {
+  50% {
+    --alpha2: 1;
+  }
+}
+@keyframes alpha2 {
+  50% {
+    --alpha2: 1;
+  }
+}
+@-webkit-keyframes alpha3 {
+  50% {
+    --alpha3: 1;
+  }
+}
+@keyframes alpha3 {
+  50% {
+    --alpha3: 1;
+  }
+}
+@-webkit-keyframes alpha4 {
+  50% {
+    --alpha4: 1;
+  }
+}
+@keyframes alpha4 {
+  50% {
+    --alpha4: 1;
+  }
+}
+@-webkit-keyframes alpha5 {
+  50% {
+    --alpha5: 1;
+  }
+}
+@keyframes alpha5 {
+  50% {
+    --alpha5: 1;
+  }
+}
+@-webkit-keyframes alpha6 {
+  50% {
+    --alpha6: 1;
+  }
+}
+@keyframes alpha6 {
+  50% {
+    --alpha6: 1;
+  }
+}
+@-webkit-keyframes alpha7 {
+  50% {
+    --alpha7: 1;
+  }
+}
+@keyframes alpha7 {
+  50% {
+    --alpha7: 1;
+  }
+}
+@-webkit-keyframes alpha8 {
+  50% {
+    --alpha8: 1;
+  }
+}
+@keyframes alpha8 {
+  50% {
+    --alpha8: 1;
+  }
+}
+@-webkit-keyframes alpha9 {
+  50% {
+    --alpha9: 1;
+  }
+}
+@keyframes alpha9 {
+  50% {
+    --alpha9: 1;
+  }
+}
+@-webkit-keyframes alpha10 {
+  50% {
+    --alpha10: 1;
+  }
+}
+@keyframes alpha10 {
+  50% {
+    --alpha10: 1;
+  }
+}
+@-webkit-keyframes alpha11 {
+  50% {
+    --alpha11: 1;
+  }
+}
+@keyframes alpha11 {
+  50% {
+    --alpha11: 1;
+  }
+}

@@ -1,0 +1,28 @@
+//user
+export const RESET = 'windsoft/reset'
+
+export const GET_USER = 'windsoft/getUser'
+export const GET_USER_SUCCESS = 'windsoft/getUserSucces'
+export const GET_USER_FAIL = 'windsoft/getUserFail'
+
+export const GET_LIST_USER = 'vitrans/getListUser'
+export const GET_LIST_USER_SUCCESS = 'vitrans/getListUserSucces'
+export const GET_LIST_USER_FAIL = 'vitrans/getListUserFail'
+export const DELETE_USER = 'vitrans/deleteUser'
+export const ADD_USER = 'vitrans/addUser'
+export const ADD_USER_SUCCESS = 'vitrans/addUserSucces'
+export const ADD_USER_FAIL = 'vitrans/addUserFail'
+export const UPDATE_USER = 'vitrans/updateUser'
+export const UPDATE_USER_SUCCESS = 'vitrans/updateUserSucces'
+export const UPDATE_USER_FAIL = 'vitrans/updateUserFail'
+
+export const GET_LIST_TRANSPORT = 'vitrans/getListTransport'
+export const GET_LIST_TRANSPORT_SUCCESS = 'vitrans/getListTransportSucces'
+export const GET_LIST_TRANSPORT_FAIL = 'vitrans/getListTransportFail'
+export const ADD_TRANSPORT = 'app/addTransport'
+export const ADD_TRANSPORT_SUCCESS = 'app/addTransportSucces'
+export const ADD_TRANSPORT_FAIL = 'app/addTransportFail'
+export const UPDATE_TRANSPORT = 'app/updateTransport'
+export const UPDATE_TRANSPORT_SUCCESS = 'app/updateTransportSucces'
+export const UPDATE_TRANSPORT_FAIL = 'app/updateTransportFail'
+export const DELETE_TRANSPORT = 'vitrans/deleteTransport'

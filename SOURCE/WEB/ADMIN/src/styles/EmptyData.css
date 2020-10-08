@@ -1,0 +1,20 @@
+.error-header {
+    background-color: #ffc107;
+    display: inline !important;
+    text-align: center;
+    padding: 2rem !important;
+}
+
+.error-icon {
+    font-size: 6.5rem;
+    color: white;
+}
+
+.custom-body {
+    text-align: center;
+}
+
+.btn-warning {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+}
