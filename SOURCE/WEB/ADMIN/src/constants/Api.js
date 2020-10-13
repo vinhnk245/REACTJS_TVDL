@@ -38,7 +38,7 @@ function createAxios() {
         }, 300)
       return response
     },
-    (error) => {}
+    (error) => { }
   )
   return axiosInstant
 }

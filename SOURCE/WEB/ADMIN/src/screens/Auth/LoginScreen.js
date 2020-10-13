@@ -9,6 +9,7 @@ import { requestLogin } from '@constants/Api'
 import Cookie from 'js-cookie'
 import reactotron from 'reactotron-react-js'
 import LoadingAction from '@src/components/LoadingAction'
+import swal from 'sweetalert';
 // import HomeScreen from '@screens/HomeScreen'
 
 class LoginScreen extends React.Component {
@@ -35,7 +36,11 @@ class LoginScreen extends React.Component {
       loadingAction: true,
     })
     if (!username || !password) {
-      alert('Vui lòng nhập đầy đủ thông tin!')
+      swal({
+        title: 'Vui lòng nhập đầy đủ thông tin',
+        // text: 'Vui lòng nhập đầy đủ thông tin',
+        timer: 2000,
+      })
       this.setState({
         loadingAction: false,
       })
