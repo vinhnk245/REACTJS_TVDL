@@ -319,7 +319,10 @@ async function createRentedBook(req, res) {
         where: {
             isActive: ACTIVE,
             readerId,
-            returnedDate: null
+            returnedDate: null,
+            status: {
+                [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED]
+            }
         }
     })
     if (checkBorrowed > 0) throw API_CODE.RETURNED_BEFORE_BORROWED
