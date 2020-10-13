@@ -80,32 +80,35 @@ class LoginScreen extends React.Component {
         {loadingAction && <LoadingAction />}
         <div style={{ width: this.state.width, height: this.state.height, backgroundColor: 'white' }}>
           <div className="bodyLogin">
-            <div className="row width-100">
+            <div className="row max-width-height">
               <div className="col-md-7 col-sm-6 bg-img d-none d-sm-flex align-items-end">
               </div>
-              <div className="col-md-5 col-sm-6 col-12 style-form-login">
-                <h2 className="color-tvdl mb-5">Quản lý Thư viện</h2>
-                <form>
-                  <div className="form-group">
-                    <input placeholder={STRING.account}
-                      autoComplete="on"
-                      className="form-control"
-                      value={username}
-                      onChange={(e) => this.handleTextChange('username', e)}
-                      required />
-                  </div>
-                  <div className="form-group">
-                    <input type="password"
-                      placeholder={STRING.password}
-                      className="form-control"
-                      value={password}
-                      onChange={(e) => this.handleTextChange('password', e)}
-                      required />
-                  </div>
-                  <Link>
-                    <button type="submit" className="btn btn-success" onClick={this.login}>ĐĂNG NHẬP</button>
-                  </Link>
-                </form>
+              <div className="col-md-4 offset-md-1 col-sm-6 col-12 style-form-login">
+                <div className="text-center">
+                  <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
+                  {/* <h2 className="color-tvdl mb-5 font-tvdl">THƯ VIỆN thư viện</h2> */}
+                  <form>
+                    <div className="form-group">
+                      <input placeholder={STRING.account}
+                        autoComplete="on"
+                        className="form-control mb-1"
+                        value={username}
+                        onChange={(e) => this.handleTextChange('username', e)}
+                        required />
+                    </div>
+                    <div className="form-group mt-3">
+                      <input type="password"
+                        placeholder={STRING.password}
+                        className="form-control"
+                        value={password}
+                        onChange={(e) => this.handleTextChange('password', e)}
+                        required />
+                    </div>
+                    {/* <Link> */}
+                    <button type="submit" className="btn btn-success max-width btn-login font-tvdl mt-4" onClick={this.login}>ĐĂNG NHẬP</button>
+                    {/* </Link> */}
+                  </form>
+                </div>
               </div>
             </div>
           </div>

@@ -1,8 +1,10 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif; */
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 16px !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -10,4 +12,69 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+::selection {
+  color: white !important;
+  background:#01d38d !important
+}
+
+.max-width-height {
+  width: 100%;
+  height: 100%;
+}
+
+.max-width {
+  width: 100%;
+}
+
+.max-height {
+  height: 100%;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 1px #00cc7a !important;
+  border: none !important;
+}
+
+.color-tvdl {
+  color: #00cc7a !important;
+}
+
+.font-tvdl {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+.text-bold {
+  font-weight: bold !important;
+}
+
+.font-size-16 { 
+  font-size: 16px !important;
+}
+
+.font-size-18 { 
+  font-size: 18px !important;
+}
+
+.font-size-20 { 
+  font-size: 20px !important;
+}
+
+.logo-sidebar {
+  margin-left: 55px !important;
+  margin-top: 0px !important;
+}
+
+.head-menu-sidebar {
+  height: 56px;
+}
+
+.react-datepicker__header select {
+  font-size: 14px;
+  padding: 3px;
+}
+
+.btn:focus {
+  box-shadow: none !important;
 }

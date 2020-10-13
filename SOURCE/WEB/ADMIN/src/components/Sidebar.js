@@ -27,12 +27,10 @@ class Sidebar extends Component {
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4 me-sidebar">
         {/* Brand Logo */}
-        <div>
-          <a className="brand-link cursor">
-            <img src={logo} className="brand-image" data-auto-collapse-size="768" style={{ opacity: '.8' }} />
-            <i className="nav-icon fas fa-bars me-delete" data-widget={this.state.width < 990 && 'pushmenu'}></i>
-          </a>
-        </div>
+        <a className="brand-link cursor head-menu-sidebar">
+          <img src={logo} className="brand-image logo-sidebar" data-auto-collapse-size="768" />
+          <i className="nav-icon fas fa-bars me-delete" data-widget={this.state.width < 990 && 'pushmenu'}></i>
+        </a>
         {/* Sidebar */}
         <div className="sidebar me-sidebar">
           {/* Sidebar Menu */}
