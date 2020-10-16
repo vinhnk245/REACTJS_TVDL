@@ -4,11 +4,11 @@ import '@styles/UserScreen.css'
 import { STRING, NUMBER } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
-import { getListUser } from '@src/redux/actions'
+import { getListMember } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import reactotron from 'reactotron-react-js'
 import { toDateString } from '@src/utils/helper'
-import { getUserRole, deleteUser, postCreateUser, updateUser, getUserDetail, requestGetUserInfo } from '@constants/Api'
+import { deleteMember, createMember, updateMember, getMemberInfo } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -21,9 +21,9 @@ class UserScreen extends Component {
     super(props)
     this.state = {
       USER_ID: '',
-      [STRING.username]: '',
+      [STRING.account]: '',
       [STRING.status]: '',
-      [STRING.fromDate]: '',
+      [STRING.status]: '',
       [STRING.toDate]: '',
       [STRING.status]: 1,
       activePage: 1,
@@ -33,7 +33,7 @@ class UserScreen extends Component {
       // isLoading: false,
       selected: [],
       modal: {
-        [STRING.username]: '',
+        [STRING.account]: '',
         [STRING.fullname]: '',
         [STRING.phoneNumber]: '',
         [STRING.email]: '',
@@ -47,8 +47,8 @@ class UserScreen extends Component {
         [STRING.address]: '',
         [STRING.userType]: [],
       },
-      editUser: false,
-      userId: '',
+      isEditMember: false,
+      id: '',
       // isLoadingData: true,
       error: null,
     }
@@ -59,86 +59,71 @@ class UserScreen extends Component {
   }
 
   componentDidMount() {
-    this.getData('', 1)
+    this.getData(1)
     // this.getUserRole()
     // this.getUser()
   }
 
-  async getUser() {
-    const res = await requestGetUserInfo()
+  async getMemberInfo() {
+    const res = await getMemberInfo()
     this.setState({
       USER_ID: res?.data?.USER_ID,
     })
   }
-  async getUserRole() {
-    try {
-      const res = await getUserRole()
-      let option = res.data.map((e) => ({
-        label: e.CONTENT,
-        value: e.VALUE,
-      }))
-      this.setState({
-        ...this.state,
-        selected: option,
-      })
-    } catch (err) {
-      console.log(err)
-    }
-  }
 
-  getData(search, page, fromDate, toDate) {
+  getData(page) {
     //api
   }
 
-  // async createUser(fullname, phoneNumber, email, address, userType) {
-  //   const user = {
-  //     ROLE_ID: userType,
-  //     NAME: fullname.trim(),
-  //     PHONE: phoneNumber,
-  //     EMAIL: email,
-  //     ADDRESS: address.trim(),
-  //   }
-  //   this.setState({
-  //     loadingAction: true,
-  //   })
-  //   try {
-  //     if (this.state.editUser) {
-  //       await updateUser(user)
-  //     } else {
-  //       await postCreateUser(user)
-  //     }
+  async createMember(account, name, phone, email, address, role) {
+    const member = {
+      role: role,
+      NAME: name.trim(),
+      PHONE: phone,
+      EMAIL: email,
+      ADDRESS: address.trim(),
+    }
+    this.setState({
+      loadingAction: true,
+    })
+    try {
+      if (this.state.isEditMember) {
+        await updateMember(member)
+      } else {
+        await createMember(member)
+      }
 
-  //     this.setState({ show: false, loadingAction: false }, () => {
-  //       notifySuccess(STRING.notifySuccess)
-  //       this.props.getListUser({
-  //         SEARCH: '',
-  //         PAGE: 1,
-  //         FROM_DATE: 0,
-  //         TO_DATE: Date.now() / 1000,
-  //       })
-  //     })
-  //   } catch (error) {
-  //     this.setState(
-  //       {
-  //         loadingAction: false,
-  //         error: error,
-  //       },
-  //       () => notifyFail(STRING.notifyFail)
-  //     )
-  //   }
-  // }
+      this.setState({ show: false, loadingAction: false }, () => {
+        notifySuccess(STRING.notifySuccess)
+        this.props.getListMember({
+          SEARCH: '',
+          PAGE: 1,
+          FROM_DATE: 0,
+          TO_DATE: Date.now() / 1000,
+        })
+      })
+    } catch (error) {
+      this.setState(
+        {
+          loadingAction: false,
+          error: error,
+        },
+        () => notifyFail(STRING.notifyFail)
+      )
+    }
+  }
 
-  // async deleteUser() {
+  // async deleteMember() {
   //   const { USER_ID } = this.state
-  //   if (USER_ID !== this.state.userId) {
+  //   if (USER_ID !== this.state.id) {
   //     this.setState({
   //       loadingAction: true,
   //     })
   //     try {
-  //       await deleteUser({
-  //         USER_ID: this.state.userId,
+  //       await deleteMember({
+  //         USER_ID: this.state.id,
   //       })
-  //       this.props.getListUser({
+  //       this.props.getListMember({
   //         SEARCH: '',
   //         PAGE: 1,
   //         FROM_DATE: 0,
@@ -173,18 +158,16 @@ class UserScreen extends Component {
   handleChange(fieldName, value) {
     this.setState({
       ...this.state,
-      [fieldName]: value || '',
+      [fieldName]: (value || '').trim(),
     })
   }
 
   handleKeyPress = (e) => {
-    const { [STRING.username]: username, [STRING.fromDate]: fromDate, [STRING.toDate]: toDate } = this.state
+    const { [STRING.account]: account } = this.state
     if (e.charCode === 13) {
-      this.props.getListUser({
-        SEARCH: username,
+      this.props.getListMember({
+        SEARCH: account,
         PAGE: 1,
-        FROM_DATE: new Date(fromDate).valueOf() / 1000 || 0,
-        TO_DATE: new Date(toDate).setHours(24, 0, 0, 0) / 1000 || Date.now() / 1000,
       })
     }
   }
@@ -193,7 +176,7 @@ class UserScreen extends Component {
     let res = user
     if (user.ID) {
       const USER_ID = user.ID
-      const rem = await getUserDetail({ USER_ID })
+      const rem = await getMemberInfo({ USER_ID })
       res = rem.data
     }
     this.setState({
@@ -206,13 +189,13 @@ class UserScreen extends Component {
         [STRING.address]: res.ADDRESS || '',
         [STRING.userType]: user.USER_ROLE
           ? user.USER_ROLE.map((e) => ({
-              label: e.ROLE_NAME,
-              value: e.ROLE_ID,
-            }))
+            label: e.ROLE_NAME,
+            value: e.ROLE_ID,
+          }))
           : [],
       },
-      editUser: user.PHONE ? true : false,
-      userId: user.USER_ID,
+      isEditMember: user.PHONE ? true : false,
+      id: user.USER_ID,
     })
   }
 
@@ -220,38 +203,18 @@ class UserScreen extends Component {
     this.setState({ activePage: pageNumber })
   }
   renderField() {
-    const { [STRING.username]: username, [STRING.fromDate]: fromDate, [STRING.toDate]: toDate } = this.state
+    const { [STRING.account]: account } = this.state
     return (
       <Row className="mx-0">
         <Col sm>
           <input
             onKeyPress={this.handleKeyPress}
             type="email"
-            className="form-control"
+            className="form-control mb-0"
             id="exampleInputEmail1"
-            placeholder={STRING.username}
-            value={username}
-            onChange={(e) => this.handleChange(STRING.username, e.target.value)}
-          />
-        </Col>
-        <Col sm>
-          <DatePickerCustom
-            className={`date-picker form-control`}
-            dateFormat="dd/MM/yyyy"
-            placeholderText={STRING.fromDate}
-            handleChange={this.handleChange}
-            selected={fromDate}
-            maxDate={toDate === null ? '' : new Date(toDate)}
-          />
-        </Col>
-        <Col sm>
-          <DatePickerCustom
-            className={`date-picker form-control`}
-            dateFormat="dd/MM/yyyy"
-            placeholderText={STRING.toDate}
-            handleChange={this.handleChange}
-            selected={toDate}
-            minDate={new Date(fromDate)}
+            placeholder={STRING.account}
+            value={account}
+            onChange={(e) => this.handleChange(STRING.account, e.target.value)}
           />
         </Col>
       </Row>
@@ -263,14 +226,17 @@ class UserScreen extends Component {
       <div className="content-wrapper">
         <div className="content-header">
           <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1 className="header">Người dùng</h1>
+            <div className="row mb-1">
+              <div className="col-md-4 col-sm-4">
+                <h1 className="text-header-screen">Thành viên</h1>
+              </div>
+              <div className="col-md-8 col-sm-8">
+                {this.renderButton()}
               </div>
             </div>
           </div>
           {this.renderField()}
-          {this.renderButton()}
+          {/* {this.renderButton()} */}
           {this.renderTable()}
           {/* {this.renderPagination()} */}
           {this.renderModal()}
@@ -281,20 +247,13 @@ class UserScreen extends Component {
   }
 
   renderButton() {
-    const { [STRING.username]: username, [STRING.fromDate]: fromDate, [STRING.toDate]: toDate, activePage } = this.state
+    const { [STRING.account]: account, activePage } = this.state
     return (
       <Row className="mx-0">
-        <Col className="button-wrapper">
+        <Col className="button-wrapper px-0">
           <Button
+            className="mr-0 ml-1"
             variant="success"
-            onClick={() => {
-              // function()
-            }}
-          >
-            {STRING.search}
-          </Button>
-          <Button
-            variant="primary"
             onClick={() => {
               this.setShow(true)
             }}
@@ -302,13 +261,21 @@ class UserScreen extends Component {
             {STRING.add}
           </Button>
           <Button
+            className="mr-0 ml-1"
+            variant="primary"
+            onClick={() => {
+              // function()
+            }}
+          >
+            {STRING.search}
+          </Button>
+          <Button
+            className="mr-0 ml-1"
             variant="secondary"
             onClick={() =>
               // funtion()
               this.setState({
-                [STRING.username]: '',
-                [STRING.fromDate]: '',
-                [STRING.toDate]: '',
+                [STRING.account]: '',
               })
             }
           >
@@ -320,28 +287,10 @@ class UserScreen extends Component {
   }
 
   renderTableData() {
-    // const { isLoading } = this.props?.listUserState
-    // if (isLoading) {
-    //   return (
-    //     <tbody>
-    //       <tr>
-    //         <td></td>
-    //         <td></td>
-    //         <td></td>
-    //         <td></td>
-    //         <td>Loading...</td>
-    //         <td></td>
-    //         <td></td>
-    //         <td></td>
-    //         <td></td>
-    //       </tr>
-    //     </tbody>
-    //   )
-    // }
     return (
       <tbody>
-        {this.props.listUserState?.data?.LIST_USER?.length ? (
-          this.props.listUserState?.data?.LIST_USER?.map((value, index) => (
+        {this.props.listMemberState?.data?.LIST_USER?.length ? (
+          this.props.listMemberState?.data?.LIST_USER?.map((value, index) => (
             <tr key={index}>
               <td>{index + NUMBER.page_limit * (this.state.activePage - 1) + 1}</td>
               <td>{value.NAME || '--'}</td>
@@ -363,7 +312,7 @@ class UserScreen extends Component {
                   className="btnDelete far fa-trash-alt"
                   onClick={() => {
                     this.setState({
-                      userId: value.ID,
+                      id: value.id,
                       confirmModal: true,
                     })
                   }}
@@ -372,35 +321,37 @@ class UserScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
 
   renderTable() {
     return (
-      <table id="example2" className="table table-bordered table-striped  table-responsive-sm table-responsive-md">
-        <thead className="text-center">
-          <tr>
-            <th>STT</th>
-            <th>{STRING.fullname}</th>
-            <th>{STRING.phoneNumber}</th>
-            <th>{STRING.group}</th>
-            <th>{STRING.createdDate}</th>
-            <th></th>
-          </tr>
-        </thead>
-        {this.renderTableData()}
-      </table>
+      <div className="col-md-12 mt-1">
+        <table id="example2" className="table table-bordered table-striped  table-responsive-sm table-responsive-md">
+          <thead className="text-center">
+            <tr>
+              <th>STT</th>
+              <th>{STRING.fullname}</th>
+              <th>{STRING.phoneNumber}</th>
+              <th>{STRING.group}</th>
+              <th>{STRING.createdDate}</th>
+              <th></th>
+            </tr>
+          </thead>
+          {this.renderTableData()}
+        </table>
+      </div>
     )
   }
 
   renderPagination() {
-    const { TOTAL_PAGE } = this.props.listUserState.data
-    const { [STRING.username]: username, [STRING.fromDate]: fromDate, [STRING.toDate]: toDate } = this.state
+    const { TOTAL_PAGE } = this.props.listMemberState.data
+    const { [STRING.account]: account } = this.state
     return (
       <Pagination
         itemClass="page-item"
@@ -418,10 +369,7 @@ class UserScreen extends Component {
             activePage: page,
           })
           this.getData(
-            username,
-            page,
-            new Date(fromDate).valueOf() / 1000 || 0,
-            new Date(toDate).setHours(24, 0, 0, 0) / 1000 || Date.now() / 1000
+            page
           )
         }}
       />
@@ -440,14 +388,14 @@ class UserScreen extends Component {
       [STRING.email]: email,
       [STRING.address]: address,
       [STRING.userType]: userType,
-      [STRING.fullname]: fullname,
+      [STRING.fullname]: name,
     } = this.state.modal
     return (
       phoneNumberError ||
       emailError ||
       fullNameError ||
       addressError ||
-      !(phoneNumber && email && address && userType.length !== 0 && fullname)
+      !(phoneNumber && email && address && userType.length !== 0 && name)
     )
   }
 
@@ -457,17 +405,18 @@ class UserScreen extends Component {
       [STRING.email]: email,
       [STRING.address]: address,
       [STRING.userType]: userType,
-      [STRING.fullname]: fullname,
+      [STRING.fullname]: name,
     } = this.state.modal
     return (
       <Row>
-        <Col className="button-wrapper">
+        <Col className="button-wrapper mt-3">
           <Button
+            className="mr-0 ml-1"
             variant="success"
             disabled={this.checkValidationErrors()}
             onClick={() => {
-              this.createUser(
-                fullname,
+              this.createMember(
+                name,
                 phoneNumber,
                 email,
                 address,
@@ -478,7 +427,8 @@ class UserScreen extends Component {
             {STRING.save}
           </Button>
           <Button
-            variant="primary"
+            className="mr-0 ml-1"
+            variant="secondary"
             onClick={() => {
               this.setShow(false)
             }}
@@ -491,7 +441,7 @@ class UserScreen extends Component {
   }
 
   renderModalField(fieldName) {
-    const isEditable = this.state.editUser
+    const isEditable = this.state.isEditMember
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
     if (fieldName === STRING.userType) {
@@ -587,7 +537,7 @@ class UserScreen extends Component {
   }
 
   renderModal() {
-    const { show, editUser } = this.state
+    const { show, isEditMember } = this.state
     return (
       <Modal
         show={show}
@@ -595,7 +545,7 @@ class UserScreen extends Component {
           this.setShow(false)
           this.setState({
             validateError: {
-              // [STRING.username]: null,
+              // [STRING.account]: null,
               [STRING.fullname]: null,
               [STRING.phoneNumber]: null,
               [STRING.email]: null,
@@ -609,11 +559,11 @@ class UserScreen extends Component {
         centered
       >
         <Modal.Header closeButton>
-          <h5 style={{ color: 'white' }}>{!editUser ? 'Thêm người dùng' : 'Sửa người dùng'}</h5>
+          <h5 className="" style={{ color: 'white' }}>{!isEditMember ? 'Thêm thành viên' : 'Sửa thành viên'}</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
-          {/* {editUser == false &&
-                        this.renderModalField(STRING.username)} */}
+          {/* {isEditMember == false &&
+                        this.renderModalField(STRING.account)} */}
           {this.renderModalField(STRING.phoneNumber)}
           {this.renderModalField(STRING.fullname)}
           {this.renderModalField(STRING.email)}
@@ -648,7 +598,7 @@ class UserScreen extends Component {
               <Button
                 variant="success"
                 onClick={() => {
-                  this.deleteUser(this.state.userId)
+                  this.deleteMember(this.state.id)
                 }}
               >
                 OK
@@ -671,7 +621,7 @@ class UserScreen extends Component {
   }
 
   render() {
-    // const { error, isLoading, isDataLoaded } = this.props.listUserState
+    // const { error, isLoading, isDataLoaded } = this.props.listMemberState
     const { loadingAction } = this.state
     return (
       <>
@@ -685,11 +635,11 @@ class UserScreen extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  listUserState: state.listUserReducer,
+  listMemberState: state.listUserReducer,
 })
 
 const mapDispatchToProps = {
-  // getListUser,
+  // getListMember,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)

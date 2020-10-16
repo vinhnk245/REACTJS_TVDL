@@ -10,8 +10,9 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  /* font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace; */
+    font-family: 'Nunito', sans-serif !important;
 }
 
 ::selection {
@@ -33,7 +34,7 @@ code {
 }
 
 .form-control:focus {
-  box-shadow: 0 0 0 1px #00cc7a !important;
+  box-shadow: 0 0 1px 0.4px #00cc7a !important;
   border: none !important;
 }
 
@@ -77,4 +78,28 @@ code {
 
 .btn:focus {
   box-shadow: none !important;
+}
+
+.text-header-screen { 
+  color: #00cc7a;
+  font-weight: bold;
+}
+
+.content-header {
+  padding: 10px .5rem !important;
+}
+
+.modal-header h5 {
+  margin-bottom: 0 !important;
+}
+
+.modal-header .close, .modal-header .mailbox-attachment-close {
+  /* padding: 1rem; */
+  /* margin: -1rem -1rem -1rem auto; */
+  padding: 0 !important;
+  margin: auto !important;
+}
+
+.modal .modal-content {
+  border-radius: 5px !important;
 }

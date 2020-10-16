@@ -4,19 +4,18 @@ import '@styles/lunar.css'
 import '@styles/demo.css'
 import '@styles/animate.min.css'
 import { Link, Redirect } from 'react-router-dom'
-import { STRING } from '@constants/Constant';
+import { STRING } from '@constants/Constant'
 import { requestLogin } from '@constants/Api'
 import Cookie from 'js-cookie'
-import reactotron from 'reactotron-react-js'
+// import reactotron from 'reactotron-react-js'
 import LoadingAction from '@src/components/LoadingAction'
-import swal from 'sweetalert';
-// import HomeScreen from '@screens/HomeScreen'
+import swal from 'sweetalert'
 
 class LoginScreen extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      username: '',
+      account: '',
       password: '',
       width: window.innerWidth,
       height: window.innerHeight,
@@ -31,40 +30,45 @@ class LoginScreen extends React.Component {
   }
 
   login = async () => {
-    const { username, password } = this.state
-    this.setState({
-      loadingAction: true,
-    })
-    if (!username || !password) {
+    const { account, password } = this.state
+    if (!account || !password) {
       swal({
         title: 'Vui lòng nhập đầy đủ thông tin',
-        // text: 'Vui lòng nhập đầy đủ thông tin',
         timer: 2000,
-      })
-      this.setState({
-        loadingAction: false,
       })
       return
     }
 
+    this.setState({
+      loadingAction: true,
+    })
     try {
       const res = await requestLogin({
-        USERNAME: username,
-        PASS: password,
+        account,
+        password,
       })
-      this.setState({
-        loadingAction: false,
-      })
-      Cookie.set('SESSION_ID', res.data.TOKEN, {
-        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
-      })
-      window.location.href = '/'
+      if (res.status !== 1) {
+        swal({
+          title: res.msg,
+          timer: 2000,
+        })
+      } else {
+        this.setState({
+          loadingAction: false,
+        })
+        Cookie.set('SESSION_ID', res.data.token, {
+          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 1 month
+        })
+        window.location.href = '/'
+      }
     } catch (err) {
-      console.log('error', err)
       this.setState({
+        account: '',
+        password: '',
         loadingAction: false,
       })
     }
+
   }
 
   handleTextChange(field, event) {
@@ -74,7 +78,7 @@ class LoginScreen extends React.Component {
   }
 
   render() {
-    const { username, password, loadingAction } = this.state
+    const { account, password, loadingAction } = this.state
     const token = Cookie.get('SESSION_ID')
     if (token) {
       return <Redirect to="/" />
@@ -86,19 +90,19 @@ class LoginScreen extends React.Component {
         <div style={{ width: this.state.width, height: this.state.height, backgroundColor: 'white' }}>
           <div className="bodyLogin">
             <div className="row max-width-height">
-              <div className="col-md-7 col-sm-6 bg-img d-none d-sm-flex align-items-end">
+              <div className="col-md-7 col-sm-5 bg-img d-none d-sm-flex align-items-end">
               </div>
-              <div className="col-md-4 offset-md-1 col-sm-6 col-12 style-form-login">
+              <div className="col-md-5 col-sm-7 col-12 style-form-login">
                 <div className="text-center">
                   <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
-                  {/* <h2 className="color-tvdl mb-5 font-tvdl">THƯ VIỆN thư viện</h2> */}
+                  {/* <div className="login-form"> */}
                   <form>
                     <div className="form-group">
                       <input placeholder={STRING.account}
                         autoComplete="on"
                         className="form-control mb-1"
-                        value={username}
-                        onChange={(e) => this.handleTextChange('username', e)}
+                        value={account}
+                        onChange={(e) => this.handleTextChange('account', e)}
                         required />
                     </div>
                     <div className="form-group mt-3">
@@ -109,10 +113,12 @@ class LoginScreen extends React.Component {
                         onChange={(e) => this.handleTextChange('password', e)}
                         required />
                     </div>
-                    {/* <Link> */}
-                    <button type="submit" className="btn btn-success max-width btn-login font-tvdl mt-4" onClick={this.login}>ĐĂNG NHẬP</button>
-                    {/* </Link> */}
+                    {/* neu bo the Link, phai bo ca Form, css lai */}
+                    <Link>
+                      <button className="btn btn-success max-width btn-login font-tvdl mt-4" onClick={this.login}>ĐĂNG NHẬP</button>
+                    </Link>
                   </form>
+                  {/* </div> */}
                 </div>
               </div>
             </div>

@@ -1,14 +1,17 @@
 body{
-    font-family: Overpass;
+    /* font-family: Overpass; */
+    font-family: 'Nunito', sans-serif !important;
 }
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-    font-family: "Work Sans";
+    /* font-family: "Work Sans"; */
+    font-family: 'Nunito', sans-serif !important;
     font-weight: 600;
 }
 .btn{
-    font-family: "Work Sans";
+    /* font-family: "Work Sans"; */
+    font-family: 'Nunito', sans-serif !important;
 }
 .demo-panel {
     display: flex;

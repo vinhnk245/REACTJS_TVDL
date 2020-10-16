@@ -1,11 +1,11 @@
 import axios from 'axios'
 import Cookie from 'js-cookie'
 import reactotron from 'reactotron-react-js'
+import swal from 'sweetalert'
 const Reactotron = process.env.NODE_ENV !== 'production' && require('reactotron-react-js').default
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 
 function createAxios() {
-  console.log('process.env.PORT', process.env)
   var axiosInstant = axios.create()
   axiosInstant.defaults.baseURL = process.env.HOST || `http://13.212.122.124:9496/`
   axiosInstant.defaults.timeout = 20000
@@ -22,7 +22,6 @@ function createAxios() {
 
   axiosInstant.interceptors.response.use(
     (response) => {
-      // log via ReactOtron
       if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
         Reactotron.apisauce(response)
       } else {
@@ -33,9 +32,14 @@ function createAxios() {
         Cookie.remove('SESSION_ID')
         window.location.reload()
       } else if (response.data.status !== 1)
-        setTimeout(() => {
-          alert(response.data.msg)
-        }, 300)
+        // setTimeout(() => {
+        // alert(response.data.msg)
+        // }, 300)
+        swal({
+          title: response.data.msg,
+          timer: 2000,
+          icon: 'error'
+        })
       return response
     },
     (error) => { }
@@ -100,10 +104,9 @@ export const getAxios = createAxios()
 function handleResult(api) {
   return api.then((res) => {
     if (res) {
-      if (res.data.status != 1) {
+      if (res.data.status !== 1) {
         if (res.data.code === 403) {
           Cookie.remove('SESSION_ID')
-          // alert("Phiên đăng nhập hết hạn.");
         }
         return Promise.reject(res.data)
       }
@@ -122,15 +125,12 @@ export const requestGetUserInfo = () => {
 
 export const requestLogin = (payload) => {
   return handleResult(
-    getAxios.post(`home/login`, {
-      account: payload.USERNAME,
-      password: payload.PASS,
-    })
+    getAxios.post(`home/login`, payload)
   )
 }
 
 // Users screen
-export const getListUser = (
+export const getListMember = (
   payload = {
     SEARCH: '',
     PAGE: 1,
@@ -141,29 +141,26 @@ export const getListUser = (
 ) => {
   return handleResult(
     getAxios.get(
-      `users/getListUser?SEARCH=${payload.SEARCH}&PAGE=${payload.PAGE}&FROM_DATE=${payload.FROM_DATE}&TO_DATE=${payload.TO_DATE}`
+      `member/getListMember?SEARCH=${payload.SEARCH}&PAGE=${payload.PAGE}&FROM_DATE=${payload.FROM_DATE}&TO_DATE=${payload.TO_DATE}`
     )
   )
 }
 
-export const postCreateUser = (payload) => {
-  return handleResult(getAxios.post(`users/createUser`, payload))
+export const createMember = (payload) => {
+  return handleResult(getAxios.post(`member/createMember`, payload))
 }
 
-export const deleteUser = (payload) => {
-  return handleResult(getAxios.post(`users/deleteUser`, payload))
+export const deleteMember = (payload) => {
+  return handleResult(getAxios.post(`member/deleteMember`, payload))
 }
 
-export const updateUser = (payload) => {
-  return handleResult(getAxios.post(`users/updateUser`, payload))
+export const updateMember = (payload) => {
+  return handleResult(getAxios.post(`member/updateMember`, payload))
 }
 
-export const getUserRole = () => {
-  return handleResult(getAxios.get(`users/getListUserRole`))
-}
 
-export const getUserDetail = (payload) => {
-  return handleResult(getAxios.get(`users/getUserDetail?USER_ID=${payload.USER_ID}`))
+export const getMemberInfo = (payload) => {
+  return handleResult(getAxios.get(`member/getMemberInfo?USER_ID=${payload.USER_ID}`))
 }
 
 // Transport screen

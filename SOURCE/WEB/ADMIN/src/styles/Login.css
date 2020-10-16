@@ -42,7 +42,12 @@ body {
 }
 
 .style-form-login form {
-  width: 70%;
+  width: 60%;
+  margin: auto;
+}
+
+.style-form-login .login-form {
+  width: 60%;
   margin: auto;
 }
 
@@ -82,10 +87,6 @@ body {
   color: #000;
 }
 
-.loginForm button {
-  background: red;
-  width: 60%;
-}
 .login-button-content {
   display: flex;
   justify-content: center;
@@ -131,22 +132,11 @@ body {
   height: 100%;
 }
 
-/* .btn-login {
-  height: 44px !important;
-  border-radius: 24px !important;
-  border: none !important;
-  background: linear-gradient(to right, rgb(15, 209, 119) , rgb(21, 177, 138)) !important;
-}
-
-.btn-login:hover {
-  background: linear-gradient(to right, rgb(98, 158, 143) , rgb(65, 71, 70)) !important;
-} */
-
 .btn-login {
   height: 44px !important;
   border-radius: 24px !important;
   border: none !important;
-
+  /* width: 60%; */
   position: relative;
   z-index: 1; /* matters! */
   overflow: hidden;

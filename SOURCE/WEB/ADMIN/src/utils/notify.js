@@ -1,4 +1,4 @@
-import { Zoom, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 export const notifySuccess = (mes) =>
   toast.success(mes, {

@@ -1,17 +1,17 @@
 import { put, takeEvery, call } from 'redux-saga/effects'
 import {
-  GET_USER,
-  GET_USER_SUCCESS,
-  GET_USER_FAIL,
-  GET_LIST_USER,
-  GET_LIST_USER_SUCCESS,
-  GET_LIST_USER_FAIL,
-  ADD_USER,
-  ADD_USER_SUCCESS,
-  ADD_USER_FAIL,
-  UPDATE_USER,
-  UPDATE_USER_SUCCESS,
-  UPDATE_USER_FAIL,
+  GET_MEMBER,
+  GET_MEMBER_SUCCESS,
+  GET_MEMBER_FAIL,
+  GET_LIST_MEMBER,
+  GET_LIST_MEMBER_SUCCESS,
+  GET_LIST_MEMBER_FAIL,
+  ADD_MEMBER,
+  ADD_MEMBER_SUCCESS,
+  ADD_MEMBER_FAIL,
+  UPDATE_MEMBER,
+  UPDATE_MEMBER_SUCCESS,
+  UPDATE_MEMBER_FAIL,
   GET_LIST_TRANSPORT,
   GET_LIST_TRANSPORT_SUCCESS,
   GET_LIST_TRANSPORT_FAIL,
@@ -24,56 +24,56 @@ import {
 } from '../actions/type'
 import * as API from '../../constants/Api'
 
-export function* getUserInfor(payload) {
+export function* getMemberInfo(payload) {
   try {
-    const response = yield call(API.requestGetUserInfo)
-    yield put({ type: GET_USER_SUCCESS, payload: response })
+    const response = yield call(API.getMemberInfo)
+    yield put({ type: GET_MEMBER_SUCCESS, payload: response })
   } catch (err) {
-    yield put({ type: GET_USER_FAIL, payload: err })
+    yield put({ type: GET_MEMBER_FAIL, payload: err })
   }
 }
 
-export function* getListUser(action) {
+export function* getListMember(action) {
   try {
-    const response = yield call(API.getListUser, action.payload)
+    const response = yield call(API.getListMember, action.payload)
     yield put({
-      type: GET_LIST_USER_SUCCESS,
+      type: GET_LIST_MEMBER_SUCCESS,
       payload: { response },
     })
   } catch (error) {
     yield put({
-      type: GET_LIST_USER_FAIL,
+      type: GET_LIST_MEMBER_FAIL,
       payload: error,
     })
   }
 }
 
-export function* addUser(action) {
+export function* addMember(action) {
   try {
-    const response = yield call(API.postCreateUser, action.payload)
+    const response = yield call(API.createMember, action.payload)
     console.log(action.payload)
     yield put({
-      type: ADD_USER_SUCCESS,
+      type: ADD_MEMBER_SUCCESS,
       payload: { response },
     })
   } catch (error) {
     yield put({
-      type: ADD_USER_FAIL,
+      type: ADD_MEMBER_FAIL,
       payload: error,
     })
   }
 }
 
-export function* updateUser(action) {
+export function* updateMember(action) {
   try {
-    const response = yield call(API.updateUser, action.payload)
+    const response = yield call(API.updateMember, action.payload)
     yield put({
-      type: UPDATE_USER_SUCCESS,
+      type: UPDATE_MEMBER_SUCCESS,
       payload: { response },
     })
   } catch (error) {
     yield put({
-      type: UPDATE_USER_FAIL,
+      type: UPDATE_MEMBER_FAIL,
       payload: error,
     })
   }
@@ -124,10 +124,10 @@ export function* updateTransport(action) {
   }
 }
 
-export const watchGetUser = takeEvery(GET_USER, getUserInfor)
-export const watchGetListUser = takeEvery(GET_LIST_USER, getListUser)
-export const watchAddUser = takeEvery(ADD_USER, addUser)
-export const watchUpdateUser = takeEvery(UPDATE_USER, updateUser)
+export const watchGetMember = takeEvery(GET_MEMBER, getMemberInfo)
+export const watchgetListMember = takeEvery(GET_LIST_MEMBER, getListMember)
+export const watchAddMember = takeEvery(ADD_MEMBER, addMember)
+export const watchUpdateMember = takeEvery(UPDATE_MEMBER, updateMember)
 export const watchGetListTransport = takeEvery(GET_LIST_TRANSPORT, getListTransport)
 export const watchAddTransport = takeEvery(ADD_TRANSPORT, addTransport)
 export const watchUpdateTransport = takeEvery(UPDATE_TRANSPORT, updateTransport)

@@ -89,12 +89,12 @@ class Sidebar extends Component {
               </li>
 
               <li
-                className={pathName.search('nguoi-dung') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
-                onClick={() => push(ROUTER.USER)}
+                className={pathName.search('thanh-vien') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
+                onClick={() => push(ROUTER.MEMBER)}
               >
                 <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
                   <i className="nav-icon fas fa-user-circle" />
-                  <p className="me-txt-menu">{STRING.user}</p>
+                  <p className="me-txt-menu">{STRING.member}</p>
                 </a>
               </li>
             </ul>

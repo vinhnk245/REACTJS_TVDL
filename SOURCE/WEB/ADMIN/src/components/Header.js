@@ -3,7 +3,7 @@ import { withRouter, Link } from 'react-router-dom'
 import '@styles/Header.css'
 import Cookie from 'js-cookie'
 import { connect } from 'react-redux'
-import { requestGetUserInfo, updateUser } from '@constants/Api'
+import { getMemberInfo, updateMember } from '@constants/Api'
 import { getListUser } from '@src/redux/actions'
 import { Button, Modal, Col, Row, FormControl } from 'react-bootstrap'
 import { STRING, ROUTER } from '@constants/Constant'
@@ -63,14 +63,14 @@ class Header extends Component {
   }
 
   async getUser() {
-    const res = await requestGetUserInfo()
+    const res = await getMemberInfo()
     this.setState({
       USER_ID: res?.data?.USER_ID,
       user: res?.data,
     })
   }
 
-  async updateUserInfo(userId) {
+  async updateMember(userId) {
     const user = this.props.user
     this.setState({
       ...this.state.modal,
@@ -100,7 +100,7 @@ class Header extends Component {
     return false
   }
 
-  async updateUser(fullname, phoneNumber, email, address, userType) {
+  async updateMember(fullname, phoneNumber, email, address, userType) {
     try {
       const user = {
         USER_ID: this.props.user?.ID,
@@ -110,7 +110,7 @@ class Header extends Component {
         EMAIL: email,
         ADDRESS: address.trim(),
       }
-      await updateUser(user)
+      await updateMember(user)
       // this.setShow(false)
       this.refreshPage()
     } catch (error) {
@@ -137,9 +137,9 @@ class Header extends Component {
         [STRING.address]: res.ADDRESS || '',
         [STRING.userType]: user.USER_ROLE
           ? user.USER_ROLE.map((e) => ({
-              label: e.ROLE_NAME,
-              value: e.ROLE_ID,
-            }))
+            label: e.ROLE_NAME,
+            value: e.ROLE_ID,
+          }))
           : [],
       },
       editUser: user.PHONE ? true : false,
@@ -264,7 +264,7 @@ class Header extends Component {
             variant="success"
             disabled={this.checkValidationErrors()}
             onClick={() => {
-              this.updateUser(
+              this.updateMember(
                 fullname,
                 phoneNumber,
                 email,
@@ -487,42 +487,42 @@ class Header extends Component {
                   </div>
                 </Link>
               ) : (
-                <Link
-                  key={index}
-                  to={this.handleRouterNoti(item.DF_NOTI_TYPE_ID, item.DATA)}
-                  style={{
-                    textDecoration: 'none',
-                    color: 'black',
-                  }}
-                >
-                  <div
+                  <Link
                     key={index}
+                    to={this.handleRouterNoti(item.DF_NOTI_TYPE_ID, item.DATA)}
                     style={{
-                      borderBottom: '1.5px solid #dcdfe3',
-                      cursor: 'pointer',
-                      backgroundColor: 'white',
+                      textDecoration: 'none',
+                      color: 'black',
                     }}
-                    className="row px-2 py-2 hover-noti"
-                    onClick={() => this.setState({ showModalNoti: false })}
                   >
-                    <div className="col-1 d-flex justify-content-between px-0 " style={{ flexDirection: 'column' }}>
-                      <i className="fas fa-bell float-left" style={{ fontSize: '20px', color: '#ff9f43' }}></i>
-                      <i className="far fa-clock" style={{ paddingBottom: '4px' }}></i>
-                    </div>
                     <div
-                      className="col-11 text-left px-0  d-flex justify-content-between ml-0"
-                      style={{ flexDirection: 'column' }}
+                      key={index}
+                      style={{
+                        borderBottom: '1.5px solid #dcdfe3',
+                        cursor: 'pointer',
+                        backgroundColor: 'white',
+                      }}
+                      className="row px-2 py-2 hover-noti"
+                      onClick={() => this.setState({ showModalNoti: false })}
                     >
-                      <span>{item.CONTENT}</span>
-                      <span>
-                        {`${new Date(item.CREATED_DATE).toLocaleTimeString('en-US')} ${'-'} ${toDateString(
-                          item.CREATED_DATE
-                        )}` || '--'}
-                      </span>
+                      <div className="col-1 d-flex justify-content-between px-0 " style={{ flexDirection: 'column' }}>
+                        <i className="fas fa-bell float-left" style={{ fontSize: '20px', color: '#ff9f43' }}></i>
+                        <i className="far fa-clock" style={{ paddingBottom: '4px' }}></i>
+                      </div>
+                      <div
+                        className="col-11 text-left px-0  d-flex justify-content-between ml-0"
+                        style={{ flexDirection: 'column' }}
+                      >
+                        <span>{item.CONTENT}</span>
+                        <span>
+                          {`${new Date(item.CREATED_DATE).toLocaleTimeString('en-US')} ${'-'} ${toDateString(
+                            item.CREATED_DATE
+                          )}` || '--'}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              )
+                  </Link>
+                )
             )}
 
             {notification.length == 0 && <p className="mt-3">Chưa có thông báo!</p>}
@@ -580,21 +580,21 @@ class Header extends Component {
                         </span>
                       </Link>
                     ) : (
-                      <Link to={ROUTER.OVERVIEW} className="text-decoration-none ">
-                        <span className="dropdown-item cursor menu-hover" onClick={this.saveChangeRole}>
-                          <div className="dropdown-admin-item">
-                            <p className="me-txt-admin-drop">Quyền CSKH</p>
-                          </div>
-                        </span>
-                      </Link>
-                    )}
+                        <Link to={ROUTER.OVERVIEW} className="text-decoration-none ">
+                          <span className="dropdown-item cursor menu-hover" onClick={this.saveChangeRole}>
+                            <div className="dropdown-admin-item">
+                              <p className="me-txt-admin-drop">Quyền CSKH</p>
+                            </div>
+                          </span>
+                        </Link>
+                      )}
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <a
                   className="dropdown-item cursor menu-hover"
-                  onClick={() => this.setShow(true) && this.updateUserInfo(userId)}
+                  onClick={() => this.setShow(true) && this.updateMember(userId)}
                 >
                   <div className="dropdown-admin-item ">
                     <p className="me-txt-admin-drop">Cập nhật thông tin</p>
@@ -627,7 +627,7 @@ const mapDispatchToProps = {
   getListUser,
   // deleteUserAction,
   // addUser,
-  // updateUser,
+  // updateMember,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header)

@@ -1,8 +1,8 @@
 import {
-  GET_LIST_USER,
-  DELETE_USER,
-  ADD_USER,
-  UPDATE_USER,
+  GET_LIST_MEMBER,
+  DELETE_MEMBER,
+  ADD_MEMBER,
+  UPDATE_MEMBER,
   GET_LIST_TRANSPORT,
   ADD_TRANSPORT,
   UPDATE_TRANSPORT,
@@ -10,22 +10,22 @@ import {
 } from './type'
 
 export const getListUser = (payload) => ({
-  type: GET_LIST_USER,
+  type: GET_LIST_MEMBER,
   payload: payload,
 })
 
 export const deleteUserAction = (payload) => ({
-  type: DELETE_USER,
+  type: DELETE_MEMBER,
   payload: payload,
 })
 
 export const addUser = (payload) => ({
-  type: ADD_USER,
+  type: ADD_MEMBER,
   payload: payload,
 })
 
 export const updateUser = (payload) => ({
-  type: UPDATE_USER,
+  type: UPDATE_MEMBER,
   payload: payload,
 })
 
