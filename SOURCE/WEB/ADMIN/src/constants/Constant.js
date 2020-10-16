@@ -22,13 +22,15 @@ const STRING = {
   toDate: 'Đến ngày',
   search: 'Tìm kiếm',
   add: 'Thêm mới',
-  phoneNumber: 'Số điện thoại',
+  name: 'Họ tên',
+  phone: 'Số điện thoại',
   email: 'Email',
-  createdDate: 'Ngày tạo',
   address: 'Địa chỉ',
+  dob: 'Sinh nhật',
+  createdDate: 'Ngày tạo',
+  joinedDate: 'Ngày tham gia',
   save: 'Lưu',
   exit: 'Thoát',
-  fullname: 'Họ và tên',
   allow: 'Duyệt',
   reject: 'Từ chối',
   clearSearch: 'Xóa bộ lọc',
@@ -40,44 +42,39 @@ const STRING = {
   actived: 'Kích hoạt',
   account: 'Tài khoản'
 }
-
 const NUMBER = {
-  page_limit: 20,
   OPTION_ONE: 1,
   OPTION_ZERO: 0,
 }
-
+const CONFIG = {
+  LIMIT: 20,
+}
 const IS_ACTIVE = {
   ACTIVE: 1,
   INACTIVE: 0,
   DEACTIVATE: 2,
   REJECT: 3,
 }
-
 const ROLE = {
   MANAGER: 1,
   HEAD_OF_BOARD: 2,
   MEMBER: 3,
 }
-
 const VOLUNTEER_STATUS = {
   PENDING: 0,
   ACCEPT: 1,
   REJECT: 2,
 }
-
 const USER_TYPE = {
   MEMBER: 1,
   READER: 2,
 }
-
 const RENTED_BOOK_STATUS = {
   PENDING: 0,
   BORROWED: 1,
   RETURNED: 2,
   CANCEL: 3,
 }
-
 const ORDER_BY = {
   MEMBER: {
     ID_ASC: 1,
@@ -110,15 +107,13 @@ const ORDER_BY = {
     EVENT_DATE_DESC: 2,
   },
 }
-
 const STATUS = {
   ACTIVE: 'Đang hoạt động',
   INACTIVE: 'Ngừng hoạt động',
 }
-
 const GENDER = {
   male: 'Nam',
   female: 'Nữ',
 }
 
-export { ROUTER, NUMBER, STRING, STATUS, GENDER }
+export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE }

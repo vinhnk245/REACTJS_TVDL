@@ -129,19 +129,20 @@ export const requestLogin = (payload) => {
   )
 }
 
-// Users screen
+// Member screen
 export const getListMember = (
-  payload = {
-    SEARCH: '',
-    PAGE: 1,
-    FROM_DATE: 0,
-    TO_DATE: Date.now() / 1000,
-    STATUS: 1,
-  }
+  payload
+  // payload = {
+  //   page: 1,
+  //   limit: 20,
+  //   text: 1,
+  //   status: 1,
+  //   orderBy: 1,
+  // }
 ) => {
   return handleResult(
     getAxios.get(
-      `member/getListMember?SEARCH=${payload.SEARCH}&PAGE=${payload.PAGE}&FROM_DATE=${payload.FROM_DATE}&TO_DATE=${payload.TO_DATE}`
+      `member/getListMember?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}`
     )
   )
 }
@@ -160,7 +161,7 @@ export const updateMember = (payload) => {
 
 
 export const getMemberInfo = (payload) => {
-  return handleResult(getAxios.get(`member/getMemberInfo?USER_ID=${payload.USER_ID}`))
+  return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
 // Transport screen

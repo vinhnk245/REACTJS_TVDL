@@ -4,12 +4,11 @@ import '@styles/Header.css'
 import Cookie from 'js-cookie'
 import { connect } from 'react-redux'
 import { getMemberInfo, updateMember } from '@constants/Api'
-import { getListUser } from '@src/redux/actions'
+import { getListMember } from '@src/redux/actions'
 import { Button, Modal, Col, Row, FormControl } from 'react-bootstrap'
 import { STRING, ROUTER } from '@constants/Constant'
 import reactotron from 'reactotron-react-js'
 import MultiSelect from 'react-multi-select-component'
-import Notification from '@src/components/Notification'
 import { validateForm } from '@src/utils/helper'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
@@ -36,18 +35,18 @@ class Header extends Component {
         newPassword: '',
         confirmNewPassword: '',
         [STRING.username]: '',
-        [STRING.fullname]: '',
-        [STRING.phoneNumber]: '',
+        [STRING.name]: '',
+        [STRING.phone]: '',
         [STRING.email]: '',
         [STRING.address]: '',
         [STRING.userType]: [],
       },
-      userId: '',
+      memberId: '',
       USER_ID: '',
       roles: '',
       validateError: {
-        [STRING.fullname]: '',
-        [STRING.phoneNumber]: '',
+        [STRING.name]: '',
+        [STRING.phone]: '',
         [STRING.email]: '',
         [STRING.address]: '',
         [STRING.userType]: [],
@@ -70,14 +69,14 @@ class Header extends Component {
     })
   }
 
-  async updateMember(userId) {
+  async updateMember(memberId) {
     const user = this.props.user
     this.setState({
       ...this.state.modal,
       USER_ID: user?.USER_ID,
       modal: {
-        [STRING.fullname]: user?.NAME,
-        [STRING.phoneNumber]: user?.USERNAME,
+        [STRING.name]: user?.NAME,
+        [STRING.phone]: user?.USERNAME,
         [STRING.email]: user?.EMAIL,
         [STRING.address]: user?.ADDRESS,
         [STRING.userType]: user?.ROLE?.map((e) => ({
@@ -131,8 +130,8 @@ class Header extends Component {
       ...this.state,
       show: bool,
       modal: {
-        [STRING.fullname]: res.NAME || '',
-        [STRING.phoneNumber]: res.PHONE || '',
+        [STRING.name]: res.NAME || '',
+        [STRING.phone]: res.PHONE || '',
         [STRING.email]: res.EMAIL || '',
         [STRING.address]: res.ADDRESS || '',
         [STRING.userType]: user.USER_ROLE
@@ -143,13 +142,13 @@ class Header extends Component {
           : [],
       },
       editUser: user.PHONE ? true : false,
-      userId: user.USER_ID,
+      memberId: user.USER_ID,
     })
   }
 
   logout() {
     Cookie.remove('SESSION_ID')
-    window.location.href = '/login'
+    window.location.href = '/Login'
   }
 
   changePassword = () => {
@@ -237,13 +236,13 @@ class Header extends Component {
   }
 
   checkValidationErrors() {
-    const { [STRING.phoneNumber]: phoneNumberError, [STRING.email]: emailError } = this.state.validateError
+    const { [STRING.phone]: phoneNumberError, [STRING.email]: emailError } = this.state.validateError
     const {
-      [STRING.phoneNumber]: phoneNumber,
+      [STRING.phone]: phoneNumber,
       [STRING.email]: email,
       [STRING.address]: address,
       [STRING.userType]: userType,
-      [STRING.fullname]: fullname,
+      [STRING.name]: fullname,
     } = this.state.modal
     return phoneNumberError || emailError || !(phoneNumber && email && address && userType.length !== 0 && fullname)
   }
@@ -251,11 +250,11 @@ class Header extends Component {
   renderModalButton() {
     const {
       [STRING.username]: username,
-      [STRING.phoneNumber]: phoneNumber,
+      [STRING.phone]: phoneNumber,
       [STRING.email]: email,
       [STRING.address]: address,
       [STRING.userType]: userType,
-      [STRING.fullname]: fullname,
+      [STRING.name]: fullname,
     } = this.state.modal
     return (
       <Row>
@@ -312,7 +311,7 @@ class Header extends Component {
           </Col>
         </Row>
       )
-    } else if (fieldName === STRING.phoneNumber) {
+    } else if (fieldName === STRING.phone) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
@@ -385,8 +384,8 @@ class Header extends Component {
           this.setState({
             validateError: {
               // [STRING.username]: null,
-              [STRING.fullname]: null,
-              [STRING.phoneNumber]: null,
+              [STRING.name]: null,
+              [STRING.phone]: null,
               [STRING.email]: null,
               [STRING.address]: null,
               [STRING.userType]: [],
@@ -398,13 +397,13 @@ class Header extends Component {
         centered
       >
         <Modal.Header closeButton>
-          <h5 style={{ color: 'white' }}>Cập nhật thông tin</h5>
+          <h5 style={{ color: 'white' }}>Sửa thông tin</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
           {/* {editUser == false &&
                     this.renderModalField(STRING.username)} */}
-          {this.renderModalField(STRING.phoneNumber)}
-          {this.renderModalField(STRING.fullname)}
+          {this.renderModalField(STRING.phone)}
+          {this.renderModalField(STRING.name)}
           {this.renderModalField(STRING.email)}
           {this.renderModalField(STRING.address)}
           {this.renderModalField(STRING.userType)}
@@ -414,131 +413,13 @@ class Header extends Component {
     )
   }
 
-  handleRouterNoti = (TYPE_NOTI, data) => {
-    switch (TYPE_NOTI) {
-      case 1:
-        return ROUTER.HOME
-      case 2:
-        return ROUTER.INFOR
-      case 3:
-        return ROUTER.intro
-      case 6:
-        return ROUTER.TRANSPORT + '/' + data?.TRANSPORT?.ID
-      case 13:
-        return ROUTER.DRIVER + '/' + data?.DRIVER?.USER_ID
-      default:
-        return ROUTER.OVERVIEW
-    }
-  }
-
-  //modal notification
-  renderModalNotification = () => {
-    const { showModalNoti, notification } = this.state
-    if (notification) {
-      return (
-        <Modal
-          show={showModalNoti}
-          onHide={() => {
-            this.setState({ showModalNoti: false })
-          }}
-          dialogClassName="modal-90w"
-          aria-labelledby="example-custom-modal-styling-title"
-          centered
-        >
-          <Modal.Header closeButton>
-            <h5 style={{ color: 'white' }}>{STRING.noti}</h5>
-          </Modal.Header>
-          <Modal.Body className="custom-body pt-0 px-4" style={{ overflow: 'auto', height: '500px' }}>
-            {notification?.map((item, index) =>
-              item?.IS_READ == 0 ? (
-                <Link
-                  to={this.handleRouterNoti(item.DF_NOTI_TYPE_ID, item.DATA)}
-                  style={{ textDecoration: 'none', color: 'black' }}
-                  key={index}
-                >
-                  <div
-                    key={index}
-                    style={{
-                      borderBottom: '1.5px solid #dcdfe3',
-                      cursor: 'pointer',
-                      backgroundColor: '#ECF3FF',
-                    }}
-                    className="row px-2 py-2 hover-noti"
-                    onClick={() => {
-                      this.readNoti(item.ID)
-                      this.setState({ showModalNoti: false })
-                    }}
-                  >
-                    <div className="col-1 d-flex justify-content-between px-0" style={{ flexDirection: 'column' }}>
-                      <i className="fas fa-bell float-left" style={{ fontSize: '20px', color: '#ff9f43' }}></i>
-                      <i className="far fa-clock" style={{ paddingBottom: '4px' }}></i>
-                    </div>
-                    <div
-                      className="col-11 text-left px-0  d-flex justify-content-between ml-0"
-                      style={{ flexDirection: 'column' }}
-                    >
-                      <span>{item.CONTENT}</span>
-                      <span>
-                        {`${new Date(item.CREATED_DATE).toLocaleTimeString('en-US')} ${'-'} ${toDateString(
-                          item.CREATED_DATE
-                        )}` || '--'}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ) : (
-                  <Link
-                    key={index}
-                    to={this.handleRouterNoti(item.DF_NOTI_TYPE_ID, item.DATA)}
-                    style={{
-                      textDecoration: 'none',
-                      color: 'black',
-                    }}
-                  >
-                    <div
-                      key={index}
-                      style={{
-                        borderBottom: '1.5px solid #dcdfe3',
-                        cursor: 'pointer',
-                        backgroundColor: 'white',
-                      }}
-                      className="row px-2 py-2 hover-noti"
-                      onClick={() => this.setState({ showModalNoti: false })}
-                    >
-                      <div className="col-1 d-flex justify-content-between px-0 " style={{ flexDirection: 'column' }}>
-                        <i className="fas fa-bell float-left" style={{ fontSize: '20px', color: '#ff9f43' }}></i>
-                        <i className="far fa-clock" style={{ paddingBottom: '4px' }}></i>
-                      </div>
-                      <div
-                        className="col-11 text-left px-0  d-flex justify-content-between ml-0"
-                        style={{ flexDirection: 'column' }}
-                      >
-                        <span>{item.CONTENT}</span>
-                        <span>
-                          {`${new Date(item.CREATED_DATE).toLocaleTimeString('en-US')} ${'-'} ${toDateString(
-                            item.CREATED_DATE
-                          )}` || '--'}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                )
-            )}
-
-            {notification.length == 0 && <p className="mt-3">Chưa có thông báo!</p>}
-          </Modal.Body>
-        </Modal>
-      )
-    }
-  }
   render() {
-    const { userId, show, loadingAction, countBadge } = this.state
-    const user = this.props.user
+    const { memberId, show, loadingAction, countBadge } = this.state
+    const member = this.props.member
     return (
       <>
         {loadingAction && <LoadingAction />}
         {this.changePassword()}
-        {this.renderModalNotification()}
         {this.renderModalChangeInfor()}
         <nav className="main-header navbar navbar-expand navbar-light me-header">
           {/* Left navbar links */}
@@ -553,51 +434,19 @@ class Header extends Component {
           <ul className="navbar-nav ml-auto">
             {/* Notifications Dropdown Menu */}
             <li className="nav-item dropdown" onClick={() => this.setState({ showModalNoti: true })}>
-              {/* <a className="nav-link" href="#">
-                {countBadge !== 0 ? (
-                  <Badge badgeContent={countBadge} color="error">
-                    <i className="fas fa-bell " style={{ fontSize: '20px' }} />
-                  </Badge>
-                ) : (
-                  <i className="fas fa-bell" style={{ fontSize: '20px' }} />
-                )}
-              </a> */}
             </li>
             {/* Dropdown Admin Menu */}
             <li className="nav-item dropdown">
               <a className="nav-link" data-toggle="dropdown" href="#">
-                <p className="me-txt-menu">Xin chào {user?.NAME} !</p>
+                <p className="me-txt-menu">Xin chào {member?.name}</p>
               </a>
               <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right" style={{ width: '110%' }}>
-                {user?.ROLE?.length == 2 ? (
-                  <div>
-                    {user?.CURRENT_ROLE_ID == 10 ? (
-                      <Link to={ROUTER.OVERVIEW} className="text-decoration-none menu-hover">
-                        <span className="dropdown-item cursor menu-hover" onClick={this.saveChangeRole}>
-                          <div className="dropdown-admin-item">
-                            <p className="me-txt-admin-drop">Quyền admin</p>
-                          </div>
-                        </span>
-                      </Link>
-                    ) : (
-                        <Link to={ROUTER.OVERVIEW} className="text-decoration-none ">
-                          <span className="dropdown-item cursor menu-hover" onClick={this.saveChangeRole}>
-                            <div className="dropdown-admin-item">
-                              <p className="me-txt-admin-drop">Quyền CSKH</p>
-                            </div>
-                          </span>
-                        </Link>
-                      )}
-                  </div>
-                ) : (
-                    ''
-                  )}
                 <a
                   className="dropdown-item cursor menu-hover"
-                  onClick={() => this.setShow(true) && this.updateMember(userId)}
+                  onClick={() => this.setShow(true) && this.updateMember(memberId)}
                 >
                   <div className="dropdown-admin-item ">
-                    <p className="me-txt-admin-drop">Cập nhật thông tin</p>
+                    <p className="me-txt-admin-drop">Sửa thông tin</p>
                   </div>
                 </a>
                 <a className="dropdown-item cursor menu-hover" onClick={() => this.setShowModal(true)}>
@@ -624,9 +473,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-  getListUser,
-  // deleteUserAction,
-  // addUser,
+  getListMember,
+  // deleteMemberAction,
+  // addMember,
   // updateMember,
 }
 

@@ -12,15 +12,6 @@ import {
   UPDATE_MEMBER,
   UPDATE_MEMBER_SUCCESS,
   UPDATE_MEMBER_FAIL,
-  GET_LIST_TRANSPORT,
-  GET_LIST_TRANSPORT_SUCCESS,
-  GET_LIST_TRANSPORT_FAIL,
-  ADD_TRANSPORT,
-  ADD_TRANSPORT_SUCCESS,
-  ADD_TRANSPORT_FAIL,
-  UPDATE_TRANSPORT,
-  UPDATE_TRANSPORT_SUCCESS,
-  UPDATE_TRANSPORT_FAIL,
 } from '../actions/type'
 import * as API from '../../constants/Api'
 
@@ -79,55 +70,8 @@ export function* updateMember(action) {
   }
 }
 
-export function* getListTransport(action) {
-  try {
-    const response = yield call(API.getListTransport, action.payload)
-    yield put({
-      type: GET_LIST_TRANSPORT_SUCCESS,
-      payload: { response },
-    })
-  } catch (error) {
-    yield put({
-      type: GET_LIST_TRANSPORT_FAIL,
-      payload: error,
-    })
-  }
-}
-
-export function* addTransport(action) {
-  try {
-    const response = yield call(API.addTransport, action.payload)
-    yield put({
-      type: ADD_TRANSPORT_SUCCESS,
-      payload: { response },
-    })
-  } catch (error) {
-    yield put({
-      type: ADD_TRANSPORT_FAIL,
-      payload: error,
-    })
-  }
-}
-
-export function* updateTransport(action) {
-  try {
-    const response = yield call(API.updateTransport, action.payload)
-    yield put({
-      type: UPDATE_TRANSPORT_SUCCESS,
-      payload: { response },
-    })
-  } catch (error) {
-    yield put({
-      type: UPDATE_TRANSPORT_FAIL,
-      payload: error,
-    })
-  }
-}
 
 export const watchGetMember = takeEvery(GET_MEMBER, getMemberInfo)
-export const watchgetListMember = takeEvery(GET_LIST_MEMBER, getListMember)
+export const watchGetListMember = takeEvery(GET_LIST_MEMBER, getListMember)
 export const watchAddMember = takeEvery(ADD_MEMBER, addMember)
 export const watchUpdateMember = takeEvery(UPDATE_MEMBER, updateMember)
-export const watchGetListTransport = takeEvery(GET_LIST_TRANSPORT, getListTransport)
-export const watchAddTransport = takeEvery(ADD_TRANSPORT, addTransport)
-export const watchUpdateTransport = takeEvery(UPDATE_TRANSPORT, updateTransport)

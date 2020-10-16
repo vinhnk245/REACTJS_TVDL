@@ -1,11 +1,9 @@
 import { combineReducers } from 'redux'
 import { RESET } from '../actions/type'
-import UserReducer from './UserReducer'
-import TransportReducer from './TransportReducer'
+import MemberReducer from './MemberReducer'
 
 let appReducer = combineReducers({
-  userReducer: UserReducer,
-  transportReducer: TransportReducer,
+  memberReducer: MemberReducer,
 })
 
 const initialState = appReducer({}, {})

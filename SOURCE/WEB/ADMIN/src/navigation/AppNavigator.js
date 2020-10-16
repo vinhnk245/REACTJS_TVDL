@@ -6,7 +6,6 @@ import LoginScreen from '@screens/Auth/LoginScreen'
 import PrivateRoute from './PrivateRoute'
 import Header from '@src/components/Header'
 import Sidebar from '@src/components/Sidebar'
-import TransportScreen from '@screens/Transport/TransportScreen'
 // import TransportDetailScreen from '@screens/Transport/TransportDetailScreen'
 import OverViewScreen from '@screens/OverView/OverViewScreen'
 // import reactotron from 'reactotron-react-js'
@@ -32,8 +31,6 @@ class MainNavigator extends Component {
         <Sidebar />
         <Switch>
           <PrivateRoute path={ROUTER.MEMBER} exact Component={MemberScreen} />
-          <PrivateRoute path={ROUTER.TRANSPORT} exact Component={TransportScreen} />
-          {/* <PrivateRoute path={ROUTER.TRANSPORT + '/:id'} exact Component={TransportDetailScreen} /> */}
           <PrivateRoute path={ROUTER.OVERVIEW} exact Component={OverViewScreen} />
           <Route render={() => <Redirect to={ROUTER.OVERVIEW} />} />
         </Switch>

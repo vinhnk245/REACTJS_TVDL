@@ -10,7 +10,7 @@ class Sidebar extends Component {
     width: window.innerWidth,
     height: window.innerHeight,
     show: false,
-    user: {},
+    member: {},
   }
   updateDimensions = () => {
     this.setState({ width: window.innerWidth, height: window.innerHeight })
@@ -23,7 +23,7 @@ class Sidebar extends Component {
     const { push } = this.props.history
     const { active } = this.state
     const pathName = window.location.pathname
-    const user = this.props.user
+    const member = this.props.member
     return (
       <aside className="main-sidebar sidebar-dark-primary elevation-4 me-sidebar">
         {/* Brand Logo */}
@@ -50,42 +50,6 @@ class Sidebar extends Component {
                   <i className="nav-icon fas fa-tachometer-alt" />
                   <p className="me-txt-menu">{STRING.overView}</p>
                 </a>
-              </li>
-
-              <li className="nav-item has-treeview">
-                <a className="nav-link cursor">
-                  <i className="nav-icon fas fa-warehouse" />
-                  <p className="me-txt-menu">
-                    {STRING.transportProvider}
-                    <i className="fas fa-angle-left right" />
-                  </p>
-                </a>
-                <ul className="nav nav-treeview me-menu-drop">
-                  <li
-                    className={
-                      pathName.search('nha-xe') !== -1 ? 'nav-item sub-menu actived hoved' : 'nav-item sub-menu hoved'
-                    }
-                    data-widget={this.state.width < 990 && 'pushmenu'}
-                    onClick={() => push(ROUTER.TRANSPORT_PROVIDER)}
-                  >
-                    <a className="nav-link cursor" style={{ flex: 1 }}>
-                      <i className="nav-icon fas fa-warehouse me-sub-menu-item" />
-                      <p className="me-txt-menu">{STRING.transportProvider}</p>
-                    </a>
-                  </li>
-                  <li
-                    className={
-                      pathName.search('xe') !== -1 ? 'nav-item sub-menu actived hoved' : 'nav-item sub-menu hoved'
-                    }
-                    data-widget={this.state.width < 990 && 'pushmenu'}
-                    onClick={() => push(ROUTER.TRANSPORT)}
-                  >
-                    <a className="nav-link cursor">
-                      <i className="nav-icon fas fa-truck me-sub-menu-item" />
-                      <p className="me-txt-menu">{STRING.transport}</p>
-                    </a>
-                  </li>
-                </ul>
               </li>
 
               <li

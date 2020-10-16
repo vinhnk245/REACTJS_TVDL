@@ -3,7 +3,7 @@ import { Row, Col, Button, FormControl } from 'react-bootstrap'
 import { STRING, CONFIG_TYPE_OVERVIEW, CONFIG_TYPE } from '@constants/Constant'
 import { getInforDashBoardOverViewSystem, getInforDashBoardOverViewStore, getStatisticAdmin } from '@constants/Api'
 import { connect } from 'react-redux'
-import '@styles/UserScreen.css'
+import '@styles/MemberScreen.css'
 import Pagination from 'react-js-pagination'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -22,7 +22,7 @@ class OverViewScreen extends Component {
       emptyData: false,
     }
   }
-  componentDidMount() {}
+  componentDidMount() { }
 
   handleChange = (fieldName, value) => {
     this.setState({

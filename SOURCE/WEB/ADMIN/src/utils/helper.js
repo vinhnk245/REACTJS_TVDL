@@ -2,9 +2,8 @@ import { STRING } from '@constants/Constant'
 
 export const toDateString = (date) => {
   let start = new Date(date)
-  let startDateString = `${start.getDate()}/${
-    start.getMonth() + 1 < 10 ? '0' + (start.getMonth() + 1) : start.getMonth() + 1
-  }/${start.getFullYear()}`
+  let startDateString = `${start.getDate()}/${start.getMonth() + 1 < 10 ? '0' + (start.getMonth() + 1) : start.getMonth() + 1
+    }/${start.getFullYear()}`
   return startDateString
 }
 
@@ -31,7 +30,7 @@ export const validateForm = (self, value, fieldName) => {
   // const { [fieldname]: field } = self.validateError;
   let regrex
   switch (fieldName) {
-    case STRING.phoneNumber:
+    case STRING.phone:
       regrex = /((09|03|07|08|05|02|06)+([0-9]{8})\b)/g
       break
     case STRING.receiverPhone:
@@ -46,13 +45,13 @@ export const validateForm = (self, value, fieldName) => {
     case STRING.username:
       regrex = /[0-9a-zA-Z_]{4,}\S/g
       break
-    case STRING.fullname:
+    case STRING.name:
       regrex = /^(?=.{1,30}$).*/g
       break
     case STRING.title:
       regrex = /^(?=.{1,30}$).*/g
       break
-    case STRING.fullnameReceiver:
+    case STRING.nameReceiver:
       regrex = /^(?=.{1,30}$).*/g
       break
     case STRING.receiverNameAtStore:
