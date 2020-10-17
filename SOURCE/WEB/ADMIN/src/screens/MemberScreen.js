@@ -14,6 +14,7 @@ import Error from '@src/components/Error'
 import DatePickerCustom from '@src/components/DatePickerCustom'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
+import swal from 'sweetalert'
 
 class MemberScreen extends Component {
   constructor(props) {
@@ -26,16 +27,15 @@ class MemberScreen extends Component {
       email: '',
       address: '',
       role: ROLE.MEMBER,
-      activePage: 1,
+      page: 1,
       limit: CONFIG.LIMIT,
       text: '',
-      status: null,
-      orderBy: null,
+      status: '',
+      orderBy: '',
       totalCount: '',
       show: false,
       confirmModal: false,
       loadingAction: false,
-      selected: [],
       modal: {
         account: '',
         name: '',
@@ -60,7 +60,7 @@ class MemberScreen extends Component {
   }
 
   componentDidMount() {
-    this.getData({ activePage: 1, limit: CONFIG.LIMIT })
+    this.getData({ page: 1, limit: CONFIG.LIMIT })
   }
 
   async getMemberInfo() {
@@ -70,13 +70,13 @@ class MemberScreen extends Component {
     })
   }
 
-  getData({ activePage, limit, text, status, orderBy }) {
+  getData({ page, limit, text, status, orderBy }) {
     this.props.getListMember({
-      page: activePage || 1,
+      page: page || 1,
       limit: limit || CONFIG.LIMIT,
-      text: text || '',
-      status: status || '',
-      orderBy: orderBy || '',
+      text: (text || '').trim(),
+      status: (status || '').trim(),
+      orderBy: (orderBy || '').trim(),
     });
   }
 
@@ -93,7 +93,7 @@ class MemberScreen extends Component {
       loadingAction: true,
     })
     try {
-      const { activePage, limit, text, status, orderBy } = this.state
+      const { page, limit, text, status, orderBy } = this.state
 
       if (this.state.isEditMember) {
         await updateMember(member)
@@ -103,13 +103,7 @@ class MemberScreen extends Component {
 
       this.setState({ show: false, loadingAction: false }, () => {
         notifySuccess(STRING.notifySuccess)
-        this.props.getListMember({
-          page: activePage,
-          limit,
-          text,
-          status,
-          orderBy,
-        })
+        this.getData({ page, limit, text, status, orderBy })
       })
     } catch (error) {
       this.setState(
@@ -123,22 +117,14 @@ class MemberScreen extends Component {
   }
 
   async deleteMember() {
-    const { memberId, activePage, limit, text, status, orderBy } = this.state
+    const { memberId, page, limit, text, status, orderBy } = this.state
     if (memberId !== this.state.id) {
-      this.setState({
-        loadingAction: true,
-      })
+      this.setState({ loadingAction: true })
       try {
         await deleteMember({
           id: this.state.id,
         })
-        this.props.getListMember({
-          page: activePage,
-          limit,
-          text,
-          status,
-          orderBy,
-        })
+        this.getData({ page, limit, text, status, orderBy })
         this.setState(
           {
             loadingAction: false,
@@ -158,7 +144,7 @@ class MemberScreen extends Component {
         console.log(err)
       }
     } else {
-      alert('Tài khoản đang đăng nhập, không thể xóa !')
+      swal('Tài khoản đang đăng nhập, không thể xóa')
       this.setState({
         confirmModal: false,
       })
@@ -168,20 +154,17 @@ class MemberScreen extends Component {
   handleChange(fieldName, value) {
     this.setState({
       ...this.state,
-      [fieldName]: (value || '').trim(),
+      [fieldName]: value || '',
     })
+    // setTimeout(() => {
+    //   this.getData({ text: this.state.text, status: this.state.status, orderBy: this.state.orderBy })
+    // }, 500)
   }
 
   handleKeyPress = (e) => {
-    const { activePage, limit, text, status, orderBy } = this.state
     if (e.charCode === 13) {
-      this.props.getListMember({
-        page: activePage,
-        limit,
-        text,
-        status,
-        orderBy,
-      })
+      const { limit, text, status, orderBy } = this.state
+      this.getData({ limit, text, status, orderBy })
     }
   }
 
@@ -207,7 +190,7 @@ class MemberScreen extends Component {
   }
 
   handlePageChange(pageNumber) {
-    this.setState({ activePage: pageNumber })
+    this.setState({ page: pageNumber })
   }
   renderField() {
     const { text } = this.state
@@ -221,7 +204,7 @@ class MemberScreen extends Component {
             id="exampleInputEmail1"
             placeholder="Nhập từ khóa"
             value={text}
-            onChange={(e) => this.handleChange(text, e.target.value)}
+            onChange={(e) => this.handleChange('text', e.target.value)}
           />
         </Col>
       </Row>
@@ -245,7 +228,7 @@ class MemberScreen extends Component {
           {this.renderField()}
           {/* {this.renderButton()} */}
           {this.renderTable()}
-          {/* {this.renderPagination()} */}
+          {this.renderPagination()}
           {this.renderModal()}
           {this.renderConfirmModal()}
         </div>
@@ -254,7 +237,7 @@ class MemberScreen extends Component {
   }
 
   renderButton() {
-    const { text } = this.state
+    const { limit, text, status, orderBy } = this.state
     return (
       <Row className="mx-0">
         <Col className="button-wrapper px-0">
@@ -271,7 +254,7 @@ class MemberScreen extends Component {
             className="mr-0 ml-1"
             variant="primary"
             onClick={() => {
-              // function()
+              this.getData({ limit, text, status, orderBy })
             }}
           >
             {STRING.search}
@@ -294,19 +277,18 @@ class MemberScreen extends Component {
   }
 
   renderTableData() {
-    console.log('listMemberState ', this.props.listMemberState)
     return (
       <tbody>
-        {this.props.listMemberState?.data?.items?.length ? (
-          this.props.listMemberState?.data?.items?.map((value, index) => (
+        {this.props.listMemberState?.data?.data?.items?.length ? (
+          this.props.listMemberState?.data?.data?.items?.map((value, index) => (
             <tr key={index}>
-              <td>{index + NUMBER.page_limit * (this.state.activePage - 1) + 1}</td>
+              <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td>{value.account || '--'}</td>
               <td>{value.name || '--'}</td>
               <td>{value.phone || '--'}</td>
               <td>{value.email || '--'}</td>
               <td>{value.address || '--'}</td>
-              <td>{toDateString(value.joinedDate) || '--'}</td>
+              <td>{value.joinedDate ? toDateString(value.joinedDate) : '--'}</td>
               <td>{toDateString(value.dob) || '--'}</td>
               <td>{value.status || '--'}</td>
               <td className="width2btn">
@@ -362,29 +344,32 @@ class MemberScreen extends Component {
   }
 
   renderPagination() {
-    const { totalPage } = this.props.listMemberState.data
-    // const {  } = this.state
+    const totalCount = this.props.listMemberState?.data?.data?.totalCount
+    // console.log(this.props.listMemberState)
+    const { page } = this.state
     return (
-      <Pagination
-        itemClass="page-item"
-        linkClass="page-link"
-        hideDisabled
-        activePage={this.state.activePage}
-        totalItemsCount={totalPage * CONFIG.LIMIT}
-        itemsCountPerPage={CONFIG.LIMIT}
-        pageRangeDisplayed={5}
-        hideNavigation
-        hideFirstLastPages
-        onChange={(page) => {
-          this.setState({
-            ...this.state,
-            activePage: page,
-          })
-          this.getData(
-            page
-          )
-        }}
-      />
+      <Col md="12">
+        <Pagination
+          itemClass="page-item"
+          linkClass="page-link"
+          hideDisabled
+          activePage={page}
+          totalItemsCount={totalCount || 0}
+          itemsCountPerPage={CONFIG.LIMIT}
+          pageRangeDisplayed={5}
+          hideNavigation
+          hideFirstLastPages
+          onChange={(page) => {
+            this.setState({
+              ...this.state,
+              page: page,
+            })
+            this.getData({
+              page
+            })
+          }}
+        />
+      </Col>
     )
   }
 
@@ -396,10 +381,10 @@ class MemberScreen extends Component {
       address: addressError,
     } = this.state.validateError
     const {
-      account: account,
-      phone: phone,
-      address: address,
-      name: name,
+      account,
+      phone,
+      address,
+      name,
     } = this.state.modal
     return (
       accountError ||
@@ -412,10 +397,10 @@ class MemberScreen extends Component {
 
   renderModalButton() {
     const {
-      phone: phone,
-      account: account,
-      address: address,
-      name: name,
+      phone,
+      account,
+      address,
+      name,
     } = this.state.modal
     return (
       <Row>
@@ -630,6 +615,7 @@ class MemberScreen extends Component {
   }
 
   render() {
+    // alert('render')
     // const { error, isLoading, isDataLoaded } = this.props.listMemberState
     const { loadingAction } = this.state
     return (

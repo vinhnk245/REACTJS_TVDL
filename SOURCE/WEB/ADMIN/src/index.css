@@ -103,3 +103,7 @@ code {
 .modal .modal-content {
   border-radius: 5px !important;
 }
+
+a:focus {
+  box-shadow: none !important;
+}

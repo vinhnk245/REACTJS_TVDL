@@ -3,7 +3,7 @@ import { RESET } from '../actions/type'
 import MemberReducer from './MemberReducer'
 
 let appReducer = combineReducers({
-  memberReducer: MemberReducer,
+  MemberReducer,
 })
 
 const initialState = appReducer({}, {})

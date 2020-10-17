@@ -47,7 +47,7 @@ const NUMBER = {
   OPTION_ZERO: 0,
 }
 const CONFIG = {
-  LIMIT: 20,
+  LIMIT: 5,
 }
 const IS_ACTIVE = {
   ACTIVE: 1,

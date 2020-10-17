@@ -34,32 +34,33 @@ class LoginScreen extends React.Component {
     if (!account || !password) {
       swal({
         title: 'Vui lòng nhập đầy đủ thông tin',
+        icon: 'warning',
         timer: 2000,
       })
       return
     }
-
-    this.setState({
-      loadingAction: true,
-    })
+    this.setState({ loadingAction: true })
     try {
       const res = await requestLogin({
         account,
         password,
       })
-      if (res.status !== 1) {
-        swal({
-          title: res.msg,
-          timer: 2000,
-        })
-      } else {
-        this.setState({
-          loadingAction: false,
-        })
+      if (res.data?.role) {
         Cookie.set('SESSION_ID', res.data.token, {
           expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         })
         window.location.href = '/'
+      } else {
+        this.setState({
+          account: '',
+          password: '',
+          loadingAction: false,
+        })
+        swal({
+          title: 'Không có quyền truy cập',
+          icon: 'error',
+          timer: 2000,
+        })
       }
     } catch (err) {
       this.setState({
@@ -68,7 +69,6 @@ class LoginScreen extends React.Component {
         loadingAction: false,
       })
     }
-
   }
 
   handleTextChange(field, event) {

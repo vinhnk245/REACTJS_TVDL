@@ -20,7 +20,7 @@ export default function (state = initialState, action) {
         isLoading: false,
         isDataLoaded: false,
         error: null,
-        data: action.payload,
+        data: action.payload.response,
       }
     }
     case GET_MEMBER_FAIL: {
@@ -39,7 +39,7 @@ export default function (state = initialState, action) {
         isLoading: false,
         isDataLoaded: false,
         error: null,
-        data: action.payload,
+        data: action.payload.response,
       }
     }
     case GET_LIST_MEMBER_FAIL: {
