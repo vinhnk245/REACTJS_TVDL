@@ -14,24 +14,24 @@ async function getListMember(req, res) {
     if (page < 0) throw API_CODE.PAGE_ERROR
     let offset = page * limit
     let text = (req.query.text || '').trim()
-    let querySearch = text.length > 0 
-    ? `(name like '%${text}%' or phone like '%${text}%')` 
-    : ''
+    let querySearch = text.length > 0
+        ? `(name like '%${text}%' or phone like '%${text}%')`
+        : ''
 
     let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
 
     let queryOrderBy = 'role, id'
-    if(req.query.orderBy == ORDER_BY.MEMBER.ID_ASC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.ID_ASC)
         queryOrderBy = 'id ASC'
-    if(req.query.orderBy == ORDER_BY.MEMBER.ID_DESC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.ID_DESC)
         queryOrderBy = 'id DESC'
-    if(req.query.orderBy == ORDER_BY.MEMBER.DOB_ASC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.DOB_ASC)
         queryOrderBy = 'dob ASC'
-    if(req.query.orderBy == ORDER_BY.MEMBER.DOB_DESC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.DOB_DESC)
         queryOrderBy = 'dob DESC'
-    if(req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_ASC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_ASC)
         queryOrderBy = 'joinedDate ASC'
-    if(req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_DESC)
+    if (req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_DESC)
         queryOrderBy = 'joinedDate DESC'
 
     let listMember = await Member.findAndCountAll({
@@ -54,8 +54,13 @@ async function getListMember(req, res) {
     }
 }
 
+async function getUserInfo(req, res) {
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+    return await getMemberDetail(req.auth.id)
+}
+
 async function getMemberInfo(req, res) {
-    if(!req.query.id) throw API_CODE.INVALID_PARAM
+    if (!req.query.id) throw API_CODE.INVALID_PARAM
     return await getMemberDetail(req.query.id)
 }
 
@@ -69,18 +74,18 @@ async function getMemberDetail(memberId) {
             'id', 'token', 'account', 'name', 'address', 'dob', 'joinedDate', 'phone', 'email', 'role', 'note'
         ]
     })
-    if(!memberDetail) throw API_CODE.NOT_FOUND
+    if (!memberDetail) throw API_CODE.NOT_FOUND
     return memberDetail
 }
 
 async function createMember(req, res) {
-    if(req.auth.role == ROLE.MEMBER)
+    if (req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let { account, name, address, dob, joinedDate, phone, email, role, note } = req.body
-    if(!account || 
-        !name || 
-        !phone || 
+    if (!account ||
+        !name ||
+        !phone ||
         !address ||
         !dob ||
         !role) throw API_CODE.REQUIRE_FIELD
@@ -89,13 +94,13 @@ async function createMember(req, res) {
         where: {
             isActive: ACTIVE,
             [Op.or]: [
-                { account: account }, 
+                { account: account },
                 { phone: phone }
             ]
         }
     })
-    if(checkAccount && checkAccount.account == account) throw API_CODE.ACCOUNT_EXIST
-    if(checkAccount && checkAccount.phone == phone) throw API_CODE.PHONE_EXIST
+    if (checkAccount && checkAccount.account == account) throw API_CODE.ACCOUNT_EXIST
+    if (checkAccount && checkAccount.phone == phone) throw API_CODE.PHONE_EXIST
 
     let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
     let newMember = await Member.create({
@@ -115,13 +120,13 @@ async function createMember(req, res) {
 }
 
 async function updateMember(req, res) {
-    if(req.auth.role == ROLE.MEMBER)
+    if (req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let { id, account, name, address, dob, joinedDate, phone, email, role, note, status } = req.body
-    if(!account || 
-        !name || 
-        !phone || 
+    if (!account ||
+        !name ||
+        !phone ||
         !address ||
         !dob ||
         !status ||
@@ -133,7 +138,7 @@ async function updateMember(req, res) {
             id: id
         }
     })
-    if(!memberUpdate) throw API_CODE.NOT_FOUND
+    if (!memberUpdate) throw API_CODE.NOT_FOUND
 
     await memberUpdate.update({
         account: account,
@@ -151,11 +156,11 @@ async function updateMember(req, res) {
 }
 
 async function deleteMember(req, res) {
-    if(req.auth.role == ROLE.MEMBER)
+    if (req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let id = req.body.id
-    if(!id) throw API_CODE.INVALID_PARAM
+    if (!id) throw API_CODE.INVALID_PARAM
 
     let memberDelete = await Member.findOne({
         where: {
@@ -163,7 +168,7 @@ async function deleteMember(req, res) {
             id: id
         }
     })
-    if(!memberDelete) throw API_CODE.NOT_FOUND
+    if (!memberDelete) throw API_CODE.NOT_FOUND
 
     await memberDelete.update({
         isActive: IS_ACTIVE.INACTIVE
@@ -174,6 +179,7 @@ async function deleteMember(req, res) {
 
 module.exports = {
     getListMember,
+    getUserInfo,
     getMemberInfo,
     getMemberDetail,
     createMember,
