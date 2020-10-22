@@ -109,11 +109,15 @@ const ORDER_BY = {
 }
 const STATUS = {
   ACTIVE: 'Đang hoạt động',
-  INACTIVE: 'Ngừng hoạt động',
+  INACTIVE: 'Tạm dừng',
 }
 const GENDER = {
   male: 'Nam',
   female: 'Nữ',
 }
+const LIST_STATUS = [
+  { value: 1, label: STATUS.ACTIVE },
+  { value: 0, label: STATUS.INACTIVE },
+]
 
-export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE }
+export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE, LIST_STATUS }

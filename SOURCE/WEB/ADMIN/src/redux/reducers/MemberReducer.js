@@ -6,7 +6,6 @@ import {
 const initialState = {
   data: {},
   isLoading: true,
-  isDataLoaded: true,
   error: null,
 }
 export default function (state = initialState, action) {
@@ -18,7 +17,6 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isLoading: false,
-        isDataLoaded: false,
         error: null,
         data: action.payload.response,
       }
@@ -37,7 +35,6 @@ export default function (state = initialState, action) {
       return {
         ...state,
         isLoading: false,
-        isDataLoaded: false,
         error: null,
         data: action.payload.response,
       }

@@ -67,32 +67,46 @@ module.exports = {
     LIMIT_TOP: 10,
   },
 
-  VOLUNTEER_STATUS: { 
+  VOLUNTEER_STATUS: {
     PENDING: 0,
     ACCEPT: 1,
     REJECT: 2,
   },
 
-  USER_TYPE: { 
+  USER_TYPE: {
     MEMBER: 1,
     READER: 2,
   },
 
-  RENTED_BOOK_STATUS: { 
+  RENTED_BOOK_STATUS: {
     PENDING: 0,
     BORROWED: 1,
     RETURNED: 2,
     CANCEL: 3,
   },
 
-  ORDER_BY: { 
+  ORDER_BY: {
     MEMBER: {
       ID_ASC: 1,
       ID_DESC: 2,
       DOB_ASC: 3,
       DOB_DESC: 4,
-      JOINED_DATE_ASC: 5,
-      JOINED_DATE_DESC: 6,
+      MONTH_ASC: 5,
+      MONTH_DESC: 6,
+    },
+    DOB_MONTH: {
+      JANUARY: 1,
+      FEBRUARY: 2,
+      MARCH: 3,
+      APRIL: 4,
+      MAY: 5,
+      JUNE: 6,
+      JULY: 7,
+      AUGUST: 8,
+      SEPTEMBER: 9,
+      OCTOBER: 10,
+      NOVEMBER: 11,
+      DECEMBER: 12,
     },
     READER: {
       CARD_NUMBER_ASC: 1,

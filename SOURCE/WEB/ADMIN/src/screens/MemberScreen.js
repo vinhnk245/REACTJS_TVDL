@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col, FormControl, Button, Modal } from 'react-bootstrap'
 import '@styles/MemberScreen.css'
-import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE } from '@constants/Constant'
+import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE, STATUS, LIST_STATUS } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
 import { getListMember } from '@src/redux/actions'
@@ -15,6 +15,7 @@ import DatePickerCustom from '@src/components/DatePickerCustom'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
 import swal from 'sweetalert'
+import reactotron from 'reactotron-react-js';
 
 class MemberScreen extends Component {
   constructor(props) {
@@ -33,9 +34,11 @@ class MemberScreen extends Component {
       status: '',
       orderBy: '',
       totalCount: '',
+      modalTitle: '',
       show: false,
       confirmModal: false,
       loadingAction: false,
+      listStatus: LIST_STATUS,
       modal: {
         account: '',
         name: '',
@@ -60,7 +63,7 @@ class MemberScreen extends Component {
   }
 
   componentDidMount() {
-    this.getData({ page: 1, limit: CONFIG.LIMIT })
+    this.getData({})
   }
 
   async getMemberInfo() {
@@ -70,14 +73,29 @@ class MemberScreen extends Component {
     })
   }
 
-  getData({ page, limit, text, status, orderBy }) {
-    this.props.getListMember({
-      page: page || 1,
-      limit: limit || CONFIG.LIMIT,
-      text: (text || '').trim(),
-      status: (status || '').trim(),
-      orderBy: (orderBy || '').trim(),
-    });
+  async getData({ page }) {
+    this.setState({ loadingAction: true })
+    const { limit, text, status, orderBy } = this.state
+    try {
+      await this.props.getListMember({
+        page: page || 1,
+        limit: limit || CONFIG.LIMIT,
+        text: text?.trim() || '',
+        status: status || '',
+        orderBy: orderBy || '',
+      });
+
+
+      this.setState({
+        loadingAction: false
+      })
+
+
+    } catch (error) {
+      this.setState({
+        loadingAction: false,
+      })
+    }
   }
 
   async createMember(account, name, phone, email, address, role) {
@@ -93,8 +111,6 @@ class MemberScreen extends Component {
       loadingAction: true,
     })
     try {
-      const { page, limit, text, status, orderBy } = this.state
-
       if (this.state.isEditMember) {
         await updateMember(member)
       } else {
@@ -103,7 +119,7 @@ class MemberScreen extends Component {
 
       this.setState({ show: false, loadingAction: false }, () => {
         notifySuccess(STRING.notifySuccess)
-        this.getData({ page, limit, text, status, orderBy })
+        this.getData({})
       })
     } catch (error) {
       this.setState(
@@ -117,14 +133,14 @@ class MemberScreen extends Component {
   }
 
   async deleteMember() {
-    const { memberId, page, limit, text, status, orderBy } = this.state
+    const { memberId } = this.state
     if (memberId !== this.state.id) {
       this.setState({ loadingAction: true })
       try {
         await deleteMember({
           id: this.state.id,
         })
-        this.getData({ page, limit, text, status, orderBy })
+        this.getData({})
         this.setState(
           {
             loadingAction: false,
@@ -156,15 +172,22 @@ class MemberScreen extends Component {
       ...this.state,
       [fieldName]: value || '',
     })
-    // setTimeout(() => {
-    //   this.getData({ text: this.state.text, status: this.state.status, orderBy: this.state.orderBy })
-    // }, 500)
+  }
+
+  handleChangeSelect = async (fieldName, value) => {
+    await this.setState(
+      {
+        ...this.state,
+        page: 1,
+        [fieldName]: value || '',
+      }
+    )
+    this.getData({})
   }
 
   handleKeyPress = (e) => {
     if (e.charCode === 13) {
-      const { limit, text, status, orderBy } = this.state
-      this.getData({ limit, text, status, orderBy })
+      this.getData({})
     }
   }
 
@@ -172,8 +195,8 @@ class MemberScreen extends Component {
     let res = member
     if (member.id) {
       const id = member.id
-      const rem = await getMemberInfo({ id })
-      res = rem.data
+      // const rem = await getMemberInfo({ id })
+      // res = rem.data
     }
     this.setState({
       ...this.state,
@@ -193,7 +216,7 @@ class MemberScreen extends Component {
     this.setState({ page: pageNumber })
   }
   renderField() {
-    const { text } = this.state
+    const { page, limit, text, status, orderBy, listStatus } = this.state
     return (
       <Row className="mx-0">
         <Col sm>
@@ -207,7 +230,32 @@ class MemberScreen extends Component {
             onChange={(e) => this.handleChange('text', e.target.value)}
           />
         </Col>
-      </Row>
+        <Col sm>
+          <FormControl
+            // onKeyPress={this.handleKeyPress}
+            as="select"
+            className="mb-0"
+            id="exampleInputEmail1"
+            // placeholder="Nhập từ khóa"
+            value={status}
+            onChange={(e) => this.handleChangeSelect('status', e.target.value)}
+          >
+            <option value="" defaultValue>
+              {STRING.status}
+            </option>
+            {listStatus?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+          </FormControl>
+        </Col>
+        <Col sm>
+          <FormControl
+            onKeyPress={this.handleKeyPress}
+            as="select"
+            className="mb-0"
+            value={orderBy}
+            onChange={(e) => this.handleChange('orderBy', e.target.value)}
+          />
+        </Col>
+      </Row >
     )
   }
 
@@ -237,7 +285,6 @@ class MemberScreen extends Component {
   }
 
   renderButton() {
-    const { limit, text, status, orderBy } = this.state
     return (
       <Row className="mx-0">
         <Col className="button-wrapper px-0">
@@ -245,7 +292,10 @@ class MemberScreen extends Component {
             className="mr-0 ml-1"
             variant="success"
             onClick={() => {
-              this.setShow(true)
+              this.setState({
+                modalTitle: 'Thêm thành viên',
+                show: true
+              })
             }}
           >
             {STRING.add}
@@ -254,7 +304,7 @@ class MemberScreen extends Component {
             className="mr-0 ml-1"
             variant="primary"
             onClick={() => {
-              this.getData({ limit, text, status, orderBy })
+              this.getData({})
             }}
           >
             {STRING.search}
@@ -263,10 +313,11 @@ class MemberScreen extends Component {
             className="mr-0 ml-1"
             variant="secondary"
             onClick={() =>
-              // funtion()
               this.setState({
                 text: '',
-              })
+                status: '',
+                orderBy: '',
+              }, () => this.getData({}))
             }
           >
             {STRING.clearSearch}
@@ -290,12 +341,15 @@ class MemberScreen extends Component {
               <td>{value.address || '--'}</td>
               <td>{value.joinedDate ? toDateString(value.joinedDate) : '--'}</td>
               <td>{toDateString(value.dob) || '--'}</td>
-              <td>{value.status || '--'}</td>
+              <td>{parseInt(value.status) === 1 ? STATUS.ACTIVE : STATUS.INACTIVE || '--'}</td>
               <td className="width2btn">
                 <i
                   className="btnEdit fa fa-fw fa-edit"
                   onClick={() => {
-                    this.setShow(true, value)
+                    this.setState({
+                      modalTitle: 'Sửa thành viên'
+                    }, () => this.setShow(true, value))
+
                   }}
                 />
                 <i
@@ -363,10 +417,7 @@ class MemberScreen extends Component {
             this.setState({
               ...this.state,
               page: page,
-            })
-            this.getData({
-              page
-            })
+            }, () => this.getData({ page }))
           }}
         />
       </Col>
@@ -445,7 +496,7 @@ class MemberScreen extends Component {
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <MultiSelect
+            {/* <MultiSelect
               options={this.state.selected}
               value={field}
               onChange={(e) => {
@@ -463,7 +514,7 @@ class MemberScreen extends Component {
                 allItemsAreSelected: 'Tất cả',
                 selectSomeItems: fieldName,
               }}
-            />
+            /> */}
           </Col>
         </Row>
       )
@@ -531,7 +582,7 @@ class MemberScreen extends Component {
   }
 
   renderModal() {
-    const { show, isEditMember } = this.state
+    const { show, modalTitle } = this.state
     return (
       <Modal
         show={show}
@@ -553,7 +604,7 @@ class MemberScreen extends Component {
         centered
       >
         <Modal.Header closeButton>
-          <h5 className="" style={{ color: 'white' }}>{!isEditMember ? 'Thêm thành viên' : 'Sửa thành viên'}</h5>
+          <h5 className="text-white">{modalTitle}</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
           {/* {isEditMember == false &&
@@ -615,14 +666,16 @@ class MemberScreen extends Component {
   }
 
   render() {
-    // alert('render')
-    // const { error, isLoading, isDataLoaded } = this.props.listMemberState
+    console.log('render')
+    const { isLoading } = this.props.listMemberState
     const { loadingAction } = this.state
     return (
       <>
         {/* {isDataLoaded && <Loading />}
         {isLoading && (!isDataLoaded ? <LoadingAction /> : null)} */}
-        {/* <Error isOpen={error} /> */}
+        {(loadingAction || isLoading) && <LoadingAction />}
+        {/* {loadingAction && <Loading />} */}
+        {/* <Error isOpen={true} /> */}
         {this.renderBody()}
       </>
     )

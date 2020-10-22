@@ -15,9 +15,9 @@ import {
 } from '../actions/type'
 import * as API from '../../constants/Api'
 
-export function* getMemberInfo(payload) {
+export function* getUserInfo(payload) {
   try {
-    const response = yield call(API.getMemberInfo)
+    const response = yield call(API.requestGetUserInfo)
     yield put({ type: GET_MEMBER_SUCCESS, payload: response })
   } catch (err) {
     yield put({ type: GET_MEMBER_FAIL, payload: err })
@@ -71,7 +71,7 @@ export function* updateMember(action) {
 }
 
 
-export const watchGetMember = takeEvery(GET_MEMBER, getMemberInfo)
+export const watchGetMember = takeEvery(GET_MEMBER, getUserInfo)
 export const watchGetListMember = takeEvery(GET_LIST_MEMBER, getListMember)
 export const watchAddMember = takeEvery(ADD_MEMBER, addMember)
 export const watchUpdateMember = takeEvery(UPDATE_MEMBER, updateMember)

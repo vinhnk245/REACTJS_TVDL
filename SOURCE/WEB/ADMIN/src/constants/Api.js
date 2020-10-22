@@ -115,12 +115,8 @@ function handleResult(api) {
   })
 }
 
-export const requestHomeData = (deviceID = '') => {
-  return handleResult(getAxios.get(`api/Service/GetHomeScreen?deviceID=${deviceID}`))
-}
-
 export const requestGetUserInfo = () => {
-  return handleResult(getAxios.get(`users/getUserInfo`))
+  return handleResult(getAxios.get(`member/getUserInfo`))
 }
 
 export const requestLogin = (payload) => {
@@ -164,58 +160,3 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
-// Transport screen
-export const getListTransport = (payload) => {
-  if (payload) {
-    return handleResult(
-      getAxios.get(
-        `transport/getListTransport?TRANSPORT_PROVIDER_ID=${payload.TRANSPORT_PROVIDER_ID}&PAGE=${payload.PAGE}&SEARCH=${payload.SEARCH}&FROM_DATE=${payload.FROM_DATE}&TO_DATE=${payload.TO_DATE}&START_PROVINCE_CODE=${payload.START_PROVINCE_CODE}&END_PROVINCE_CODE=${payload.END_PROVINCE_CODE}`,
-        payload
-      )
-    )
-  } else {
-    return handleResult(getAxios.get(`transport/getListTransport`))
-  }
-}
-
-export const getTransportInfo = (id) => {
-  return handleResult(getAxios.get(`transport/getTransportInfo?TRANSPORT_ID=${id}`))
-}
-
-export const getTransportHistory = (payload) => {
-  return handleResult(
-    getAxios.get(
-      `transportRequest/getListTransportAssignedTransportProvider?TRANSPORT_PROVIDER_ID=${payload.TRANSPORT_PROVIDER_ID}&PAGE=${payload.PAGE}&STATUS=${payload.STATUS}&DRIVER_USER_ID=${payload.DRIVER_USER_ID}&FROM_DATE=${payload.FROM_DATE}&TO_DATE=${payload.TO_DATE}&ROUTE_ID=${payload.ROUTE_ID}&TRANSPORT_ID=${payload.TRANSPORT_ID}`,
-      payload
-    )
-  )
-}
-
-export const addTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/createTransport`, payload))
-}
-
-export const updateTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/updateTransport`, payload))
-}
-
-export const deleteTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/deleteTransport`, payload))
-}
-export const getListTransportRoute = (payload) => {
-  return handleResult(getAxios.get(`route/getListTransportRoute?TRANSPORT_PROVIDER_ID=${payload}`))
-}
-
-export const confirmTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/confirmTransport`, payload))
-}
-
-export const rejectTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/rejectTransport`, payload))
-}
-export const unActiveTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/unActiveTransport`, payload))
-}
-export const activeTransport = (payload) => {
-  return handleResult(getAxios.post(`transport/activeTransport`, payload))
-}

@@ -3,7 +3,7 @@ import { withRouter, Link } from 'react-router-dom'
 import '@styles/Header.css'
 import Cookie from 'js-cookie'
 import { connect } from 'react-redux'
-import { getMemberInfo, updateMember } from '@constants/Api'
+import { requestGetUserInfo, updateMember } from '@constants/Api'
 import { getListMember } from '@src/redux/actions'
 import { Button, Modal, Col, Row, FormControl } from 'react-bootstrap'
 import { STRING, ROUTER } from '@constants/Constant'
@@ -42,7 +42,7 @@ class Header extends Component {
         [STRING.userType]: [],
       },
       memberId: '',
-      USER_ID: '',
+      id: '',
       roles: '',
       validateError: {
         [STRING.name]: '',
@@ -56,15 +56,16 @@ class Header extends Component {
   }
 
   async componentDidMount() {
-    // this.getUserInfo(),
+    this.getUserInfo()
     // this.getListNotification()
     // this.getUser()
   }
 
-  async getUser() {
-    const res = await getMemberInfo()
+  async getUserInfo() {
+    const res = await requestGetUserInfo({})
+    reactotron.log('user', res)
     this.setState({
-      USER_ID: res?.data?.USER_ID,
+      id: res?.data?.id,
       user: res?.data,
     })
   }
@@ -73,7 +74,7 @@ class Header extends Component {
     const user = this.props.user
     this.setState({
       ...this.state.modal,
-      USER_ID: user?.USER_ID,
+      id: user?.id,
       modal: {
         [STRING.name]: user?.NAME,
         [STRING.phone]: user?.USERNAME,
@@ -102,7 +103,7 @@ class Header extends Component {
   async updateMember(fullname, phoneNumber, email, address, userType) {
     try {
       const user = {
-        USER_ID: this.props.user?.ID,
+        id: this.props.user?.ID,
         ROLE_ID: userType,
         NAME: fullname.trim(),
         PHONE: phoneNumber,
@@ -142,7 +143,7 @@ class Header extends Component {
           : [],
       },
       editUser: user.PHONE ? true : false,
-      memberId: user.USER_ID,
+      memberId: user.id,
     })
   }
 
@@ -414,8 +415,9 @@ class Header extends Component {
   }
 
   render() {
-    const { memberId, show, loadingAction, countBadge } = this.state
-    const member = this.props.member
+    const { memberId, show, loadingAction, countBadge, user } = this.state
+    // const  = this.props.user
+    reactotron.log('user ', user)
     return (
       <>
         {loadingAction && <LoadingAction />}
@@ -438,7 +440,7 @@ class Header extends Component {
             {/* Dropdown Admin Menu */}
             <li className="nav-item dropdown">
               <a className="nav-link" data-toggle="dropdown" href="#">
-                <p className="me-txt-menu">Xin chào {member?.name}</p>
+                <p className="me-txt-menu">Xin chào {user?.name}</p>
               </a>
               <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right" style={{ width: '110%' }}>
                 <a

@@ -9,6 +9,7 @@ const { member: Member } = require("@models")
 const { success, error } = require("../commons/response")
 
 async function getListMember(req, res) {
+    let { orderBy, status, dobMonth } = req.query
     let page = !req.query.page ? 0 : req.query.page - 1
     let limit = parseInt(req.query.limit || LIMIT)
     if (page < 0) throw API_CODE.PAGE_ERROR
@@ -18,28 +19,71 @@ async function getListMember(req, res) {
         ? `(name like '%${text}%' or phone like '%${text}%')`
         : ''
 
-    let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
+    let queryStatus = status ? `status = ${status}` : ``
 
     let queryOrderBy = 'role, id'
-    if (req.query.orderBy == ORDER_BY.MEMBER.ID_ASC)
+    if (orderBy == ORDER_BY.MEMBER.ID_ASC)
         queryOrderBy = 'id ASC'
-    if (req.query.orderBy == ORDER_BY.MEMBER.ID_DESC)
+    if (orderBy == ORDER_BY.MEMBER.ID_DESC)
         queryOrderBy = 'id DESC'
-    if (req.query.orderBy == ORDER_BY.MEMBER.DOB_ASC)
+    if (orderBy == ORDER_BY.MEMBER.DOB_ASC)
         queryOrderBy = 'dob ASC'
-    if (req.query.orderBy == ORDER_BY.MEMBER.DOB_DESC)
+    if (orderBy == ORDER_BY.MEMBER.DOB_DESC)
         queryOrderBy = 'dob DESC'
-    if (req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_ASC)
-        queryOrderBy = 'joinedDate ASC'
-    if (req.query.orderBy == ORDER_BY.MEMBER.JOINED_DATE_DESC)
-        queryOrderBy = 'joinedDate DESC'
+    if (orderBy == ORDER_BY.MEMBER.MONTH_ASC)
+        queryOrderBy = 'MONTH(dob) ASC, DAY(dob) ASC'
+    if (orderBy == ORDER_BY.MEMBER.MONTH_DESC)
+        queryOrderBy = 'MONTH(dob) DESC, DAY(dob) ASC'
+
+    let queryDobMonth = ''
+    switch (parseInt(dobMonth)) {
+        case ORDER_BY.DOB_MONTH.JANUARY:
+            queryDobMonth = 'MONTH(dob) = 1'
+            break;
+        case ORDER_BY.DOB_MONTH.FEBRUARY:
+            queryDobMonth = 'MONTH(dob) = 2'
+            break;
+        case ORDER_BY.DOB_MONTH.MARCH:
+            queryDobMonth = 'MONTH(dob) = 3'
+            break;
+        case ORDER_BY.DOB_MONTH.APRIL:
+            queryDobMonth = 'MONTH(dob) = 4'
+            break;
+        case ORDER_BY.DOB_MONTH.MAY:
+            queryDobMonth = 'MONTH(dob) = 5'
+            break;
+        case ORDER_BY.DOB_MONTH.JUNE:
+            queryDobMonth = 'MONTH(dob) = 6'
+            break;
+        case ORDER_BY.DOB_MONTH.JULY:
+            queryDobMonth = 'MONTH(dob) = 7'
+            break;
+        case ORDER_BY.DOB_MONTH.AUGUST:
+            queryDobMonth = 'MONTH(dob) = 8'
+            break;
+        case ORDER_BY.DOB_MONTH.SEPTEMBER:
+            queryDobMonth = 'MONTH(dob) = 9'
+            break;
+        case ORDER_BY.DOB_MONTH.OCTOBER:
+            queryDobMonth = 'MONTH(dob) = 10'
+            break;
+        case ORDER_BY.DOB_MONTH.NOVEMBER:
+            queryDobMonth = 'MONTH(dob) = 11'
+            break;
+        case ORDER_BY.DOB_MONTH.DECEMBER:
+            queryDobMonth = 'MONTH(dob) = 12'
+            break;
+        default:
+            break;
+    }
 
     let listMember = await Member.findAndCountAll({
         where: {
             isActive: ACTIVE,
             [Op.and]: [
                 literal(queryStatus),
-                literal(querySearch)
+                literal(querySearch),
+                literal(queryDobMonth)
             ]
         },
         order: literal(queryOrderBy),
