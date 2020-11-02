@@ -10,5 +10,6 @@ router.post("/logout", isAuthenticated(), wrapHandlerWithJSONResponse(homeContro
 router.post("/changePassword", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.changePassword));
 router.post("/resetPassword", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.resetPassword));
 router.post("/checkTokenForApp", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.checkTokenForApp));
+router.get("/getOverviews", isAuthenticated(), wrapHandlerWithJSONResponse(homeController.getOverviews));
 
 module.exports = router;

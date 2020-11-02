@@ -1,46 +1,49 @@
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
+// const Sequelize = require('sequelize')
+// const Op = Sequelize.Op
+const { Sequelize, Op, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
 const hat = require("hat")
 const response = require("@commons/response")
 const { success, error } = response
-const { API_CODE, IS_ACTIVE, ROLE, CONFIG, USER_TYPE } = require('@utils/constant')
-const { 
-    reader: Reader, 
-    member: Member 
+const { API_CODE, IS_ACTIVE, ROLE, CONFIG, USER_TYPE, RENTED_BOOK_STATUS } = require('@utils/constant')
+const {
+    book: Book,
+    reader: Reader,
+    member: Member,
+    rented_book: RentedBook,
 } = require('@models')
 const memberController = require('@controllers/memberController')
 const readerController = require('@controllers/readerController')
 
 async function login(req, res, next) {
     const { account, password, deviceId } = req.body
-    if(!account || !password)
+    if (!account || !password)
         throw API_CODE.REQUIRE_FIELD
 
     let readerLogin = await Reader.findOne({
-        where: { 
+        where: {
             account: account,
             isActive: IS_ACTIVE.ACTIVE
         }
     })
-    if(!readerLogin) {
+    if (!readerLogin) {
         let memberLogin = await Member.findOne({
             where: {
                 account: account,
                 isActive: IS_ACTIVE.ACTIVE
             }
         })
-        if(!memberLogin) throw API_CODE.LOGIN_FAIL
-        if(memberLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
+        if (!memberLogin) throw API_CODE.LOGIN_FAIL
+        if (memberLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
 
         let checkPass = await bcrypt.compareSync(
-            password, 
-            memberLogin.password, 
+            password,
+            memberLogin.password,
             (err, res) => {
                 return res
             })
-        if(!checkPass) throw API_CODE.LOGIN_FAIL
+        if (!checkPass) throw API_CODE.LOGIN_FAIL
 
         await memberLogin.update({
             token: hat(),
@@ -48,15 +51,15 @@ async function login(req, res, next) {
         })
         return await memberController.getMemberDetail(memberLogin.id)
     } else {
-        if(readerLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
+        if (readerLogin.status === IS_ACTIVE.DEACTIVATE) throw API_CODE.ACCOUNT_DEACTIVATED
 
         let checkPasswordReader = await bcrypt.compareSync(
-            password, 
-            readerLogin.password, 
+            password,
+            readerLogin.password,
             (err, res) => {
                 return res
             })
-        if(!checkPasswordReader) throw API_CODE.LOGIN_FAIL
+        if (!checkPasswordReader) throw API_CODE.LOGIN_FAIL
 
         await readerLogin.update({
             token: hat(),
@@ -86,15 +89,15 @@ async function logout(req, res, next) {
 
 async function changePassword(req, res, next) {
     const { currentPassword, newPassword } = req.body
-    if(!currentPassword || !newPassword) throw API_CODE.REQUIRE_FIELD
+    if (!currentPassword || !newPassword) throw API_CODE.REQUIRE_FIELD
 
     let checkPass = await bcrypt.compareSync(
-        currentPassword, 
-        req.auth.password, 
+        currentPassword,
+        req.auth.password,
         (err, res) => {
             return res
         })
-    if(!checkPass) throw API_CODE.WRONG_PASSWORD
+    if (!checkPass) throw API_CODE.WRONG_PASSWORD
 
     let hash = bcrypt.hashSync(newPassword, CONFIG.CRYPT_SALT)
     await req.auth.update({ password: hash })
@@ -102,18 +105,18 @@ async function changePassword(req, res, next) {
 }
 
 async function resetPassword(req, res, next) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     const { id, userType } = req.body
-    if(!id || !userType || ![USER_TYPE.MEMBER, USER_TYPE.READER].includes(userType)) throw API_CODE.INVALID_PARAM
+    if (!id || !userType || ![USER_TYPE.MEMBER, USER_TYPE.READER].includes(userType)) throw API_CODE.INVALID_PARAM
 
-    if(userType === USER_TYPE.MEMBER) {
-        if(req.auth.role === ROLE.MEMBER) throw API_CODE.CANT_RESET_PASSWORD
-        
+    if (userType === USER_TYPE.MEMBER) {
+        if (req.auth.role === ROLE.MEMBER) throw API_CODE.CANT_RESET_PASSWORD
+
         let findMember = await Member.findOne({
             where: { id, isActive: IS_ACTIVE.ACTIVE }
         })
-        if(!findMember) throw API_CODE.NOT_FOUND
+        if (!findMember) throw API_CODE.NOT_FOUND
 
         let hash = bcrypt.hashSync(CONFIG.DEFAULT_PASSWORD, CONFIG.CRYPT_SALT)
         await findMember.update({ password: hash })
@@ -121,7 +124,7 @@ async function resetPassword(req, res, next) {
         let findReader = await Reader.findOne({
             where: { id, isActive: IS_ACTIVE.ACTIVE }
         })
-        if(!findReader) throw API_CODE.NOT_FOUND
+        if (!findReader) throw API_CODE.NOT_FOUND
 
         let hash = bcrypt.hashSync(findReader.account, CONFIG.CRYPT_SALT)
         await findReader.update({ password: hash })
@@ -143,6 +146,46 @@ async function checkTokenForApp(req, res, next) {
     }
 }
 
+async function getOverviews(req, res, next) {
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let data = {}
+    data.activeMember = await Member.count({
+        where: {
+            isActive: IS_ACTIVE.ACTIVE,
+            status: IS_ACTIVE.ACTIVE
+        }
+    })
+    data.totalMember = await Member.count({
+        where: {
+            isActive: IS_ACTIVE.ACTIVE
+        }
+    })
+    data.totalBook = await Book.count({
+        where: {
+            isActive: IS_ACTIVE.ACTIVE
+        }
+    })
+    data.totalReader = await Reader.count({
+        where: {
+            isActive: IS_ACTIVE.ACTIVE
+        }
+    })
+    data.totalRentedThisMonth = await RentedBook.count({
+        where: {
+            isActive: IS_ACTIVE.ACTIVE,
+            status: {
+                [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED]
+            },
+            [Op.and]: [
+                literal(`MONTH(borrowedDate) = MONTH(now())`)
+            ]
+        }
+    })
+
+    return data
+}
+
 
 module.exports = {
     login,
@@ -150,4 +193,5 @@ module.exports = {
     changePassword,
     resetPassword,
     checkTokenForApp,
+    getOverviews,
 };
