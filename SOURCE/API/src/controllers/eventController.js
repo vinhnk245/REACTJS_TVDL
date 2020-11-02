@@ -65,7 +65,7 @@ async function getEventDetail(eventId, urlRequest) {
 }
 
 async function createEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { name, content, linkGoogleForm, eventDate } = req.body
     if (!name ||
@@ -117,7 +117,7 @@ async function updateEvent(req, res) {
         eventDate: Number(eventDate)
     }
     if (urlImage) dataUpdate.image = urlImage
-        
+
     await eventUpdate.update(dataUpdate)
 
     return await getEventDetail(id, req.url)
