@@ -128,17 +128,10 @@ export const requestLogin = (payload) => {
 // Member screen
 export const getListMember = (
   payload
-  // payload = {
-  //   page: 1,
-  //   limit: 20,
-  //   text: 1,
-  //   status: 1,
-  //   orderBy: 1,
-  // }
 ) => {
   return handleResult(
     getAxios.get(
-      `member/getListMember?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}`
+      `member/getListMember?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}&dobMonth=${payload.dobMonth}`
     )
   )
 }

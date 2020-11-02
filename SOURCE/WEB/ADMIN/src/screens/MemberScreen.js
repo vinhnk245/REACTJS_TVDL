@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col, FormControl, Button, Modal } from 'react-bootstrap'
 import '@styles/MemberScreen.css'
-import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE, STATUS, LIST_STATUS } from '@constants/Constant'
+import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE, STATUS, LIST_STATUS, LIST_DOB_MONTH, LIST_ORDER_BY_MEMBER } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
 import { getListMember } from '@src/redux/actions'
@@ -33,12 +33,15 @@ class MemberScreen extends Component {
       text: '',
       status: '',
       orderBy: '',
+      dobMonth: '',
       totalCount: '',
       modalTitle: '',
       show: false,
       confirmModal: false,
       loadingAction: false,
       listStatus: LIST_STATUS,
+      listDobMonth: LIST_DOB_MONTH,
+      listOrderByMember: LIST_ORDER_BY_MEMBER,
       modal: {
         account: '',
         name: '',
@@ -75,7 +78,7 @@ class MemberScreen extends Component {
 
   async getData({ page }) {
     this.setState({ loadingAction: true })
-    const { limit, text, status, orderBy } = this.state
+    const { limit, text, status, orderBy, dobMonth } = this.state
     try {
       await this.props.getListMember({
         page: page || 1,
@@ -83,6 +86,7 @@ class MemberScreen extends Component {
         text: text?.trim() || '',
         status: status || '',
         orderBy: orderBy || '',
+        dobMonth: dobMonth || '',
       });
 
 
@@ -216,10 +220,12 @@ class MemberScreen extends Component {
     this.setState({ page: pageNumber })
   }
   renderField() {
-    const { page, limit, text, status, orderBy, listStatus } = this.state
+    const { page, limit, text, status, orderBy, dobMonth, listStatus, listDobMonth, listOrderByMember } = this.state
     return (
       <Row className="mx-0">
-        <Col sm>
+        <Col
+          className="col-md-5 col-sm-8"
+        >
           <input
             onKeyPress={this.handleKeyPress}
             type="text"
@@ -230,13 +236,41 @@ class MemberScreen extends Component {
             onChange={(e) => this.handleChange('text', e.target.value)}
           />
         </Col>
-        <Col sm>
+        <Col
+          className="col-md-3 col-sm-4"
+        >
           <FormControl
-            // onKeyPress={this.handleKeyPress}
             as="select"
             className="mb-0"
-            id="exampleInputEmail1"
-            // placeholder="Nhập từ khóa"
+            value={orderBy}
+            onChange={(e) => this.handleChangeSelect('orderBy', e.target.value)}
+          >
+            <option value="" defaultValue>
+              {STRING.orderBy}
+            </option>
+            {listOrderByMember?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+          </FormControl>
+        </Col>
+        <Col
+          className="col-md-2 col-sm-4"
+        >
+          <FormControl
+            as="select"
+            className="mb-0"
+            value={dobMonth}
+            onChange={(e) => this.handleChangeSelect('dobMonth', e.target.value)}
+          >
+            <option value="" defaultValue>
+              {STRING.dob}
+            </option>
+            {listDobMonth?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+          </FormControl>
+        </Col>
+        <Col
+          className="col-md-2 col-sm-4">
+          <FormControl
+            as="select"
+            className="mb-0"
             value={status}
             onChange={(e) => this.handleChangeSelect('status', e.target.value)}
           >
@@ -245,15 +279,6 @@ class MemberScreen extends Component {
             </option>
             {listStatus?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
           </FormControl>
-        </Col>
-        <Col sm>
-          <FormControl
-            onKeyPress={this.handleKeyPress}
-            as="select"
-            className="mb-0"
-            value={orderBy}
-            onChange={(e) => this.handleChange('orderBy', e.target.value)}
-          />
         </Col>
       </Row >
     )
@@ -339,9 +364,9 @@ class MemberScreen extends Component {
               <td>{value.phone || '--'}</td>
               <td>{value.email || '--'}</td>
               <td>{value.address || '--'}</td>
-              <td>{value.joinedDate ? toDateString(value.joinedDate) : '--'}</td>
               <td>{toDateString(value.dob) || '--'}</td>
-              <td>{parseInt(value.status) === 1 ? STATUS.ACTIVE : STATUS.INACTIVE || '--'}</td>
+              <td>{value.joinedDate ? toDateString(value.joinedDate) : '--'}</td>
+              {/* <td>{parseInt(value.status) === 1 ? STATUS.ACTIVE : STATUS.INACTIVE || '--'}</td> */}
               <td className="width2btn">
                 <i
                   className="btnEdit fa fa-fw fa-edit"
@@ -376,18 +401,18 @@ class MemberScreen extends Component {
   renderTable() {
     return (
       <div className="col-md-12 mt-1">
-        <table id="example2" className="table table-bordered table-striped  table-responsive-sm table-responsive-md">
+        <table id="example2" className="table table-bordered table-hover table-responsive-sm table-responsive-md">
           <thead className="text-center">
             <tr>
               <th>STT</th>
-              <th>Mã TNV</th>
+              <th>Mã</th>
               <th>{STRING.name}</th>
               <th>{STRING.phone}</th>
               <th>{STRING.email}</th>
               <th>{STRING.address}</th>
               <th>{STRING.dob}</th>
               <th>{STRING.joinedDate}</th>
-              <th>{STRING.status}</th>
+              {/* <th>{STRING.status}</th> */}
               <th></th>
             </tr>
           </thead>

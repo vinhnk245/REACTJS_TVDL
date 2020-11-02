@@ -107,3 +107,11 @@ code {
 a:focus {
   box-shadow: none !important;
 }
+
+table tbody tr {
+  vertical-align: middle !important;
+}
+/* 
+table thead th {
+  color: #00cc7a !important;
+} */

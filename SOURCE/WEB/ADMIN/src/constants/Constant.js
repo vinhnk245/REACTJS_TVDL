@@ -18,6 +18,7 @@ const STRING = {
   username: 'Tên người dùng',
   namePhoneNumber: 'Tên, Số điện thoại',
   status: 'Trạng thái',
+  orderBy: 'Sắp xếp mặc định',
   fromDate: 'Từ ngày',
   toDate: 'Đến ngày',
   search: 'Tìm kiếm',
@@ -40,7 +41,8 @@ const STRING = {
   password: 'Mật khẩu',
   unActive: 'Ngừng hoạt động',
   actived: 'Kích hoạt',
-  account: 'Tài khoản'
+  account: 'Tài khoản',
+  dobMonth: 'Tháng '
 }
 const NUMBER = {
   OPTION_ONE: 1,
@@ -119,5 +121,27 @@ const LIST_STATUS = [
   { value: 1, label: STATUS.ACTIVE },
   { value: 0, label: STATUS.INACTIVE },
 ]
+const LIST_DOB_MONTH = [
+  { value: 1, label: STRING.dobMonth + 1 },
+  { value: 2, label: STRING.dobMonth + 2 },
+  { value: 3, label: STRING.dobMonth + 3 },
+  { value: 4, label: STRING.dobMonth + 4 },
+  { value: 5, label: STRING.dobMonth + 5 },
+  { value: 6, label: STRING.dobMonth + 6 },
+  { value: 7, label: STRING.dobMonth + 7 },
+  { value: 8, label: STRING.dobMonth + 8 },
+  { value: 9, label: STRING.dobMonth + 9 },
+  { value: 10, label: STRING.dobMonth + 10 },
+  { value: 11, label: STRING.dobMonth + 11 },
+  { value: 12, label: STRING.dobMonth + 12 },
+]
+const LIST_ORDER_BY_MEMBER = [
+  { value: 1, label: 'Thêm từ lâu nhất' },
+  { value: 2, label: 'Thêm gần đây nhất' },
+  { value: 3, label: 'Sinh nhật lớn đến bé' },
+  { value: 4, label: 'Sinh nhật bé đến lớn' },
+  { value: 5, label: 'Tháng sinh nhật bé đến lớn' },
+  { value: 6, label: 'Tháng sinh nhật lớn đến bé' },
+]
 
-export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE, LIST_STATUS }
+export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE, LIST_STATUS, LIST_DOB_MONTH, LIST_ORDER_BY_MEMBER }
