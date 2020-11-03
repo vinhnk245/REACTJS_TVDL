@@ -1,0 +1,1705 @@
+{
+	"info": {
+		"_postman_id": "5059491d-fb2c-4e56-b7e6-fb81640f9db5",
+		"name": "TVDL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "COMMON",
+			"item": [
+				{
+					"name": "getListCategory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}bookCategory/getListCategory?text=",
+							"host": [
+								"{{local}}bookCategory"
+							],
+							"path": [
+								"getListCategory"
+							],
+							"query": [
+								{
+									"key": "text",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getListBook",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{local}}book/getListBook?page=1&limit=10&bookCategoryId=&text=&orderBy=",
+							"host": [
+								"{{local}}book"
+							],
+							"path": [
+								"getListBook"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "bookCategoryId",
+									"value": ""
+								},
+								{
+									"key": "text",
+									"value": ""
+								},
+								{
+									"key": "orderBy",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getBookInfo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{server}}book/getBookInfo?id=6",
+							"host": [
+								"{{server}}book"
+							],
+							"path": [
+								"getBookInfo"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"T59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}home/login",
+							"host": [
+								"{{server}}home"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"TV59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/logout",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changePassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"TVDL11092013\",\r\n    \"newPassword\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/changePassword",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resetPassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 9,\r\n    \"userType\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/resetPassword",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getListEvent",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}event/getListEvent?page=1&limit=10&orderBy=",
+							"host": [
+								"{{local}}event"
+							],
+							"path": [
+								"getListEvent"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "orderBy",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEventInfo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{local}}event/getEventInfo?id=1",
+							"host": [
+								"{{local}}event"
+							],
+							"path": [
+								"getEventInfo"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRentedBookDetail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}rented/getRentedBookDetail?id=11",
+							"host": [
+								"{{local}}rented"
+							],
+							"path": [
+								"getRentedBookDetail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRentedBookHistory",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{local}}rented/getRentedBookHistory?page=1&limit=10&cardNumber=&readerName=&bookCode=&bookName=&fromDate=&toDate=&status=&orderBy",
+							"host": [
+								"{{local}}rented"
+							],
+							"path": [
+								"getRentedBookHistory"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "cardNumber",
+									"value": ""
+								},
+								{
+									"key": "readerName",
+									"value": ""
+								},
+								{
+									"key": "bookCode",
+									"value": ""
+								},
+								{
+									"key": "bookName",
+									"value": ""
+								},
+								{
+									"key": "fromDate",
+									"value": ""
+								},
+								{
+									"key": "toDate",
+									"value": ""
+								},
+								{
+									"key": "status",
+									"value": ""
+								},
+								{
+									"key": "orderBy",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTopBorrowedBook",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}rented/getTopBorrowedBook",
+							"host": [
+								"{{local}}rented"
+							],
+							"path": [
+								"getTopBorrowedBook"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "APP",
+			"item": [
+				{
+					"name": "requestRentBook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listBook\": [\r\n        {\r\n            \"bookId\": 7,\r\n            \"bookCategoryId\": 4\r\n        },\r\n        {\r\n            \"bookId\": 8,\r\n            \"bookCategoryId\": 4\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}rented/requestRentBook",
+							"host": [
+								"{{local}}rented"
+							],
+							"path": [
+								"requestRentBook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "volunteerRegistration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Trần Thị Ninh\",\r\n    \"phone\": \"0966456123\",\r\n    \"email\": \"ninhtran@gmail.com\",\r\n    \"linkFacebook\": \"Đội 11 Dương Liễu\",\r\n    \"dob\": 903286800000,\r\n    \"reasons\": \"Ở nhà chán quá nên muốn tham gia thư viện ạ\",\r\n    \"contributes\": \"Cái này em cũng chưa nghĩ ra =)))\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}volunteer/volunteerRegistration",
+							"host": [
+								"{{local}}volunteer"
+							],
+							"path": [
+								"volunteerRegistration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkTokenForApp",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/checkTokenForApp",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"checkTokenForApp"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "WEB",
+			"item": [
+				{
+					"name": "overviews",
+					"item": [
+						{
+							"name": "getOverviews",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server}}home/getOverviews",
+									"host": [
+										"{{server}}home"
+									],
+									"path": [
+										"getOverviews"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "members",
+					"item": [
+						{
+							"name": "getListMember",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"url": {
+									"raw": "{{server}}member/getListMember?page=1&limit=5&text=&status=&orderBy=&dobMonth",
+									"host": [
+										"{{server}}member"
+									],
+									"path": [
+										"getListMember"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										},
+										{
+											"key": "text",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "orderBy",
+											"value": ""
+										},
+										{
+											"key": "dobMonth",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getMemberInfo",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server}}member/getMemberInfo?id=2",
+									"host": [
+										"{{server}}member"
+									],
+									"path": [
+										"getMemberInfo"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createMember",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"account\": \"TV21\",\r\n    \"name\": \"Nguyễn Thảo Ngọc\",\r\n    \"phone\": \"0933229496\",\r\n    \"email\": \"\",\r\n    \"address\": \"Đội 8, Dương Liễu\",\r\n    \"dob\": 998931600000,\r\n    \"role\": 3,\r\n    \"note\": \"\",\r\n    \"joinedDate\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}member/createMember",
+									"host": [
+										"{{local}}member"
+									],
+									"path": [
+										"createMember"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateMember",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 2,\r\n    \"account\": \"TV59\",\r\n    \"name\": \"Nguyễn Khắc Vinh\",\r\n    \"phone\": \"0968839496\",\r\n    \"email\": \"\",\r\n    \"address\": \"Đội 11, Dương Liễu\",\r\n    \"dob\": 895942800000,\r\n    \"role\": 3,\r\n    \"status\": 1,\r\n    \"note\": \"1 chàng trai chuẩn mực\",\r\n    \"joinedDate\": 1577811600000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}member/updateMember",
+									"host": [
+										"{{local}}member"
+									],
+									"path": [
+										"updateMember"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteMember",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 20\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}member/deleteMember",
+									"host": [
+										"{{local}}member"
+									],
+									"path": [
+										"deleteMember"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getUserInfo",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{local}}member/getUserInfo",
+									"host": [
+										"{{local}}member"
+									],
+									"path": [
+										"getUserInfo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "readers",
+					"item": [
+						{
+							"name": "getListReader",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"url": {
+									"raw": "{{local}}reader/getListReader?page=1&limit=10&text=&cardNumber=&status=&orderBy=",
+									"host": [
+										"{{local}}reader"
+									],
+									"path": [
+										"getListReader"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "text",
+											"value": ""
+										},
+										{
+											"key": "cardNumber",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "orderBy",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getReaderInfo",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{local}}reader/getReaderInfo?id=7",
+									"host": [
+										"{{local}}reader"
+									],
+									"path": [
+										"getReaderInfo"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createReader",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Lê Đức Anh\",\r\n    \"address\": \"KĐT Tân Tây Đô\",\r\n    \"dob\": 1381510800000,\r\n    \"parentName\": \"Lê Đức Tùng\",\r\n    \"parentPhone\": \"0988663181\",\r\n    \"note\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}reader/createReader",
+									"host": [
+										"{{local}}reader"
+									],
+									"path": [
+										"createReader"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateReader",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 9,\r\n    \"cardNumber\": 9,\r\n    \"name\": \"Lê Đức Anh\",\r\n    \"address\": \"KĐT Tân Tây Đô\",\r\n    \"dob\": 1381510800,\r\n    \"parentName\": \"Lê Đức Tùng\",\r\n    \"parentPhone\": \"0988663181\",\r\n    \"status\": 1,\r\n    \"note\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}reader/updateReader",
+									"host": [
+										"{{local}}reader"
+									],
+									"path": [
+										"updateReader"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteReader",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 90\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}reader/deleteReader",
+									"host": [
+										"{{local}}reader"
+									],
+									"path": [
+										"deleteReader"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "books",
+					"item": [
+						{
+							"name": "createBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "bookCategoryId",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "Điểm Đến Của Cuộc Đời",
+											"type": "text"
+										},
+										{
+											"key": "code",
+											"value": "4",
+											"type": "text"
+										},
+										{
+											"key": "qty",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "available",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "note",
+											"value": "Talk & Share X-02",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Điểm đến của cuộc đời kể lại một hành trình không thể nào quên cùng những người cận tử. Dấn thân vào “một thế giới của những bi kịch và tổn thất khổng lồ, của phẩm giá và lòng tự trọng trong hoàn cảnh khắc nghiệt, của sự phản bội và sợ hãi, của tình yêu mãnh liệt và hy vọng khôn nguôi, tóm lại, của tất cả những gì thuộc về con người, ở mức độ dữ dội nhất”, tác giả muốn đi tìm câu trả lời cho thôi thúc nội tâm: ta nên ứng xử thế nào trước cái chết, và sự chết có thể dạy ta điều gì cho cuộc sống?",
+											"type": "text"
+										},
+										{
+											"key": "author",
+											"value": "Đặng Hoàng Giang",
+											"type": "text"
+										},
+										{
+											"key": "publishers",
+											"value": "Nhã Nam",
+											"type": "text"
+										},
+										{
+											"key": "publishingYear",
+											"value": "2018",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/vinhh/Desktop/MEDIA/IMG_0571.JPG"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}book/createBook",
+									"host": [
+										"{{local}}book"
+									],
+									"path": [
+										"createBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 8,\r\n    \"bookCategoryId\": 4,\r\n    \"name\": \"Hoàng Tử Bé (Tái Bản 2019)\",\r\n    \"code\": \"4\",\r\n    \"qty\": 1,\r\n    \"lost\": 0,\r\n    \"available\": 1,\r\n    \"note\": \"\",\r\n    \"description\": \"Cuốn sách đẹp như một bài thơ thanh sáng, một câu chuyện cổ tích về tình yêu thương, lòng nhân ái, ý nghĩa của sự tồn tại, về sự cảm thông giữa người với người\",\r\n    \"author\": \"Saint Exupery\",\r\n    \"publishers\": \"Nhà Xuất Bản Kim Đồng\",\r\n    \"publishingYear\": 2019\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}book/updateBook",
+									"host": [
+										"{{local}}book"
+									],
+									"path": [
+										"updateBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}book/deleteBook",
+									"host": [
+										"{{local}}book"
+									],
+									"path": [
+										"deleteBook"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "volunteers",
+					"item": [
+						{
+							"name": "getListVolunteerRegistration",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{local}}volunteer/getListVolunteerRegistration?page=1&limit=10&text=&status=&orderBy=",
+									"host": [
+										"{{local}}volunteer"
+									],
+									"path": [
+										"getListVolunteerRegistration"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "text",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "orderBy",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "rejectRequestVolunteer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"note\": \"Bạn này ở xa quá nên sẽ không thể hoạt động cùng Thư viện được\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}volunteer/rejectRequestVolunteer",
+									"host": [
+										"{{local}}volunteer"
+									],
+									"path": [
+										"rejectRequestVolunteer"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "acceptRequestVolunteer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 5,\r\n    \"account\": \"T70\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}volunteer/acceptRequestVolunteer",
+									"host": [
+										"{{local}}volunteer"
+									],
+									"path": [
+										"acceptRequestVolunteer"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "events",
+					"item": [
+						{
+							"name": "createEvent",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "Cú trip Hà Giang 2020",
+											"type": "text"
+										},
+										{
+											"key": "content",
+											"value": "Quá zui",
+											"type": "text"
+										},
+										{
+											"key": "linkGoogleForm",
+											"value": "https://docs.google.com/forms/d/e/1FAIpQLSdbEJRWEKGzvAg1mgoQKneOUMRosdr7stad5FZ17h5GioETNg/viewform",
+											"type": "text"
+										},
+										{
+											"key": "eventDate",
+											"value": "1600484387000",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/vinhh/Desktop/New folder/DSCF0067.JPG"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{local}}event/createEvent",
+									"host": [
+										"{{local}}event"
+									],
+									"path": [
+										"createEvent"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateEvent",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "Talk & Share X-03",
+											"type": "text"
+										},
+										{
+											"key": "content",
+											"value": "Các bạn ơi cuối tháng 12 sẽ có một bất ngờ rất lớn",
+											"type": "text"
+										},
+										{
+											"key": "linkGoogleForm",
+											"value": "https://docs.google.com/forms/d/e/1FAIpQLSdbEJRWEKGzvAg1mgoQKneOUMRosdr7stad5FZ17h5GioETNg/viewform",
+											"type": "text"
+										},
+										{
+											"key": "eventDate",
+											"value": "1600484387000",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/vinhh/Desktop/MEDIA/IMG_1335.JPG"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{local}}event/updateEvent",
+									"host": [
+										"{{local}}event"
+									],
+									"path": [
+										"updateEvent"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteEvent",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{local}}event/deleteEvent",
+									"host": [
+										"{{local}}event"
+									],
+									"path": [
+										"deleteEvent"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "rented",
+					"item": [
+						{
+							"name": "createRentedBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"readerId\": 1,\r\n    \"noteMember\": \"\",\r\n    \"listBook\": [\r\n        {\r\n            \"bookId\": 10,\r\n            \"bookCategoryId\": 1\r\n        },\r\n        {\r\n            \"bookId\": 4,\r\n            \"bookCategoryId\": 8\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/createRentedBook",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"createRentedBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateRentedBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 9\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/updateRentedBook",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"updateRentedBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateRentedBookDetail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 37,\r\n    \"status\": 2,\r\n    \"lost\": 0,\r\n    \"note\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/updateRentedBookDetail",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"updateRentedBookDetail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getListRequestRentBook",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"url": {
+									"raw": "{{local}}rented/getListRequestRentBook?page=1&limit=10&cardNumber=&readerName=&bookCode=&bookName=&fromDate=&toDate=&status=",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"getListRequestRentBook"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "cardNumber",
+											"value": ""
+										},
+										{
+											"key": "readerName",
+											"value": ""
+										},
+										{
+											"key": "bookCode",
+											"value": ""
+										},
+										{
+											"key": "bookName",
+											"value": ""
+										},
+										{
+											"key": "fromDate",
+											"value": ""
+										},
+										{
+											"key": "toDate",
+											"value": ""
+										},
+										{
+											"key": "status",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTopBorrowedReader",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"url": {
+									"raw": "{{local}}rented/getTopBorrowedReader",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"getTopBorrowedReader"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirmRequestRentBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 17\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/confirmRequestRentBook",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"confirmRequestRentBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cancelRequestRentBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 12,\r\n    \"noteMember\": \"Mấy quyển này hiện đang hết.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/cancelRequestRentBook",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"cancelRequestRentBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteRentedBookDetail (Pending)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 25\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/deleteRentedBookDetail",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"deleteRentedBookDetail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getLostBooksByReaderId",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{local}}book/getLostBooksByReaderId?id=1",
+									"host": [
+										"{{local}}book"
+									],
+									"path": [
+										"getLostBooksByReaderId"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
