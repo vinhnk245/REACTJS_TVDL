@@ -74,7 +74,8 @@ async function getRentedBookHistory(req, res) {
         ],
         include: [
             {
-                required: true,
+                separate: true,
+                // required: true,
                 where: {
                     isActive: ACTIVE
                 },
@@ -106,18 +107,32 @@ async function getRentedBookHistory(req, res) {
                 attributes: [
                     ['id', 'rentedBookDetailId'],
                     'status', 'lost', 'note', 'outOfDate', 'returnedDate', 'returnedConfirmMemberId',
-                    [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
-                    [literal("`rented_book_details->book`.`id`"), "bookId"],
-                    [literal("`rented_book_details->book`.`code`"), "bookCode"],
-                    [literal("`rented_book_details->book`.`name`"), "bookName"],
-                    [literal("`rented_book_details->book`.`description`"), "bookDescription"],
-                    [literal("`rented_book_details->book`.`author`"), "author"],
-                    [literal("`rented_book_details->book`.`publishers`"), "publishers"],
-                    [literal("`rented_book_details->book`.`publishingYear`"), "publishingYear"],
-                    [literal("`rented_book_details->book->book_category`.`name`"), "categoryName"],
-                    [literal("`rented_book_details->book->book_category`.`code`"), "categoryCode"],
-                    [literal("`rented_book_details->book->book_category`.`description`"), "categoryDescription"],
-                    [fn('CONCAT', req.url, col('`rented_book_details->book->book_category`.`logo`')), 'categoryLogo']
+                    [literal("`returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
+                    [literal("`book`.`id`"), "bookId"],
+                    [literal("`book`.`code`"), "bookCode"],
+                    [literal("`book`.`name`"), "bookName"],
+                    [literal("`book`.`description`"), "bookDescription"],
+                    [literal("`book`.`author`"), "author"],
+                    [literal("`book`.`publishers`"), "publishers"],
+                    [literal("`book`.`publishingYear`"), "publishingYear"],
+                    [literal("`book->book_category`.`name`"), "categoryName"],
+                    [literal("`book->book_category`.`code`"), "categoryCode"],
+                    [literal("`book->book_category`.`description`"), "categoryDescription"],
+                    [fn('CONCAT', req.url, col('`book->book_category`.`logo`')), 'categoryLogo']
+
+                    // doan nay dung khi required : true nhung limit offset sai
+                    // [literal("`rented_book_details->returnedConfirmMemberRentedDetail`.`name`"), "returnedConfirmMemberName"],
+                    // [literal("`rented_book_details->book`.`id`"), "bookId"],
+                    // [literal("`rented_book_details->book`.`code`"), "bookCode"],
+                    // [literal("`rented_book_details->book`.`name`"), "bookName"],
+                    // [literal("`rented_book_details->book`.`description`"), "bookDescription"],
+                    // [literal("`rented_book_details->book`.`author`"), "author"],
+                    // [literal("`rented_book_details->book`.`publishers`"), "publishers"],
+                    // [literal("`rented_book_details->book`.`publishingYear`"), "publishingYear"],
+                    // [literal("`rented_book_details->book->book_category`.`name`"), "categoryName"],
+                    // [literal("`rented_book_details->book->book_category`.`code`"), "categoryCode"],
+                    // [literal("`rented_book_details->book->book_category`.`description`"), "categoryDescription"],
+                    // [fn('CONCAT', req.url, col('`rented_book_details->book->book_category`.`logo`')), 'categoryLogo']
                 ]
             },
             {

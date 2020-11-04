@@ -151,39 +151,40 @@ async function getOverviews(req, res, next) {
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let data = {}
-    data.activeMember = await Member.count({
-        where: {
-            isActive: IS_ACTIVE.ACTIVE,
-            status: IS_ACTIVE.ACTIVE
-        }
-    })
-    data.totalMember = await Member.count({
-        where: {
-            isActive: IS_ACTIVE.ACTIVE
-        }
-    })
-    data.totalBook = await Book.count({
-        where: {
-            isActive: IS_ACTIVE.ACTIVE
-        }
-    })
-    data.totalReader = await Reader.count({
-        where: {
-            isActive: IS_ACTIVE.ACTIVE
-        }
-    })
-    data.totalRentedThisMonth = await RentedBook.count({
-        where: {
-            isActive: IS_ACTIVE.ACTIVE,
-            status: {
-                [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED]
-            },
-            [Op.and]: [
-                literal(`MONTH(borrowedDate) = MONTH(now())`)
-            ]
-        }
-    })
-
+    await Promise.all([
+        data.activeMember = await Member.count({
+            where: {
+                isActive: IS_ACTIVE.ACTIVE,
+                status: IS_ACTIVE.ACTIVE
+            }
+        }),
+        data.totalMember = await Member.count({
+            where: {
+                isActive: IS_ACTIVE.ACTIVE
+            }
+        }),
+        data.totalBook = await Book.count({
+            where: {
+                isActive: IS_ACTIVE.ACTIVE
+            }
+        }),
+        data.totalReader = await Reader.count({
+            where: {
+                isActive: IS_ACTIVE.ACTIVE
+            }
+        }),
+        data.totalRentedThisMonth = await RentedBook.count({
+            where: {
+                isActive: IS_ACTIVE.ACTIVE,
+                status: {
+                    [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED]
+                },
+                [Op.and]: [
+                    literal(`MONTH(borrowedDate) = MONTH(now())`)
+                ]
+            }
+        }),
+    ])
     return data
 }
 
