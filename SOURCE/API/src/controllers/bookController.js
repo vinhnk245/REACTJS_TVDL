@@ -6,8 +6,8 @@ const hat = require("hat")
 const { API_CODE, IS_ACTIVE, ROLE, CONFIG, ORDER_BY, RENTED_BOOK_STATUS } = require("@utils/constant")
 const ACTIVE = IS_ACTIVE.ACTIVE
 const LIMIT = CONFIG.PAGING_LIMIT
-const { 
-    book: Book, 
+const {
+    book: Book,
     reader: Reader,
     book_category: BookCategory,
     book_image: BookImage,
@@ -25,18 +25,18 @@ async function getListBook(req, res) {
     if (page < 0) throw API_CODE.PAGE_ERROR
     let offset = page * limit
     let text = (req.query.text || '').trim()
-    let querySearch = text.length > 0 
-        ? `(book.name like '%${text}%' or book.code like '%${text}%' or book.author like '%${text}%' or book.publishers like '%${text}%')` 
+    let querySearch = text.length > 0
+        ? `(book.name like '%${text}%' or book.code like '%${text}%' or book.author like '%${text}%' or book.publishers like '%${text}%')`
         : ''
-    
+
     let queryBookCategory = req.query.bookCategoryId ? `bookCategoryId = ${req.query.bookCategoryId}` : ``
 
     let queryOrderBy = 'id DESC'
-    if(req.query.orderBy == ORDER_BY.BOOK.QTY_DESC)
+    if (req.query.orderBy == ORDER_BY.BOOK.QTY_DESC)
         queryOrderBy = 'qty DESC, id DESC'
-    if(req.query.orderBy == ORDER_BY.BOOK.LOST_DESC)
+    if (req.query.orderBy == ORDER_BY.BOOK.LOST_DESC)
         queryOrderBy = 'lost DESC, id DESC'
-    if(req.query.orderBy == ORDER_BY.BOOK.AVAILABLE_DESC)
+    if (req.query.orderBy == ORDER_BY.BOOK.AVAILABLE_DESC)
         queryOrderBy = 'available DESC, id DESC'
 
     let listBook = await Book.findAndCountAll({
@@ -84,7 +84,7 @@ async function getListBook(req, res) {
 }
 
 async function getBookInfo(req, res) {
-    if(!req.query.id) throw API_CODE.INVALID_PARAM
+    if (!req.query.id) throw API_CODE.INVALID_PARAM
     const urlRequest = req.protocol + '://' + req.get('host') + '/'
     return await getBookDetail(req.query.id, urlRequest)
 }
@@ -114,7 +114,7 @@ async function getBookDetail(bookId, urlRequest) {
             'id', 'name', 'code', 'qty', 'lost', 'available', 'note', 'description', 'author', 'publishers', 'publishingYear', 'createdDate'
         ],
     })
-    if(!bookDetail) throw API_CODE.NOT_FOUND
+    if (!bookDetail) throw API_CODE.NOT_FOUND
 
     // bookDetail.dataValues.image = await getBookImages(bookId, urlRequest)
     return bookDetail
@@ -131,7 +131,7 @@ async function getBookImages(bookId, urlRequest) {
                 [fn('CONCAT', urlRequest, col('image')), 'image'],
             ]
         })
-        return bookImages.map(item => { return item.dataValues.image})
+        return bookImages.map(item => { return item.dataValues.image })
     } catch (error) {
         return []
     }
@@ -139,12 +139,12 @@ async function getBookImages(bookId, urlRequest) {
 
 async function createBook(req, res) {
     //khong co role => reader
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { bookCategoryId, name, code, qty, note, description, author, publishers, publishingYear } = req.body
-    if(!bookCategoryId || 
-        !name || 
-        !code || 
+    if (!bookCategoryId ||
+        !name ||
+        !code ||
         !qty) throw API_CODE.REQUIRE_FIELD
 
     let findCategory = await BookCategory.findOne({
@@ -153,7 +153,7 @@ async function createBook(req, res) {
             id: bookCategoryId
         }
     })
-    if(!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+    if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
 
     code = findCategory.code + code
     let findBook = await Book.findOne({
@@ -162,7 +162,7 @@ async function createBook(req, res) {
             code: code
         }
     })
-    if(findBook) throw API_CODE.BOOK_CODE_EXIST
+    if (findBook) throw API_CODE.BOOK_CODE_EXIST
 
     let data = await sequelize.transaction(async transaction => {
         let newBook = await Book.create({
@@ -177,15 +177,15 @@ async function createBook(req, res) {
             publishers: publishers,
             publishingYear: publishingYear,
             createdMemberId: req.auth.id
-        },{ transaction })
-    
-        if(req.files && req.files.image) {
+        }, { transaction })
+
+        if (req.files && req.files.image) {
             const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
             await BookImage.create({
                 bookId: newBook.id,
                 image: urlImage,
                 createdMemberId: req.auth.id
-            },{ transaction })
+            }, { transaction })
         }
         return newBook
     })
@@ -193,19 +193,19 @@ async function createBook(req, res) {
 }
 
 async function updateBook(req, res) {
-    if(!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { id, bookCategoryId, name, code, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
-    if(!id ||
-        !bookCategoryId || 
-        !name || 
-        !code || 
+    if (!id ||
+        !bookCategoryId ||
+        !name ||
+        !code ||
         typeof qty != 'number' ||
         typeof lost != 'number' ||
         typeof available != 'number') throw API_CODE.REQUIRE_FIELD
 
-    if(qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
-    if(qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
+    if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
+    if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
 
     let bookUpdate = await Book.findOne({
         where: {
@@ -213,7 +213,7 @@ async function updateBook(req, res) {
             id: id
         }
     })
-    if(!bookUpdate) throw API_CODE.NOT_FOUND
+    if (!bookUpdate) throw API_CODE.NOT_FOUND
 
     let findCategory = await BookCategory.findOne({
         where: {
@@ -221,8 +221,8 @@ async function updateBook(req, res) {
             id: bookCategoryId
         }
     })
-    if(!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
-    
+    if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+
     code = findCategory.code + code
     if (bookUpdate.code != code) {
         let findBook = await Book.findOne({
@@ -231,7 +231,7 @@ async function updateBook(req, res) {
                 code: code
             }
         })
-        if(findBook) throw API_CODE.BOOK_CODE_EXIST
+        if (findBook) throw API_CODE.BOOK_CODE_EXIST
     }
 
     await bookUpdate.update({
@@ -294,8 +294,8 @@ async function getLostBooksByReaderId(req, res) {
     if (!findReader) throw API_CODE.NOT_FOUND
 
     let listBookId = await RentedBookDetail.findAll({
-        where: { 
-            isActive: ACTIVE, 
+        where: {
+            isActive: ACTIVE,
             readerId: id,
             lost: 1,
             status: { [Op.in]: [RENTED_BOOK_STATUS.BORROWED, RENTED_BOOK_STATUS.RETURNED] }
@@ -304,7 +304,7 @@ async function getLostBooksByReaderId(req, res) {
     if (listBookId.length == 0) return []
 
     listBookId = listBookId.map(item => item.bookId)
-    
+
     let listBook = await Book.findAll({
         where: {
             isActive: ACTIVE,
@@ -330,7 +330,7 @@ async function getLostBooksByReaderId(req, res) {
 
 async function uploadImage(req, res) {
     const imageUpload = req.files.image
-    if(!imageUpload) throw API_CODE.REQUIRE_IMAGE
+    if (!imageUpload) throw API_CODE.REQUIRE_IMAGE
     return req.url + await uploadFile(imageUpload, CONFIG.PATH_IMAGE_BOOK)
 }
 
@@ -342,6 +342,7 @@ async function uploadFile(file, pathImage) {
         file.mv(`./public/${pathImage}` + fileName)
         return pathImage + fileName
     } catch (error) {
+        console.log(error)
         return ''
     }
 }
