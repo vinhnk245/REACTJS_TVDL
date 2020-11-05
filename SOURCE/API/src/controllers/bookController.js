@@ -1,4 +1,5 @@
 const { Sequelize, Op, fn, col, literal } = require('sequelize')
+const path = require('path')
 // const Sequelize = require('sequelize')
 // const Op = Sequelize.Op
 const sequelize = require('../config/env.js')
@@ -339,13 +340,14 @@ async function uploadFile(file, pathImage) {
         const fileType = file.mimetype.replace('image/', '')
         const fileName = `${hat()}.${fileType}`
         //Use the mv() method to place the file in upload directory
-        file.mv(`./public/${pathImage}` + fileName)
+        file.mv(path.join(__dirname.replace("src/controllers", ""), `public/${pathImage}` + fileName))
         return pathImage + fileName
     } catch (error) {
         console.log(error)
         return ''
     }
 }
+
 
 
 module.exports = {
