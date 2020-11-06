@@ -3,7 +3,7 @@ const { debug } = require("../utils/constant");
 const CONSTANT = require("../utils/constant");
 
 const env = {
-  host: process.env.DB_HOST || "13.212.122.124",
+  host: process.env.DB_HOST || "13.251.27.111",
   user: process.env.DB_USER || "vinhnk",
   password: process.env.DB_PASSWORD || "V21official",
   database: process.env.DB_NAME || "duonglieu_library_test"
@@ -40,13 +40,13 @@ const sequelize = new Sequelize(env.database, env.user, env.password, {
 });
 
 sequelize
-        .authenticate()
-        .then(() => {
-            console.log('Server already');
-        })
-        .catch((err) => {
-            console.log('Can not connect to the database: ', err);
-        });
+  .authenticate()
+  .then(() => {
+    console.log('Server already');
+  })
+  .catch((err) => {
+    console.log('Can not connect to the database: ', err);
+  });
 
 
 module.exports = sequelize;
