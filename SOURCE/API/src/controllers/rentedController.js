@@ -557,29 +557,6 @@ async function updateRentedBookDetail(req, res) {
 }
 
 
-async function deleteRentedBookDetail(req, res) {
-    if (!req.auth.role) throw API_CODE.NO_PERMISSION
-
-    let { id } = req.body
-    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
-
-    let rentedBookDetailDelete = await RentedBookDetail.findOne({
-        where: {
-            isActive: ACTIVE,
-            id
-        }
-    })
-    if (!rentedBookDetailDelete) throw API_CODE.NOT_FOUND
-    if (rentedBookDetailDelete.status !== RENTED_BOOK_STATUS.PENDING) throw API_CODE.CAN_NOT_DELETE_RENTED_DETAIL
-
-    await rentedBookDetailDelete.update({
-        isActive: IS_ACTIVE.INACTIVE
-    })
-
-    return await rentedDetail(rentedBookDetailDelete.rentedBookId, req.url)
-}
-
-
 async function getListRequestRentBook(req, res) {
     let page = !req.query.page ? 0 : req.query.page - 1
     let limit = parseInt(req.query.limit || LIMIT)
@@ -742,6 +719,72 @@ async function confirmRequestRentBook(req, res) {
 }
 
 
+async function addBookToRequestRentedBook(req, res) {
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { bookId, bookCategoryId, rentedBookId } = req.body
+    if (!bookId || bookId <= 0 || !bookCategoryId || bookCategoryId <= 0 || !rentedBookId || rentedBookId <= 0) throw API_CODE.INVALID_PARAM
+
+    let findBook = await Book.findOne({
+        where: {
+            isActive: ACTIVE,
+            id: bookId,
+            bookCategoryId
+        }
+    })
+    if (!findBook) throw API_CODE.BOOK_NOT_FOUND
+
+    let rentedBookUpdate = await RentedBook.findOne({
+        where: {
+            isActive: ACTIVE,
+            id: rentedBookId,
+            status: RENTED_BOOK_STATUS.PENDING
+        }
+    })
+    if (!rentedBookUpdate) throw API_CODE.NOT_FOUND
+
+    let count = await RentedBookDetail.count({
+        where: {
+            isActive: ACTIVE,
+            rentedBookId,
+            status: RENTED_BOOK_STATUS.PENDING
+        }
+    })
+    if (count > 2) throw API_CODE.RENTED_BOOK_OUT_OF_QTY
+
+    await RentedBookDetail.create({
+        readerId: rentedBookUpdate.readerId,
+        rentedBookId,
+        bookId,
+        status: RENTED_BOOK_STATUS.PENDING
+    })
+    return
+}
+
+
+async function removeBookInRentedBookDetail(req, res) {
+    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+
+    let { id } = req.body
+    if (!id || id <= 0) throw API_CODE.INVALID_PARAM
+
+    let rentedBookDetailDelete = await RentedBookDetail.findOne({
+        where: {
+            isActive: ACTIVE,
+            id
+        }
+    })
+    if (!rentedBookDetailDelete) throw API_CODE.NOT_FOUND
+    if (rentedBookDetailDelete.status !== RENTED_BOOK_STATUS.PENDING) throw API_CODE.CAN_NOT_DELETE_RENTED_DETAIL
+
+    await rentedBookDetailDelete.update({
+        isActive: IS_ACTIVE.INACTIVE
+    })
+
+    return await rentedDetail(rentedBookDetailDelete.rentedBookId, req.url)
+}
+
+
 module.exports = {
     getRentedBookHistory,
     getRentedBookDetail,
@@ -754,5 +797,6 @@ module.exports = {
     getListRequestRentBook,
     cancelRequestRentBook,
     confirmRequestRentBook,
-    deleteRentedBookDetail,
+    addBookToRequestRentedBook,
+    removeBookInRentedBookDetail,
 }

@@ -17,6 +17,7 @@ router.post("/requestRentBook", isAuthenticated(), wrapHandlerWithJSONResponse(r
 router.get("/getListRequestRentBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.getListRequestRentBook));
 router.post("/cancelRequestRentBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.cancelRequestRentBook));
 router.post("/confirmRequestRentBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.confirmRequestRentBook));
-router.post("/deleteRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.deleteRentedBookDetail));
+router.post("/addBookToRequestRentedBook", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.addBookToRequestRentedBook));
+router.post("/removeBookInRentedBookDetail", isAuthenticated(), wrapHandlerWithJSONResponse(rentedController.removeBookInRentedBookDetail));
 
 module.exports = router;

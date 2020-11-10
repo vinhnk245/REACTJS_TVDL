@@ -48,12 +48,14 @@ module.exports = {
     BORROWED_MAX_THREE: { code: 32, message: 'Chỉ được mượn tối đa 3 quyển' },
     RENTED_BOOK_WAS_RETURNED: { code: 33, message: 'Lượt mượn sách này đã được trả từ trước' },
     BOOK_WAS_BORROWED: { code: 34, message: 'Không thể xóa vì sách đã từng được mượn' },
-    CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả' },
+    CAN_NOT_DELETE_RENTED_DETAIL: { code: 35, message: 'Không thể xóa dữ liệu mượn trả sách' },
     EXIST_REQUEST_RENT_BOOK_PENDING: { code: 36, message: 'Bạn đang có 1 yêu cầu mượn sách. Vui lòng không gửi yêu cầu thêm' },
     REQUIRE_NOTE_MEMBER_CANCEL_REQUEST: { code: 37, message: 'Vui lòng điền lý do hủy' },
     ACCEPT_VOLUNTEER_REQUIRE_ACCOUNT: { code: 38, message: 'Vui lòng điền mã TNV để tạo tài khoản' },
     VOLUNTEER_HAS_BEEN_MEMBER: { code: 39, message: 'Yêu cầu này đã từng được duyệt thành TNV' },
     ACCOUNT_EXIST: { code: 40, message: 'Mã TNV đã tồn tại' },
+    BOOK_NOT_FOUND: { code: 41, message: 'Thông tin sách không tồn tại' },
+    RENTED_BOOK_OUT_OF_QTY: { code: 42, message: 'Mỗi đơn chỉ được phép mượn tối đa 3 quyển' },
   },
 
   CONFIG: {
