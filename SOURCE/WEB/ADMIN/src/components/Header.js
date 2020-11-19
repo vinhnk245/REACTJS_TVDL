@@ -63,7 +63,6 @@ class Header extends Component {
 
   async getUserInfo() {
     const res = await requestGetUserInfo({})
-    reactotron.log('user', res)
     this.setState({
       id: res?.data?.id,
       user: res?.data,

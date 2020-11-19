@@ -125,6 +125,10 @@ export const requestLogin = (payload) => {
   )
 }
 
+export const requestGetOverviews = () => {
+  return handleResult(getAxios.get(`home/getOverviews`))
+}
+
 // Member screen
 export const getListMember = (
   payload
@@ -148,8 +152,9 @@ export const updateMember = (payload) => {
   return handleResult(getAxios.post(`member/updateMember`, payload))
 }
 
-
 export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
+
+
 

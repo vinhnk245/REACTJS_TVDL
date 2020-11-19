@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Row, Col, FormControl, Button, Modal } from 'react-bootstrap'
 import '@styles/MemberScreen.css'
+import '@styles/hover.css'
 import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE, STATUS, LIST_STATUS, LIST_DOB_MONTH, LIST_ORDER_BY_MEMBER } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
@@ -289,19 +290,27 @@ class MemberScreen extends Component {
       <div className="content-wrapper">
         <div className="content-header">
           <div className="container-fluid">
-            <div className="row mb-1">
+            <div className="row my-2">
               <div className="col-md-4 col-sm-4">
-                <h1 className="text-header-screen">Thành viên</h1>
+                <h1 className="text-header-screen">{STRING.member}
+                  {this.props.listMemberState?.data?.data?.totalCount
+                    ? ' - ' + this.props.listMemberState?.data?.data?.totalCount
+                    : ''
+                  }
+                </h1>
               </div>
               <div className="col-md-8 col-sm-8">
                 {this.renderButton()}
               </div>
             </div>
+            <div className="col-md-12 my-2 bg-table">
+              {this.renderField()}
+              {this.renderTable()}
+              {this.renderPagination()}
+            </div>
           </div>
-          {this.renderField()}
-          {/* {this.renderButton()} */}
-          {this.renderTable()}
-          {this.renderPagination()}
+
+
           {this.renderModal()}
           {this.renderConfirmModal()}
         </div>
@@ -314,7 +323,7 @@ class MemberScreen extends Component {
       <Row className="mx-0">
         <Col className="button-wrapper px-0">
           <Button
-            className="mr-0 ml-1"
+            className="mr-0 ml-2"
             variant="success"
             onClick={() => {
               this.setState({
@@ -326,7 +335,7 @@ class MemberScreen extends Component {
             {STRING.add}
           </Button>
           <Button
-            className="mr-0 ml-1"
+            className="mr-0 ml-2"
             variant="primary"
             onClick={() => {
               this.getData({})
@@ -335,13 +344,14 @@ class MemberScreen extends Component {
             {STRING.search}
           </Button>
           <Button
-            className="mr-0 ml-1"
+            className="mr-0 ml-2"
             variant="secondary"
             onClick={() =>
               this.setState({
                 text: '',
                 status: '',
                 orderBy: '',
+                dobMonth: '',
               }, () => this.getData({}))
             }
           >
@@ -360,7 +370,7 @@ class MemberScreen extends Component {
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td>{value.account || '--'}</td>
-              <td>{value.name || '--'}</td>
+              <td className={"hvr-rotate cursor-pointer text-table-hover " + (parseInt(value.status) === 1 ? 'color-tvdl' : 'text-danger')}>{value.name || '--'}</td>
               <td>{value.phone || '--'}</td>
               <td>{value.email || '--'}</td>
               <td>{value.address || '--'}</td>
@@ -369,7 +379,7 @@ class MemberScreen extends Component {
               {/* <td>{parseInt(value.status) === 1 ? STATUS.ACTIVE : STATUS.INACTIVE || '--'}</td> */}
               <td className="width2btn">
                 <i
-                  className="btnEdit fa fa-fw fa-edit"
+                  className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
                   onClick={() => {
                     this.setState({
                       modalTitle: 'Sửa thành viên'
@@ -378,7 +388,7 @@ class MemberScreen extends Component {
                   }}
                 />
                 <i
-                  className="btnDelete far fa-trash-alt"
+                  className="btnDelete far fa-trash-alt hvr-bounce-in"
                   onClick={() => {
                     this.setState({
                       id: value.id,
@@ -400,11 +410,11 @@ class MemberScreen extends Component {
 
   renderTable() {
     return (
-      <div className="col-md-12 mt-1">
-        <table id="example2" className="table table-bordered table-hover table-responsive-sm table-responsive-md">
+      <div className="col-md-12 mt-3">
+        <table id="example2" className="table table-hover table-responsive-sm table-responsive-md">
           <thead className="text-center">
             <tr>
-              <th>STT</th>
+              <th>#</th>
               <th>Mã</th>
               <th>{STRING.name}</th>
               <th>{STRING.phone}</th>

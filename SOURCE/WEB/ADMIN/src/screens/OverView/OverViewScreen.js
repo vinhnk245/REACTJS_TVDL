@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
 import { Row, Col, Button, FormControl } from 'react-bootstrap'
-import { STRING, CONFIG_TYPE_OVERVIEW, CONFIG_TYPE } from '@constants/Constant'
-import { getInforDashBoardOverViewSystem, getInforDashBoardOverViewStore, getStatisticAdmin } from '@constants/Api'
+import { ROUTER, STRING } from '@constants/Constant'
+import { requestGetOverviews } from '@constants/Api'
 import { connect } from 'react-redux'
-import '@styles/MemberScreen.css'
-import Pagination from 'react-js-pagination'
+import '@styles/OverViewScreen.css'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
-import EmptyData from '@src/components/EmptyData'
-import DatePickerCustom from 'src/components/DatePickerCustom'
 import LoadingAction from '@src/components/LoadingAction'
 import reactotron from 'reactotron-react-js'
 
@@ -20,9 +17,29 @@ class OverViewScreen extends Component {
       loadingAction: false,
       error: false,
       emptyData: false,
+      activeMember: 0,
+      totalMember: 0,
+      totalBook: 0,
+      totalReader: 0,
+      totalRentedThisMonth: 0
     }
   }
-  componentDidMount() { }
+  componentDidMount() {
+    this.getOverviews()
+  }
+
+  async getOverviews() {
+    this.setState({ loadingAction: true })
+    const res = await requestGetOverviews({})
+    this.setState({
+      activeMember: res?.data?.activeMember,
+      totalMember: res?.data?.totalMember,
+      totalBook: res?.data?.totalBook,
+      totalReader: res?.data?.totalReader,
+      totalRentedThisMonth: res?.data?.totalRentedThisMonth,
+    })
+    this.setState({ loadingAction: false })
+  }
 
   handleChange = (fieldName, value) => {
     this.setState({
@@ -32,13 +49,100 @@ class OverViewScreen extends Component {
   }
 
   renderBody = () => {
+    const { push } = this.props.history
+    const { activeMember, totalMember, totalReader, totalBook, totalRentedThisMonth } = this.state
     return (
       <div className="content-wrapper">
         <div className="content-header mx-0">
-          <div className="row mb-2 mx-0">
+          {/* <div className="row mb-2 mx-0">
             <div className="col-sm-6">
               <h2 className="header">{STRING.System_overView}</h2>
             </div>
+          </div> */}
+          <div className="container-fluid">
+            <div className="row my-2">
+              <div className="col-md-12">
+                <h1 className="text-header-screen">Tổng quan
+                </h1>
+              </div>
+            </div>
+            {/* <div className="col-md-12"> */}
+            <div className="row mt-4">
+              <div className="col-xl-3 col-lg-6">
+                <div className="card hvr-float">
+                  <div className="card-body card-type-3">
+                    <div className="row">
+                      <div className="col">
+                        <h6 className="text-muted mb-0">Mượn sách</h6>
+                        <span className="font-weight-bold mb-0">{totalRentedThisMonth}</span>
+                      </div>
+                      <div className="col-auto">
+                        <div className="card-circle l-bg-cyan text-white">
+                          <i className="fa fa-chart-area"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-6">
+                <div className="card hvr-float">
+                  <div className="card-body card-type-3">
+                    <div className="row">
+                      <div className="col">
+                        <h6 className="text-muted mb-0">Bạn đọc</h6>
+                        <span className="font-weight-bold mb-0">{totalReader}</span>
+                      </div>
+                      <div className="col-auto">
+                        <div className="card-circle l-bg-green text-white">
+                          <i className="fa fa-address-card"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-6">
+                <div className="card hvr-float">
+                  <div className="card-body card-type-3">
+                    <div className="row">
+                      <div className="col">
+                        <h6 className="text-muted mb-0">Sách</h6>
+                        <span className="font-weight-bold mb-0">{totalBook}</span>
+                      </div>
+                      <div className="col-auto">
+                        <div className="card-circle l-bg-orange text-white">
+                          <i className="fa fa-book-open"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-6">
+                <div className="card hvr-float">
+                  <div className="card-body card-type-3 card-member" onClick={() => push(ROUTER.MEMBER)}>
+                    <div className="row">
+                      <div className="col">
+                        <h6 className="text-muted mb-0">{STRING.member}</h6>
+                        <span className="font-weight-bold mb-0">{activeMember} / {totalMember}</span>
+                      </div>
+                      <div className="col-auto">
+                        <div className="card-circle l-bg-purple text-white">
+                          <i className="fa fa-users"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row mt-5">
+
+            </div>
+
+            {/* </div> */}
           </div>
         </div>
       </div>
