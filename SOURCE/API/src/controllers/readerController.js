@@ -137,7 +137,7 @@ async function updateReader(req, res) {
     !cardNumber ||
     !address ||
     !parentName ||
-    !status ||
+    // !status ||
     !dob) throw API_CODE.REQUIRE_FIELD
 
   let readerUpdate = await Reader.findOne({
@@ -169,7 +169,7 @@ async function updateReader(req, res) {
     parentPhone: parentPhone,
     dob: dob,
     note: note,
-    status: status,
+    // status: status,
   })
   return await getReaderDetail(readerUpdate.id)
 }
