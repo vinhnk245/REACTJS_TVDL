@@ -17,7 +17,7 @@ async function getListReader(req, res) {
   let offset = page * limit
   let text = (req.query.text || '').trim()
   let querySearch = text.length > 0
-    ? `(name like '%${text}%' or parentName like '%${text}%' or parentPhone like '%${text}%')`
+    ? `(reader.name like '%${text}%' or reader.parentName like '%${text}%' or reader.parentPhone like '%${text}%')`
     : ''
 
   let queryCardNumber = req.query.cardNumber ? `cardNumber = ${req.query.cardNumber}` : ``
