@@ -11,7 +11,7 @@ import {
   STATUS,
   LIST_STATUS,
   LIST_DOB_MONTH,
-  LIST_ORDER_BY_MEMBER,
+  LIST_ORDER_BY_READER,
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
@@ -51,7 +51,7 @@ class ReaderScreen extends Component {
       loadingAction: false,
       listStatus: LIST_STATUS,
       listDobMonth: LIST_DOB_MONTH,
-      listOrderByMember: LIST_ORDER_BY_MEMBER,
+      listOrderByMember: LIST_ORDER_BY_READER,
       modal: {
         account: '',
         name: '',
