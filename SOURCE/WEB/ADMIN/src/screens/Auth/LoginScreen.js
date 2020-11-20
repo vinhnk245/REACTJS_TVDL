@@ -94,7 +94,6 @@ class LoginScreen extends React.Component {
               <div className="col-md-5 col-sm-7 col-12 style-form-login">
                 <div className="text-center">
                   <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
-                  <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
                   {/* <div className="login-form"> */}
                   <form>
                     <div className="form-group">
