@@ -35,7 +35,7 @@ export const validateForm = (self, value, fieldName) => {
     case STRING.phone:
       regrex = /((09|03|07|08|05|02|06)+([0-9]{8})\b)/g
       break
-    case STRING.receiverPhone:
+    case STRING.parentPhone:
       regrex = /((09|03|07|08|05|02|06)+([0-9]{8})\b)/g
       break
     case STRING.receiverPhoneAtStore:
@@ -51,6 +51,9 @@ export const validateForm = (self, value, fieldName) => {
       regrex = /[0-9a-zA-Z_]{4,}\S/g
       break
     case STRING.name:
+      regrex = /^(?=.{1,30}$).*/g
+      break
+    case STRING.parentName:
       regrex = /^(?=.{1,30}$).*/g
       break
     case STRING.title:

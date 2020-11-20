@@ -10,7 +10,10 @@ const ROUTER = {
   OVERVIEW: '/tong-quan',
 }
 const STRING = {
-  card_number: 'Số thẻ',
+  lostBook: 'Làm mất',
+  parentName: 'Họ tên bố mẹ',
+  parentPhone: 'Sđt bố mẹ',
+  cardNumber: 'Số thẻ',
   date_of_birth: 'Ngày sinh',
   note: 'Ghi chú',
   joined_Date: 'Ngày tham gia',

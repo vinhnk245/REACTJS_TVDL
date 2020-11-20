@@ -14,24 +14,6 @@ const initialState = {
 }
 export default function (state = initialState, action) {
   switch (action.type) {
-    case GET_READER: {
-      return { ...state, isLoading: true }
-    }
-    case GET_READER_SUCCESS: {
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        data: action.payload.response,
-      }
-    }
-    case GET_READER_FAIL: {
-      return {
-        ...state,
-        error: action.payload,
-        isLoading: false,
-      }
-    }
     case GET_LIST_READER: {
       return { ...state, isLoading: true }
     }
