@@ -90,32 +90,38 @@ class LoginScreen extends React.Component {
         <div style={{ width: this.state.width, height: this.state.height, backgroundColor: 'white' }}>
           <div className="bodyLogin">
             <div className="row max-width-height">
-              <div className="col-md-7 col-sm-5 bg-img d-none d-sm-flex align-items-end">
-              </div>
+              <div className="col-md-7 col-sm-5 bg-img d-none d-sm-flex align-items-end"></div>
               <div className="col-md-5 col-sm-7 col-12 style-form-login">
                 <div className="text-center">
+                  <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
                   <h3 className="color-tvdl mb-5 text-bold font-tvdl">Children create miracles when they read</h3>
                   {/* <div className="login-form"> */}
                   <form>
                     <div className="form-group">
-                      <input placeholder={STRING.account}
+                      <input
+                        placeholder={STRING.account}
                         autoComplete="on"
                         className="form-control mb-1"
                         value={account}
                         onChange={(e) => this.handleTextChange('account', e)}
-                        required />
+                        required
+                      />
                     </div>
                     <div className="form-group mt-3">
-                      <input type="password"
+                      <input
+                        type="password"
                         placeholder={STRING.password}
                         className="form-control"
                         value={password}
                         onChange={(e) => this.handleTextChange('password', e)}
-                        required />
+                        required
+                      />
                     </div>
                     {/* neu bo the Link, phai bo ca Form, css lai */}
                     <Link>
-                      <button className="btn btn-success max-width btn-login font-tvdl mt-4" onClick={this.login}>ĐĂNG NHẬP</button>
+                      <button className="btn btn-success max-width btn-login font-tvdl mt-4" onClick={this.login}>
+                        ĐĂNG NHẬP
+                      </button>
                     </Link>
                   </form>
                   {/* </div> */}
