@@ -152,6 +152,13 @@ const LIST_ORDER_BY_MEMBER = [
   { value: 5, label: 'Tháng sinh nhật bé đến lớn' },
   { value: 6, label: 'Tháng sinh nhật lớn đến bé' },
 ]
+const LIST_ORDER_BY_READER = [
+  { value: 1, label: 'Số thẻ bé đến lớn' },
+  { value: 2, label: 'Số thẻ lớn đến bé' },
+  { value: 3, label: 'Sinh nhật lớn đến bé' },
+  { value: 4, label: 'Sinh nhật bé đến lớn' },
+  { value: 5, label: 'Làm mất sách nhiều nhất' },
+]
 
 export {
   ROUTER,
@@ -165,4 +172,5 @@ export {
   LIST_STATUS,
   LIST_DOB_MONTH,
   LIST_ORDER_BY_MEMBER,
+  LIST_ORDER_BY_READER,
 }

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5059491d-fb2c-4e56-b7e6-fb81640f9db5",
+		"_postman_id": "0aa0093e-5b72-4ea5-9214-ac881563eb7e",
 		"name": "TVDL",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -25,6 +25,35 @@
 								{
 									"key": "text",
 									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getBookInfo",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{server}}book/getBookInfo?id=6",
+							"host": [
+								"{{server}}book"
+							],
+							"path": [
+								"getBookInfo"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "6"
 								}
 							]
 						}
@@ -77,157 +106,6 @@
 					"response": []
 				},
 				{
-					"name": "getBookInfo",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{server}}book/getBookInfo?id=6",
-							"host": [
-								"{{server}}book"
-							],
-							"path": [
-								"getBookInfo"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "6"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "login",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"account\": \"T59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{server}}home/login",
-							"host": [
-								"{{server}}home"
-							],
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "logout",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"account\": \"TV59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{local}}home/logout",
-							"host": [
-								"{{local}}home"
-							],
-							"path": [
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "changePassword",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"currentPassword\": \"TVDL11092013\",\r\n    \"newPassword\": \"123456\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{local}}home/changePassword",
-							"host": [
-								"{{local}}home"
-							],
-							"path": [
-								"changePassword"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "resetPassword",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"type": "text",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"id\": 9,\r\n    \"userType\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{local}}home/resetPassword",
-							"host": [
-								"{{local}}home"
-							],
-							"path": [
-								"resetPassword"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "getListEvent",
 					"request": {
 						"method": "GET",
@@ -252,77 +130,6 @@
 								{
 									"key": "orderBy",
 									"value": ""
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getEventInfo",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"url": {
-							"raw": "{{local}}event/getEventInfo?id=1",
-							"host": [
-								"{{local}}event"
-							],
-							"path": [
-								"getEventInfo"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "getRentedBookDetail",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "token",
-								"type": "text",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{local}}rented/getRentedBookDetail?id=11",
-							"host": [
-								"{{local}}rented"
-							],
-							"path": [
-								"getRentedBookDetail"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "11"
 								}
 							]
 						}
@@ -395,6 +202,199 @@
 					"response": []
 				},
 				{
+					"name": "getRentedBookDetail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}rented/getRentedBookDetail?id=33",
+							"host": [
+								"{{local}}rented"
+							],
+							"path": [
+								"getRentedBookDetail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "33"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resetPassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 9,\r\n    \"userType\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/resetPassword",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"T59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}home/login",
+							"host": [
+								"{{server}}home"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getEventInfo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{local}}event/getEventInfo?id=1",
+							"host": [
+								"{{local}}event"
+							],
+							"path": [
+								"getEventInfo"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changePassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"TVDL11092013\",\r\n    \"newPassword\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/changePassword",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"account\": \"TV59\",\r\n    \"password\": \"123456\",\r\n    \"deviceId\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/logout",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "getTopBorrowedBook",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -435,6 +435,38 @@
 		{
 			"name": "APP",
 			"item": [
+				{
+					"name": "checkTokenForApp",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}home/checkTokenForApp",
+							"host": [
+								"{{local}}home"
+							],
+							"path": [
+								"checkTokenForApp"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "requestRentBook",
 					"request": {
@@ -492,38 +524,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "checkTokenForApp",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{local}}home/checkTokenForApp",
-							"host": [
-								"{{local}}home"
-							],
-							"path": [
-								"checkTokenForApp"
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -564,6 +564,35 @@
 				{
 					"name": "members",
 					"item": [
+						{
+							"name": "getMemberInfo",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server}}member/getMemberInfo?id=2",
+									"host": [
+										"{{server}}member"
+									],
+									"path": [
+										"getMemberInfo"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "getListMember",
 							"request": {
@@ -614,7 +643,7 @@
 							"response": []
 						},
 						{
-							"name": "getMemberInfo",
+							"name": "getUserInfo",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -625,50 +654,12 @@
 									}
 								],
 								"url": {
-									"raw": "{{server}}member/getMemberInfo?id=2",
-									"host": [
-										"{{server}}member"
-									],
-									"path": [
-										"getMemberInfo"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "2"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "createMember",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "token",
-										"type": "text",
-										"value": "{{token}}"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"account\": \"TV21\",\r\n    \"name\": \"Nguyễn Thảo Ngọc\",\r\n    \"phone\": \"0933229496\",\r\n    \"email\": \"\",\r\n    \"address\": \"Đội 8, Dương Liễu\",\r\n    \"dob\": 998931600000,\r\n    \"role\": 3,\r\n    \"note\": \"\",\r\n    \"joinedDate\": null\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{local}}member/createMember",
+									"raw": "{{local}}member/getUserInfo",
 									"host": [
 										"{{local}}member"
 									],
 									"path": [
-										"createMember"
+										"getUserInfo"
 									]
 								}
 							},
@@ -707,6 +698,38 @@
 							"response": []
 						},
 						{
+							"name": "createMember",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"account\": \"TV98\",\r\n    \"name\": \"Đỗ Văn Sỹ\",\r\n    \"phone\": \"0933221234\",\r\n    \"email\": \"\",\r\n    \"address\": \"Thường Tín\",\r\n    \"dob\": 998931600000,\r\n    \"role\": 3,\r\n    \"note\": \"\",\r\n    \"joinedDate\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server}}member/createMember",
+									"host": [
+										"{{server}}member"
+									],
+									"path": [
+										"createMember"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "deleteMember",
 							"request": {
 								"method": "POST",
@@ -737,9 +760,16 @@
 								}
 							},
 							"response": []
-						},
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "readers",
+					"item": [
 						{
-							"name": "getUserInfo",
+							"name": "getReaderInfo",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -750,24 +780,23 @@
 									}
 								],
 								"url": {
-									"raw": "{{local}}member/getUserInfo",
+									"raw": "{{local}}reader/getReaderInfo?id=7",
 									"host": [
-										"{{local}}member"
+										"{{local}}reader"
 									],
 									"path": [
-										"getUserInfo"
+										"getReaderInfo"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "7"
+										}
 									]
 								}
 							},
 							"response": []
-						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
-				},
-				{
-					"name": "readers",
-					"item": [
+						},
 						{
 							"name": "getListReader",
 							"request": {
@@ -780,9 +809,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{local}}reader/getListReader?page=1&limit=10&text=&cardNumber=&status=&orderBy=",
+									"raw": "{{server}}reader/getListReader?page=1&limit=10&text=&cardNumber=&status=&orderBy=",
 									"host": [
-										"{{local}}reader"
+										"{{server}}reader"
 									],
 									"path": [
 										"getListReader"
@@ -811,35 +840,6 @@
 										{
 											"key": "orderBy",
 											"value": ""
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "getReaderInfo",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "token",
-										"value": "{{token}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{local}}reader/getReaderInfo?id=7",
-									"host": [
-										"{{local}}reader"
-									],
-									"path": [
-										"getReaderInfo"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "7"
 										}
 									]
 								}
@@ -949,6 +949,38 @@
 				{
 					"name": "books",
 					"item": [
+						{
+							"name": "deleteBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"type": "text",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}book/deleteBook",
+									"host": [
+										"{{local}}book"
+									],
+									"path": [
+										"deleteBook"
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "createBook",
 							"request": {
@@ -1070,32 +1102,29 @@
 							"response": []
 						},
 						{
-							"name": "deleteBook",
+							"name": "getLostBooksByReaderId",
 							"request": {
-								"method": "POST",
+								"method": "GET",
 								"header": [
 									{
 										"key": "token",
-										"type": "text",
-										"value": "{{token}}"
+										"value": "{{token}}",
+										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{local}}book/deleteBook",
+									"raw": "{{local}}book/getLostBooksByReaderId?id=1",
 									"host": [
 										"{{local}}book"
 									],
 									"path": [
-										"deleteBook"
+										"getLostBooksByReaderId"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
 									]
 								}
 							},
@@ -1238,6 +1267,39 @@
 					"name": "events",
 					"item": [
 						{
+							"name": "deleteEvent",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{local}}event/deleteEvent",
+									"host": [
+										"{{local}}event"
+									],
+									"path": [
+										"deleteEvent"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "createEvent",
 							"request": {
 								"method": "POST",
@@ -1347,39 +1409,6 @@
 								}
 							},
 							"response": []
-						},
-						{
-							"name": "deleteEvent",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "token",
-										"value": "{{token}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "id",
-											"value": "1",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{local}}event/deleteEvent",
-									"host": [
-										"{{local}}event"
-									],
-									"path": [
-										"deleteEvent"
-									]
-								}
-							},
-							"response": []
 						}
 					],
 					"protocolProfileBehavior": {},
@@ -1389,9 +1418,9 @@
 					"name": "rented",
 					"item": [
 						{
-							"name": "createRentedBook",
+							"name": "getLostBooksByReaderId",
 							"request": {
-								"method": "POST",
+								"method": "GET",
 								"header": [
 									{
 										"key": "token",
@@ -1399,86 +1428,42 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"readerId\": 1,\r\n    \"noteMember\": \"\",\r\n    \"listBook\": [\r\n        {\r\n            \"bookId\": 10,\r\n            \"bookCategoryId\": 1\r\n        },\r\n        {\r\n            \"bookId\": 4,\r\n            \"bookCategoryId\": 8\r\n        }\r\n    ]\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{local}}rented/createRentedBook",
+									"raw": "{{local}}book/getLostBooksByReaderId?id=1",
 									"host": [
-										"{{local}}rented"
+										"{{local}}book"
 									],
 									"path": [
-										"createRentedBook"
+										"getLostBooksByReaderId"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										}
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "updateRentedBook",
+							"name": "getTopBorrowedReader",
 							"request": {
-								"method": "POST",
+								"method": "GET",
 								"header": [
 									{
 										"key": "token",
-										"value": "{{token}}",
-										"type": "text"
+										"type": "text",
+										"value": "{{token}}"
 									}
 								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 9\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
-									"raw": "{{local}}rented/updateRentedBook",
+									"raw": "{{local}}rented/getTopBorrowedReader",
 									"host": [
 										"{{local}}rented"
 									],
 									"path": [
-										"updateRentedBook"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "updateRentedBookDetail",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "token",
-										"value": "{{token}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"id\": 37,\r\n    \"status\": 2,\r\n    \"lost\": 0,\r\n    \"note\": \"\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{local}}rented/updateRentedBookDetail",
-									"host": [
-										"{{local}}rented"
-									],
-									"path": [
-										"updateRentedBookDetail"
+										"getTopBorrowedReader"
 									]
 								}
 							},
@@ -1546,30 +1531,7 @@
 							"response": []
 						},
 						{
-							"name": "getTopBorrowedReader",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "token",
-										"type": "text",
-										"value": "{{token}}"
-									}
-								],
-								"url": {
-									"raw": "{{local}}rented/getTopBorrowedReader",
-									"host": [
-										"{{local}}rented"
-									],
-									"path": [
-										"getTopBorrowedReader"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "confirmRequestRentBook",
+							"name": "updateRentedBook",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1581,7 +1543,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 17\r\n}",
+									"raw": "{\r\n    \"id\": 9\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1589,12 +1551,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{local}}rented/confirmRequestRentBook",
+									"raw": "{{local}}rented/updateRentedBook",
 									"host": [
 										"{{local}}rented"
 									],
 									"path": [
-										"confirmRequestRentBook"
+										"updateRentedBook"
 									]
 								}
 							},
@@ -1633,7 +1595,103 @@
 							"response": []
 						},
 						{
-							"name": "deleteRentedBookDetail (Pending)",
+							"name": "createRentedBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"readerId\": 1,\r\n    \"noteMember\": \"\",\r\n    \"listBook\": [\r\n        {\r\n            \"bookId\": 10,\r\n            \"bookCategoryId\": 1\r\n        },\r\n        {\r\n            \"bookId\": 7,\r\n            \"bookCategoryId\": 4\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server}}rented/createRentedBook",
+									"host": [
+										"{{server}}rented"
+									],
+									"path": [
+										"createRentedBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateRentedBookDetail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 37,\r\n    \"status\": 2,\r\n    \"lost\": 0,\r\n    \"note\": \"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/updateRentedBookDetail",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"updateRentedBookDetail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "confirmRequestRentBook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 17\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}rented/confirmRequestRentBook",
+									"host": [
+										"{{local}}rented"
+									],
+									"path": [
+										"confirmRequestRentBook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addBookToRequestRentedBook",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1645,7 +1703,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 25\r\n}",
+									"raw": "{\r\n    \"rentedBookId\": 30,\r\n    \"bookId\": 6,\r\n    \"bookCategoryId\": 4\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1653,41 +1711,44 @@
 									}
 								},
 								"url": {
-									"raw": "{{local}}rented/deleteRentedBookDetail",
+									"raw": "{{local}}rented/addBookToRequestRentedBook",
 									"host": [
 										"{{local}}rented"
 									],
 									"path": [
-										"deleteRentedBookDetail"
+										"addBookToRequestRentedBook"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "getLostBooksByReaderId",
+							"name": "removeBookInRentedBookDetail",
 							"request": {
-								"method": "GET",
+								"method": "POST",
 								"header": [
 									{
 										"key": "token",
-										"value": "{{token}}",
-										"type": "text"
+										"type": "text",
+										"value": "{{token}}"
 									}
 								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 62\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
 								"url": {
-									"raw": "{{local}}book/getLostBooksByReaderId?id=1",
+									"raw": "{{server}}rented/removeBookInRentedBookDetail",
 									"host": [
-										"{{local}}book"
+										"{{server}}rented"
 									],
 									"path": [
-										"getLostBooksByReaderId"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "1"
-										}
+										"removeBookInRentedBookDetail"
 									]
 								}
 							},
