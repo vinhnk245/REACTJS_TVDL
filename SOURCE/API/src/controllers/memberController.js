@@ -173,7 +173,7 @@ async function updateMember(req, res) {
         !phone ||
         !address ||
         !dob ||
-        !status ||
+        typeof status != "number" ||
         !role) throw API_CODE.REQUIRE_FIELD
 
     let memberUpdate = await Member.findOne({
@@ -196,7 +196,7 @@ async function updateMember(req, res) {
         status: status,
         note: note
     })
-    return await getMemberDetail(memberUpdate.id)
+    return await getMemberDetail(id)
 }
 
 async function deleteMember(req, res) {
