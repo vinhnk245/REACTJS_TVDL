@@ -12,8 +12,8 @@ const ROUTER = {
 const STRING = {
   date_of_birth: 'Ngày sinh',
   note: 'Ghi chú',
-  join_date: 'Ngày gia nhập',
-  userType: 'Loại người dùng',
+  joined_Date: 'Ngày tham gia',
+  role: 'Loại người dùng',
   emptyData: 'Không có dữ liệu',
   overView: 'Tổng quan',
   transport: 'Xe',
@@ -48,7 +48,9 @@ const STRING = {
   unActive: 'Ngừng hoạt động',
   actived: 'Kích hoạt',
   account: 'Tài khoản',
-  dobMonth: 'Tháng '
+  dobMonth: 'Tháng ',
+  notifySuccess: 'Thao tác thành công',
+  notifyFail: 'Thao tác thất bại',
 }
 const NUMBER = {
   OPTION_ONE: 1,
@@ -150,4 +152,16 @@ const LIST_ORDER_BY_MEMBER = [
   { value: 6, label: 'Tháng sinh nhật lớn đến bé' },
 ]
 
-export { ROUTER, NUMBER, STRING, STATUS, GENDER, CONFIG, IS_ACTIVE, ROLE, LIST_STATUS, LIST_DOB_MONTH, LIST_ORDER_BY_MEMBER }
+export {
+  ROUTER,
+  NUMBER,
+  STRING,
+  STATUS,
+  GENDER,
+  CONFIG,
+  IS_ACTIVE,
+  ROLE,
+  LIST_STATUS,
+  LIST_DOB_MONTH,
+  LIST_ORDER_BY_MEMBER,
+}

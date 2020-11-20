@@ -2,7 +2,17 @@ import React, { Component } from 'react'
 import { Row, Col, FormControl, Button, Modal } from 'react-bootstrap'
 import '@styles/MemberScreen.css'
 import '@styles/hover.css'
-import { STRING, NUMBER, IS_ACTIVE, CONFIG, ROLE, STATUS, LIST_STATUS, LIST_DOB_MONTH, LIST_ORDER_BY_MEMBER } from '@constants/Constant'
+import {
+  STRING,
+  NUMBER,
+  IS_ACTIVE,
+  CONFIG,
+  ROLE,
+  STATUS,
+  LIST_STATUS,
+  LIST_DOB_MONTH,
+  LIST_ORDER_BY_MEMBER,
+} from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
 import { getListMember } from '@src/redux/actions'
@@ -16,7 +26,7 @@ import DatePickerCustom from '@src/components/DatePickerCustom'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
 import swal from 'sweetalert'
-import reactotron from 'reactotron-react-js';
+import reactotron from 'reactotron-react-js'
 
 class MemberScreen extends Component {
   constructor(props) {
@@ -44,15 +54,15 @@ class MemberScreen extends Component {
       listDobMonth: LIST_DOB_MONTH,
       listOrderByMember: LIST_ORDER_BY_MEMBER,
       modal: {
-        account: '',
-        name: '',
-        phone: '',
-        email: '',
-        address: '',
+        [STRING.account]: '',
+        [STRING.name]: '',
+        [STRING.phone]: '',
+        [STRING.email]: '',
+        [STRING.address]: '',
         [STRING.date_of_birth]: '',
-        userType: '',
-        note: '',
-        [STRING.join_date]: ''
+        [STRING.role]: '',
+        [STRING.note]: '',
+        [STRING.joined_Date]: '',
       },
       validateError: {
         account: '',
@@ -62,6 +72,8 @@ class MemberScreen extends Component {
         note: '',
         address: '',
       },
+      user_id: '',
+      status_modal: '',
       isEditMember: false,
       id: '',
       error: null,
@@ -94,14 +106,11 @@ class MemberScreen extends Component {
         status: status || '',
         orderBy: orderBy || '',
         dobMonth: dobMonth || '',
-      });
-
-
-      this.setState({
-        loadingAction: false
       })
 
-
+      this.setState({
+        loadingAction: false,
+      })
     } catch (error) {
       this.setState({
         loadingAction: false,
@@ -109,37 +118,58 @@ class MemberScreen extends Component {
     }
   }
 
-  async createMember(account, name, phone, email, address, role) {
-    const member = {
-      account,
-      name,
-      phone,
-      email,
-      address,
-      role,
-    }
+  async createMember() {
+    const {
+      [STRING.account]: account,
+      [STRING.name]: name,
+      [STRING.phone]: phone,
+      [STRING.email]: email,
+      [STRING.address]: address,
+      [STRING.date_of_birth]: dob,
+      [STRING.role]: role,
+      [STRING.note]: note,
+      [STRING.joined_Date]: joinedDate,
+    } = this.state.modal
+    const { user_id, status_modal, page } = this.state
     this.setState({
       loadingAction: true,
     })
     try {
       if (this.state.isEditMember) {
-        await updateMember(member)
+        await updateMember({
+          id: user_id,
+          status: status_modal,
+          account: account,
+          name: name,
+          phone: phone,
+          email: email,
+          address: address,
+          dob: dob,
+          role: role,
+          note: note,
+          joinedDate: joinedDate || null,
+        })
       } else {
-        await createMember(member)
+        await createMember({
+          account: account,
+          name: name,
+          phone: phone,
+          email: email,
+          address: address,
+          dob: dob,
+          role: role,
+          note: note,
+          joinedDate: joinedDate || null,
+        })
       }
-
       this.setState({ show: false, loadingAction: false }, () => {
         notifySuccess(STRING.notifySuccess)
-        this.getData({})
+        this.getData({ page })
       })
     } catch (error) {
-      this.setState(
-        {
-          loadingAction: false,
-          error: error,
-        },
-        () => notifyFail(STRING.notifyFail)
-      )
+      this.setState({
+        loadingAction: false,
+      })
     }
   }
 
@@ -178,7 +208,7 @@ class MemberScreen extends Component {
     }
   }
 
-  handleChangeFieldModal(fieldName, value) {
+  handleChangeFieldModal = (fieldName, value) => {
     this.setState({
       ...this.state,
       modal: {
@@ -196,13 +226,11 @@ class MemberScreen extends Component {
   }
 
   handleChangeSelect = async (fieldName, value) => {
-    await this.setState(
-      {
-        ...this.state,
-        page: 1,
-        [fieldName]: value || '',
-      }
-    )
+    await this.setState({
+      ...this.state,
+      page: 1,
+      [fieldName]: value || '',
+    })
     this.getData({})
   }
 
@@ -213,36 +241,38 @@ class MemberScreen extends Component {
   }
 
   async setShow(bool, member = {}) {
-    let res = member
-    if (member.id) {
-      const id = member.id
-      // const rem = await getMemberInfo({ id })
-      // res = rem.data
-    }
+    reactotron.log('men', member)
     this.setState({
       ...this.state,
       show: bool,
       modal: {
-        name: res.name || '',
-        phone: res.phone || '',
-        email: res.email || '',
-        address: res.address || '',
+        ...this.state.modal,
+        [STRING.account]: member.account,
+        [STRING.name]: member.name,
+        [STRING.phone]: member.phone,
+        [STRING.email]: member.email,
+        [STRING.address]: member.address,
+        [STRING.note]: member.note,
+        [STRING.date_of_birth]: Date.parse(member.dob),
+        [STRING.role]: member.role,
+        [STRING.joined_Date]: Date.parse(member.joinedDate) || '',
       },
-      isEditMember: member.phone ? true : false,
+      isEditMember: member.account ? true : false,
       id: member.id,
+      user_id: member.id,
+      status_modal: member.status,
     })
   }
 
   handlePageChange(pageNumber) {
     this.setState({ page: pageNumber })
   }
+
   renderField() {
     const { page, limit, text, status, orderBy, dobMonth, listStatus, listDobMonth, listOrderByMember } = this.state
     return (
       <Row className="mx-0">
-        <Col
-          className="col-md-5 col-sm-8"
-        >
+        <Col className="col-md-5 col-sm-8">
           <input
             onKeyPress={this.handleKeyPress}
             type="text"
@@ -253,9 +283,7 @@ class MemberScreen extends Component {
             onChange={(e) => this.handleChange('text', e.target.value)}
           />
         </Col>
-        <Col
-          className="col-md-3 col-sm-4"
-        >
+        <Col className="col-md-3 col-sm-4">
           <FormControl
             as="select"
             className="mb-0"
@@ -265,12 +293,14 @@ class MemberScreen extends Component {
             <option value="" defaultValue>
               {STRING.orderBy}
             </option>
-            {listOrderByMember?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+            {listOrderByMember?.map((item, index) => (
+              <option value={item.value} key={index}>
+                {item.label}
+              </option>
+            ))}
           </FormControl>
         </Col>
-        <Col
-          className="col-md-2 col-sm-4"
-        >
+        <Col className="col-md-2 col-sm-4">
           <FormControl
             as="select"
             className="mb-0"
@@ -280,11 +310,14 @@ class MemberScreen extends Component {
             <option value="" defaultValue>
               {STRING.dob}
             </option>
-            {listDobMonth?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+            {listDobMonth?.map((item, index) => (
+              <option value={item.value} key={index}>
+                {item.label}
+              </option>
+            ))}
           </FormControl>
         </Col>
-        <Col
-          className="col-md-2 col-sm-4">
+        <Col className="col-md-2 col-sm-4">
           <FormControl
             as="select"
             className="mb-0"
@@ -294,10 +327,14 @@ class MemberScreen extends Component {
             <option value="" defaultValue>
               {STRING.status}
             </option>
-            {listStatus?.map((item, index) => <option value={item.value} key={index}>{item.label}</option>)}
+            {listStatus?.map((item, index) => (
+              <option value={item.value} key={index}>
+                {item.label}
+              </option>
+            ))}
           </FormControl>
         </Col>
-      </Row >
+      </Row>
     )
   }
 
@@ -308,16 +345,14 @@ class MemberScreen extends Component {
           <div className="container-fluid">
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
-                <h1 className="text-header-screen">{STRING.member}
+                <h1 className="text-header-screen">
+                  {STRING.member}
                   {this.props.listMemberState?.data?.data?.totalCount
                     ? ' - ' + this.props.listMemberState?.data?.data?.totalCount
-                    : ''
-                  }
+                    : ''}
                 </h1>
               </div>
-              <div className="col-md-8 col-sm-8">
-                {this.renderButton()}
-              </div>
+              <div className="col-md-8 col-sm-8">{this.renderButton()}</div>
             </div>
             <div className="col-md-12 my-2 bg-table">
               {this.renderField()}
@@ -325,7 +360,6 @@ class MemberScreen extends Component {
               {this.renderPagination()}
             </div>
           </div>
-
 
           {this.renderModal()}
           {this.renderConfirmModal()}
@@ -344,7 +378,7 @@ class MemberScreen extends Component {
             onClick={() => {
               this.setState({
                 modalTitle: 'Thêm thành viên',
-                show: true
+                show: true,
               })
             }}
           >
@@ -363,12 +397,15 @@ class MemberScreen extends Component {
             className="mr-0 ml-2"
             variant="secondary"
             onClick={() =>
-              this.setState({
-                text: '',
-                status: '',
-                orderBy: '',
-                dobMonth: '',
-              }, () => this.getData({}))
+              this.setState(
+                {
+                  text: '',
+                  status: '',
+                  orderBy: '',
+                  dobMonth: '',
+                },
+                () => this.getData({})
+              )
             }
           >
             {STRING.clearSearch}
@@ -386,7 +423,22 @@ class MemberScreen extends Component {
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td>{value.account || '--'}</td>
-              <td className={"hvr-rotate cursor-pointer text-table-hover " + (parseInt(value.status) === 1 ? 'color-tvdl' : 'text-danger')}>{value.name || '--'}</td>
+              <td
+                className={
+                  'hvr-rotate cursor-pointer text-table-hover ' +
+                  (parseInt(value.status) === 1 ? 'color-tvdl' : 'text-danger')
+                }
+                onClick={() => {
+                  this.setState(
+                    {
+                      modalTitle: 'Sửa thành viên',
+                    },
+                    () => this.setShow(true, value)
+                  )
+                }}
+              >
+                {value.name || '--'}
+              </td>
               <td>{value.phone || '--'}</td>
               <td>{value.email || '--'}</td>
               <td>{value.address || '--'}</td>
@@ -397,10 +449,12 @@ class MemberScreen extends Component {
                 <i
                   className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
                   onClick={() => {
-                    this.setState({
-                      modalTitle: 'Sửa thành viên'
-                    }, () => this.setShow(true, value))
-
+                    this.setState(
+                      {
+                        modalTitle: 'Sửa thành viên',
+                      },
+                      () => this.setShow(true, value)
+                    )
                   }}
                 />
                 <i
@@ -416,10 +470,10 @@ class MemberScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -465,10 +519,13 @@ class MemberScreen extends Component {
           hideNavigation
           hideFirstLastPages
           onChange={(page) => {
-            this.setState({
-              ...this.state,
-              page: page,
-            }, () => this.getData({ page }))
+            this.setState(
+              {
+                ...this.state,
+                page: page,
+              },
+              () => this.getData({ page })
+            )
           }}
         />
       </Col>
@@ -482,42 +539,21 @@ class MemberScreen extends Component {
       name: nameError,
       address: addressError,
     } = this.state.validateError
-    const {
-      account,
-      phone,
-      address,
-      name,
-    } = this.state.modal
-    return (
-      accountError ||
-      phoneError ||
-      nameError ||
-      addressError ||
-      !(phone && account && address && name)
-    )
+    const { account, phone, address, name } = this.state.modal
+    return accountError || phoneError || nameError || addressError || !(phone && account && address && name)
   }
 
   renderModalButton() {
-    const {
-      phone,
-      account,
-      address,
-      name,
-    } = this.state.modal
+    const { phone, account, address, name } = this.state.modal
     return (
       <Row>
         <Col className="button-wrapper mt-3">
           <Button
             className="mr-0 ml-1"
             variant="success"
-            disabled={this.checkValidationErrors()}
+            // disabled={this.checkValidationErrors()}
             onClick={() => {
-              this.createMember(
-                name,
-                phone,
-                account,
-                address,
-              )
+              this.createMember()
             }}
           >
             {STRING.save}
@@ -540,14 +576,19 @@ class MemberScreen extends Component {
     const isEditable = this.state.isEditMember
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
-    if (fieldName === STRING.userType) {
+
+    if (fieldName === STRING.role) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <FormControl as="select" value={field} onChange={() => this}>
+            <FormControl
+              as="select"
+              value={field}
+              onChange={(e) => this.handleChangeFieldModal([STRING.role], parseInt(e.target.value))}
+            >
               <option value="1">Quản lý</option>
               <option value="2">Trưởng ban</option>
               <option value="3">TNV</option>
@@ -563,10 +604,27 @@ class MemberScreen extends Component {
           </Col>
           <Col sm={8}>
             <DatePickerCustom
-              disabled={true}
               className={`date-picker form-control`}
               dateFormat="dd/MM/yyyy"
-              placeholderText={STRING.dob}
+              placeholderText={STRING.date_of_birth}
+              handleChange={this.handleChangeFieldModal}
+              selected={field}
+              maxDate={new Date()}
+            />
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.joined_Date) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <DatePickerCustom
+              className={`date-picker form-control`}
+              dateFormat="dd/MM/yyyy"
+              placeholderText={STRING.joined_Date}
               handleChange={this.handleChangeFieldModal}
               selected={field}
               maxDate={new Date()}
@@ -582,7 +640,6 @@ class MemberScreen extends Component {
           </Col>
           <Col sm={8}>
             <FormControl
-              disabled={isEditable}
               aria-describedby="basic-addon1"
               placeholder={`Nhập ${fieldName}`}
               onChange={(e) => {
@@ -601,6 +658,36 @@ class MemberScreen extends Component {
               }}
             />
             {fieldError && <span className="validation-error align-top">{fieldError}</span>}
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.account) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <FormControl
+              disabled={isEditable}
+              aria-describedby="basic-addon1"
+              placeholder={`Nhập ${fieldName}`}
+              onChange={(e) => {
+                validateForm(this, field, fieldName)
+                this.setState({
+                  ...this.state,
+                  modal: {
+                    ...this.state.modal,
+                    [fieldName]: e.target.value,
+                  },
+                })
+              }}
+              value={field}
+              onBlur={() => {
+                validateForm(this, field?.trim(), fieldName)
+              }}
+            />
+            {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
         </Row>
       )
@@ -626,7 +713,6 @@ class MemberScreen extends Component {
               }}
               value={field}
               onBlur={() => {
-                // console.log(this.state.validateError)
                 validateForm(this, field?.trim(), fieldName)
               }}
             />
@@ -651,7 +737,7 @@ class MemberScreen extends Component {
               phone: null,
               email: null,
               address: null,
-              [STRING.userType]: [],
+              [STRING.role]: [],
             },
           })
         }}
@@ -671,9 +757,9 @@ class MemberScreen extends Component {
           {this.renderModalField(STRING.email)}
           {this.renderModalField(STRING.address)}
           {this.renderModalField(STRING.date_of_birth)}
-          {this.renderModalField(STRING.userType)}
+          {this.renderModalField(STRING.role)}
           {this.renderModalField(STRING.note)}
-          {this.renderModalField(STRING.join_date)}
+          {this.renderModalField(STRING.joined_Date)}
           {this.renderModalButton()}
         </Modal.Body>
       </Modal>
@@ -726,16 +812,11 @@ class MemberScreen extends Component {
   }
 
   render() {
-    console.log('render')
     const { isLoading } = this.props.listMemberState
     const { loadingAction } = this.state
     return (
       <>
-        {/* {isDataLoaded && <Loading />}
-        {isLoading && (!isDataLoaded ? <LoadingAction /> : null)} */}
         {(loadingAction || isLoading) && <LoadingAction />}
-        {/* {loadingAction && <Loading />} */}
-        {/* <Error isOpen={true} /> */}
         {this.renderBody()}
       </>
     )

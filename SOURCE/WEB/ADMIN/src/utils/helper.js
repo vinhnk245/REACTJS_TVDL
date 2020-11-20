@@ -3,7 +3,9 @@ import { STRING } from '@constants/Constant'
 export const toDateString = (date) => {
   let start = new Date(date)
   let startDateString = `
-  ${(start.getDate() < 10) ? '0' + (start.getDate()) : start.getDate()}/${start.getMonth() + 1 < 10 ? '0' + (start.getMonth() + 1) : start.getMonth() + 1}/${start.getFullYear()}`
+  ${start.getDate() < 10 ? '0' + start.getDate() : start.getDate()}/${
+    start.getMonth() + 1 < 10 ? '0' + (start.getMonth() + 1) : start.getMonth() + 1
+  }/${start.getFullYear()}`
   return startDateString
 }
 
@@ -41,6 +43,9 @@ export const validateForm = (self, value, fieldName) => {
       break
     case STRING.email:
       regrex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+      break
+    case STRING.account:
+      regrex = /(T[0-9]).*/g
       break
     case STRING.username:
       regrex = /[0-9a-zA-Z_]{4,}\S/g
