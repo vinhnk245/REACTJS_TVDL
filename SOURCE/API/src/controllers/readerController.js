@@ -4,7 +4,7 @@ const LIMIT = CONFIG.PAGING_LIMIT
 const { Sequelize, Op, fn, col, literal } = require('sequelize')
 const sequelize = require('../config/env.js')
 const bcrypt = require("bcrypt")
-const { 
+const {
   reader: Reader,
   member: Member,
 } = require("@models")
@@ -16,25 +16,25 @@ async function getListReader(req, res) {
   if (page < 0) throw API_CODE.PAGE_ERROR
   let offset = page * limit
   let text = (req.query.text || '').trim()
-  let querySearch = text.length > 0 
-    ? `(name like '%${text}%' or parentName like '%${text}%' or parentPhone like '%${text}%')` 
+  let querySearch = text.length > 0
+    ? `(name like '%${text}%' or parentName like '%${text}%' or parentPhone like '%${text}%')`
     : ''
 
   let queryCardNumber = req.query.cardNumber ? `cardNumber = ${req.query.cardNumber}` : ``
-  let queryStatus = req.query.status ? `status = ${req.query.status}` : ``
+  let queryStatus = req.query.status ? `reader.status = ${req.query.status}` : ``
 
   let queryOrderBy = 'id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_ASC)
+  if (req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_ASC)
     queryOrderBy = 'cardNumber ASC, id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_DESC)
+  if (req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_DESC)
     queryOrderBy = 'cardNumber DESC, id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.DOB_ASC)
+  if (req.query.orderBy == ORDER_BY.READER.DOB_ASC)
     queryOrderBy = 'dob ASC, id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.DOB_DESC)
+  if (req.query.orderBy == ORDER_BY.READER.DOB_DESC)
     queryOrderBy = 'dob DESC, id DESC'
-  if(req.query.orderBy == ORDER_BY.READER.LOST_DESC)
+  if (req.query.orderBy == ORDER_BY.READER.LOST_DESC)
     queryOrderBy = 'lost DESC, id DESC'
-   
+
   let listReader = await Reader.findAndCountAll({
     subQuery: false,
     attributes: [
@@ -73,7 +73,7 @@ async function getListReader(req, res) {
 }
 
 async function getReaderInfo(req, res) {
-  if(!req.query.id) throw API_CODE.INVALID_PARAM
+  if (!req.query.id) throw API_CODE.INVALID_PARAM
   return await getReaderDetail(req.query.id)
 }
 
@@ -87,16 +87,16 @@ async function getReaderDetail(readerId) {
       id: readerId
     }
   })
-  if(!readerDetail) throw API_CODE.NOT_FOUND
+  if (!readerDetail) throw API_CODE.NOT_FOUND
   return readerDetail
 }
 
 async function createReader(req, res) {
   let { name, address, dob, parentName, parentPhone, note } = req.body
-  if(!name || 
-      !address || 
-      !parentName || 
-      !dob) throw API_CODE.REQUIRE_FIELD
+  if (!name ||
+    !address ||
+    !parentName ||
+    !dob) throw API_CODE.REQUIRE_FIELD
 
   let account, cardNumber
   let lastReader = await Reader.findAll({
@@ -108,7 +108,7 @@ async function createReader(req, res) {
     ],
     limit: 1
   })
-  if(!lastReader || lastReader.length === 0){
+  if (!lastReader || lastReader.length === 0) {
     //khong co ban ghi reader trong db
     cardNumber = CONFIG.FIRST_CARD_NUMBER
   } else {
@@ -117,27 +117,27 @@ async function createReader(req, res) {
   account = CONFIG.PREFIX + cardNumber
   let hash = bcrypt.hashSync(account, CONFIG.CRYPT_SALT)
   let newReader = await Reader.create({
-      account: account,
-      password: hash,
-      name: name,
-      address: address,
-      cardNumber: cardNumber,
-      parentName: parentName,
-      parentPhone: parentPhone,
-      dob: dob,
-      note: note,
-      createdMemberId: req.auth.id
+    account: account,
+    password: hash,
+    name: name,
+    address: address,
+    cardNumber: cardNumber,
+    parentName: parentName,
+    parentPhone: parentPhone,
+    dob: dob,
+    note: note,
+    createdMemberId: req.auth.id
   })
   return await getReaderDetail(newReader.id)
 }
 
 async function updateReader(req, res) {
   let { id, name, cardNumber, address, dob, parentName, parentPhone, note, status } = req.body
-  if(!name || 
-    !cardNumber || 
-    !address || 
-    !parentName || 
-    !status || 
+  if (!name ||
+    !cardNumber ||
+    !address ||
+    !parentName ||
+    !status ||
     !dob) throw API_CODE.REQUIRE_FIELD
 
   let readerUpdate = await Reader.findOne({
@@ -146,17 +146,17 @@ async function updateReader(req, res) {
       id: id
     }
   })
-  if(!readerUpdate) throw API_CODE.NOT_FOUND
+  if (!readerUpdate) throw API_CODE.NOT_FOUND
 
   let newAccount = readerUpdate.account
-  if(readerUpdate.cardNumber != cardNumber){
+  if (readerUpdate.cardNumber != cardNumber) {
     let checkCardNumber = await Reader.findOne({
       where: {
         isActive: ACTIVE,
         cardNumber: cardNumber
       }
     })
-    if(checkCardNumber) throw API_CODE.CARD_NUMBER_EXIST
+    if (checkCardNumber) throw API_CODE.CARD_NUMBER_EXIST
 
     newAccount = CONFIG.PREFIX + cardNumber
   }
@@ -175,19 +175,19 @@ async function updateReader(req, res) {
 }
 
 async function deleteReader(req, res) {
-  if(req.auth.role == ROLE.MEMBER)
+  if (req.auth.role == ROLE.MEMBER)
     throw API_CODE.NO_PERMISSION
 
   let id = req.body.id
-  if(!id) throw API_CODE.INVALID_PARAM
+  if (!id) throw API_CODE.INVALID_PARAM
   let readerDelete = await Reader.findOne({
     where: {
-        isActive: ACTIVE,
-        id: id
+      isActive: ACTIVE,
+      id: id
     }
   })
-  if(!readerDelete) throw API_CODE.NOT_FOUND
-  
+  if (!readerDelete) throw API_CODE.NOT_FOUND
+
   await readerDelete.update({
     isActive: IS_ACTIVE.INACTIVE
   })
