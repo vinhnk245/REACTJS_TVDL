@@ -10,6 +10,10 @@ const ROUTER = {
   OVERVIEW: '/tong-quan',
 }
 const STRING = {
+  date_of_birth: 'Ngày sinh',
+  note: 'Ghi chú',
+  join_date: 'Ngày gia nhập',
+  userType: 'Loại người dùng',
   emptyData: 'Không có dữ liệu',
   overView: 'Tổng quan',
   transport: 'Xe',

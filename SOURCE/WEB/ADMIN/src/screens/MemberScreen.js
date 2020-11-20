@@ -49,11 +49,17 @@ class MemberScreen extends Component {
         phone: '',
         email: '',
         address: '',
+        [STRING.date_of_birth]: '',
+        userType: '',
+        note: '',
+        [STRING.join_date]: ''
       },
       validateError: {
         account: '',
         name: '',
         phone: '',
+        email: '',
+        note: '',
         address: '',
       },
       isEditMember: false,
@@ -170,6 +176,16 @@ class MemberScreen extends Component {
         confirmModal: false,
       })
     }
+  }
+
+  handleChangeFieldModal(fieldName, value) {
+    this.setState({
+      ...this.state,
+      modal: {
+        ...this.state.modal,
+        [fieldName]: value || '',
+      },
+    })
   }
 
   handleChange(fieldName, value) {
@@ -531,25 +547,30 @@ class MemberScreen extends Component {
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            {/* <MultiSelect
-              options={this.state.selected}
-              value={field}
-              onChange={(e) => {
-                this.setState({
-                  ...this.state,
-                  modal: {
-                    ...this.state.modal,
-                    [fieldName]: e,
-                  },
-                })
-              }}
-              hasSelectAll={false}
-              disableSearch
-              overrideStrings={{
-                allItemsAreSelected: 'Tất cả',
-                selectSomeItems: fieldName,
-              }}
-            /> */}
+            <FormControl as="select" value={field} onChange={() => this}>
+              <option value="1">Quản lý</option>
+              <option value="2">Trưởng ban</option>
+              <option value="3">TNV</option>
+            </FormControl>
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.date_of_birth) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <DatePickerCustom
+              disabled={true}
+              className={`date-picker form-control`}
+              dateFormat="dd/MM/yyyy"
+              placeholderText={STRING.dob}
+              handleChange={this.handleChangeFieldModal}
+              selected={field}
+              maxDate={new Date()}
+            />
           </Col>
         </Row>
       )
@@ -563,7 +584,7 @@ class MemberScreen extends Component {
             <FormControl
               disabled={isEditable}
               aria-describedby="basic-addon1"
-              placeholder={`Nhập ${fieldName.toLowerCase()}`}
+              placeholder={`Nhập ${fieldName}`}
               onChange={(e) => {
                 validateForm(this, field, fieldName)
                 this.setState({
@@ -592,7 +613,7 @@ class MemberScreen extends Component {
           <Col sm={8}>
             <FormControl
               aria-describedby="basic-addon1"
-              placeholder={`Nhập ${fieldName.toLowerCase()}`}
+              placeholder={`Nhập ${fieldName}`}
               onChange={(e) => {
                 validateForm(this, field, fieldName)
                 this.setState({
@@ -606,7 +627,7 @@ class MemberScreen extends Component {
               value={field}
               onBlur={() => {
                 // console.log(this.state.validateError)
-                validateForm(this, field.trim(), fieldName)
+                validateForm(this, field?.trim(), fieldName)
               }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
@@ -644,11 +665,15 @@ class MemberScreen extends Component {
         <Modal.Body className="custom-body">
           {/* {isEditMember == false &&
                         this.renderModalField(STRING.account)} */}
-          {this.renderModalField(STRING.phone)}
+          {this.renderModalField(STRING.account)}
           {this.renderModalField(STRING.name)}
+          {this.renderModalField(STRING.phone)}
           {this.renderModalField(STRING.email)}
           {this.renderModalField(STRING.address)}
+          {this.renderModalField(STRING.date_of_birth)}
           {this.renderModalField(STRING.userType)}
+          {this.renderModalField(STRING.note)}
+          {this.renderModalField(STRING.join_date)}
           {this.renderModalButton()}
         </Modal.Body>
       </Modal>
