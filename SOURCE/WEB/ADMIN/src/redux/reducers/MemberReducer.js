@@ -1,11 +1,15 @@
 import {
-  GET_MEMBER, GET_MEMBER_SUCCESS, GET_MEMBER_FAIL,
-  GET_LIST_MEMBER, GET_LIST_MEMBER_SUCCESS, GET_LIST_MEMBER_FAIL,
+  GET_MEMBER,
+  GET_MEMBER_SUCCESS,
+  GET_MEMBER_FAIL,
+  GET_LIST_MEMBER,
+  GET_LIST_MEMBER_SUCCESS,
+  GET_LIST_MEMBER_FAIL,
 } from '../actions/type'
 
 const initialState = {
   data: {},
-  isLoading: true,
+  isLoading: false,
   error: null,
 }
 export default function (state = initialState, action) {

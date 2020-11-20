@@ -43,8 +43,9 @@ class ReaderScreen extends Component {
       text: '',
       status: '',
       orderBy: '',
-      dobMonth: '',
+      cardNumber: '',
       totalCount: '',
+
       modalTitle: '',
       show: false,
       confirmModal: false,
@@ -76,7 +77,7 @@ class ReaderScreen extends Component {
   }
 
   componentDidMount() {
-    // this.getData({})
+    this.getData({})
   }
 
   async getReaderInfo() {
@@ -88,7 +89,7 @@ class ReaderScreen extends Component {
 
   async getData({ page }) {
     this.setState({ loadingAction: true })
-    const { limit, text, status, orderBy, dobMonth } = this.state
+    const { limit, text, status, orderBy, cardNumber } = this.state
     try {
       await this.props.getListReader({
         page: page || 1,
@@ -96,7 +97,7 @@ class ReaderScreen extends Component {
         text: text?.trim() || '',
         status: status || '',
         orderBy: orderBy || '',
-        dobMonth: dobMonth || '',
+        cardNumber: cardNumber || '',
       })
 
       this.setState({
@@ -418,10 +419,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -433,7 +434,7 @@ class ReaderScreen extends Component {
           <thead className="text-center">
             <tr>
               <th>#</th>
-              <th>Mã</th>
+              <th>{STRING.card_number}</th>
               <th>{STRING.name}</th>
               <th>{STRING.phone}</th>
               <th>{STRING.email}</th>

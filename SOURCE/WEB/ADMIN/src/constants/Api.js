@@ -38,11 +38,11 @@ function createAxios() {
         swal({
           title: response.data.msg,
           timer: 2000,
-          icon: 'error'
+          icon: 'error',
         })
       return response
     },
-    (error) => { }
+    (error) => {}
   )
   return axiosInstant
 }
@@ -120,21 +120,15 @@ export const requestGetUserInfo = () => {
 }
 
 export const requestLogin = (payload) => {
-  return handleResult(
-    getAxios.post(`home/login`, payload)
-  )
+  return handleResult(getAxios.post(`home/login`, payload))
 }
 
 export const requestGetOverviews = () => {
   return handleResult(getAxios.get(`home/getOverviews`))
 }
 
-
-
 // Member
-export const getListMember = (
-  payload
-) => {
+export const getListMember = (payload) => {
   return handleResult(
     getAxios.get(
       `member/getListMember?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}&dobMonth=${payload.dobMonth}`
@@ -158,15 +152,11 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
-
-
 // Reader
-export const getListReader = (
-  payload
-) => {
+export const getListReader = (payload) => {
   return handleResult(
     getAxios.get(
-      `member/getListReader?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}&dobMonth=${payload.dobMonth}`
+      `reader/getListReader?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&cardNumber=${payload.cardNumber}&status=${payload.status}&orderBy=${payload.orderBy}`
     )
   )
 }
@@ -186,5 +176,3 @@ export const updateReader = (payload) => {
 export const getReaderInfo = (payload) => {
   return handleResult(getAxios.get(`reader/getReaderInfo?id=${payload.id}`))
 }
-
-
