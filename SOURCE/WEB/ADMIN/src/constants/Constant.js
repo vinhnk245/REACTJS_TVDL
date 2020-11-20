@@ -19,6 +19,7 @@ const STRING = {
   transport: 'Xe',
   numericalOrder: 'STT',
   member: 'TNV',
+  reader: 'Bạn đọc',
   user: 'Người dùng',
   username: 'Tên người dùng',
   namePhoneNumber: 'Tên, Số điện thoại',

@@ -41,6 +41,7 @@ class Sidebar extends Component {
               role="menu"
               data-accordion="false"
             >
+
               <li
                 className={pathName.search('tong-quan') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
                 data-widget={this.state.width < 990 && 'pushmenu'}
@@ -61,6 +62,17 @@ class Sidebar extends Component {
                   <p className="me-txt-menu">{STRING.member}</p>
                 </a>
               </li>
+
+              <li
+                className={pathName.search('ban-doc') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
+                onClick={() => push(ROUTER.READER)}
+              >
+                <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
+                  <i className="nav-icon fas fa-user-circle" />
+                  <p className="me-txt-menu">{STRING.reader}</p>
+                </a>
+              </li>
+
             </ul>
           </nav>
           {/* /.sidebar-menu */}

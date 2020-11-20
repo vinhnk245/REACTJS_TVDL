@@ -129,7 +129,9 @@ export const requestGetOverviews = () => {
   return handleResult(getAxios.get(`home/getOverviews`))
 }
 
-// Member screen
+
+
+// Member
 export const getListMember = (
   payload
 ) => {
@@ -156,5 +158,33 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
+
+
+// Reader
+export const getListReader = (
+  payload
+) => {
+  return handleResult(
+    getAxios.get(
+      `member/getListReader?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&status=${payload.status}&orderBy=${payload.orderBy}&dobMonth=${payload.dobMonth}`
+    )
+  )
+}
+
+export const createReader = (payload) => {
+  return handleResult(getAxios.post(`reader/createReader`, payload))
+}
+
+export const deleteReader = (payload) => {
+  return handleResult(getAxios.post(`reader/deleteReader`, payload))
+}
+
+export const updateReader = (payload) => {
+  return handleResult(getAxios.post(`reader/updateReader`, payload))
+}
+
+export const getReaderInfo = (payload) => {
+  return handleResult(getAxios.get(`reader/getReaderInfo?id=${payload.id}`))
+}
 
 

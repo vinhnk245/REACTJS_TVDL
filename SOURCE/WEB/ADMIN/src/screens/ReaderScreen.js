@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Row, Col, FormControl, Button, Modal } from 'react-bootstrap'
-import '@styles/MemberScreen.css'
+import '@styles/ReaderScreen.css'
 import '@styles/hover.css'
 import {
   STRING,
@@ -15,10 +15,10 @@ import {
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
-import { getListMember } from '@src/redux/actions'
+import { getListReader } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
-import { deleteMember, createMember, updateMember, getMemberInfo } from '@constants/Api'
+import { deleteReader, createReader, updateReader, getReaderInfo } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -28,7 +28,7 @@ import { notifyFail, notifySuccess } from '@src/utils/notify'
 import swal from 'sweetalert'
 import reactotron from 'reactotron-react-js'
 
-class MemberScreen extends Component {
+class ReaderScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -38,7 +38,6 @@ class MemberScreen extends Component {
       phone: '',
       email: '',
       address: '',
-      role: ROLE.MEMBER,
       page: 1,
       limit: CONFIG.LIMIT,
       text: '',
@@ -66,7 +65,7 @@ class MemberScreen extends Component {
         phone: '',
         address: '',
       },
-      isEditMember: false,
+      isEditReader: false,
       id: '',
       error: null,
     }
@@ -77,11 +76,11 @@ class MemberScreen extends Component {
   }
 
   componentDidMount() {
-    this.getData({})
+    // this.getData({})
   }
 
-  async getMemberInfo() {
-    const res = await getMemberInfo()
+  async getReaderInfo() {
+    const res = await getReaderInfo()
     this.setState({
       memberId: res?.data?.id,
     })
@@ -91,7 +90,7 @@ class MemberScreen extends Component {
     this.setState({ loadingAction: true })
     const { limit, text, status, orderBy, dobMonth } = this.state
     try {
-      await this.props.getListMember({
+      await this.props.getListReader({
         page: page || 1,
         limit: limit || CONFIG.LIMIT,
         text: text?.trim() || '',
@@ -110,7 +109,7 @@ class MemberScreen extends Component {
     }
   }
 
-  async createMember(account, name, phone, email, address, role) {
+  async createReader(account, name, phone, email, address, role) {
     const member = {
       account,
       name,
@@ -123,10 +122,10 @@ class MemberScreen extends Component {
       loadingAction: true,
     })
     try {
-      if (this.state.isEditMember) {
-        await updateMember(member)
+      if (this.state.isEditReader) {
+        await updateReader(member)
       } else {
-        await createMember(member)
+        await createReader(member)
       }
 
       this.setState({ show: false, loadingAction: false }, () => {
@@ -144,12 +143,12 @@ class MemberScreen extends Component {
     }
   }
 
-  async deleteMember() {
+  async deleteReader() {
     const { memberId } = this.state
     if (memberId !== this.state.id) {
       this.setState({ loadingAction: true })
       try {
-        await deleteMember({
+        await deleteReader({
           id: this.state.id,
         })
         this.getData({})
@@ -217,7 +216,7 @@ class MemberScreen extends Component {
         email: res.email || '',
         address: res.address || '',
       },
-      isEditMember: member.phone ? true : false,
+      isEditReader: member.phone ? true : false,
       id: member.id,
     })
   }
@@ -303,9 +302,9 @@ class MemberScreen extends Component {
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
-                  {STRING.member}
-                  {this.props.listMemberState?.data?.data?.totalCount
-                    ? ' - ' + this.props.listMemberState?.data?.data?.totalCount
+                  {STRING.reader}
+                  {this.props.listReaderState?.data?.data?.totalCount
+                    ? ' - ' + this.props.listReaderState?.data?.data?.totalCount
                     : ''}
                 </h1>
               </div>
@@ -334,7 +333,7 @@ class MemberScreen extends Component {
             variant="success"
             onClick={() => {
               this.setState({
-                modalTitle: 'Thêm thành viên',
+                modalTitle: 'Thêm bạn đọc',
                 show: true,
               })
             }}
@@ -375,8 +374,8 @@ class MemberScreen extends Component {
   renderTableData() {
     return (
       <tbody>
-        {this.props.listMemberState?.data?.data?.items?.length ? (
-          this.props.listMemberState?.data?.data?.items?.map((value, index) => (
+        {this.props.listReaderState?.data?.data?.items?.length ? (
+          this.props.listReaderState?.data?.data?.items?.map((value, index) => (
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td>{value.account || '--'}</td>
@@ -400,7 +399,7 @@ class MemberScreen extends Component {
                   onClick={() => {
                     this.setState(
                       {
-                        modalTitle: 'Sửa thành viên',
+                        modalTitle: 'Sửa bạn đọc',
                       },
                       () => this.setShow(true, value)
                     )
@@ -419,10 +418,10 @@ class MemberScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -452,8 +451,8 @@ class MemberScreen extends Component {
   }
 
   renderPagination() {
-    const totalCount = this.props.listMemberState?.data?.data?.totalCount
-    // console.log(this.props.listMemberState)
+    const totalCount = this.props.listReaderState?.data?.data?.totalCount
+    // console.log(this.props.listReaderState)
     const { page } = this.state
     return (
       <Col md="12">
@@ -522,7 +521,7 @@ class MemberScreen extends Component {
   }
 
   renderModalField(fieldName) {
-    const isEditable = this.state.isEditMember
+    const isEditable = this.state.isEditReader
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
     if (fieldName === STRING.userType) {
@@ -643,7 +642,7 @@ class MemberScreen extends Component {
           <h5 className="text-white">{modalTitle}</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
-          {/* {isEditMember == false &&
+          {/* {isEditReader == false &&
                         this.renderModalField(STRING.account)} */}
           {this.renderModalField(STRING.phone)}
           {this.renderModalField(STRING.name)}
@@ -703,7 +702,7 @@ class MemberScreen extends Component {
 
   render() {
     console.log('render')
-    const { isLoading } = this.props.listMemberState
+    const { isLoading } = this.props.listReaderState
     const { loadingAction } = this.state
     return (
       <>
@@ -719,11 +718,11 @@ class MemberScreen extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  listMemberState: state.MemberReducer,
+  listReaderState: state.ReaderReducer,
 })
 
 const mapDispatchToProps = {
-  getListMember,
+  getListReader,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MemberScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(ReaderScreen)

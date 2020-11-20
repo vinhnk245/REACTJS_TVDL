@@ -3,6 +3,10 @@ import {
   watchGetListMember,
   watchAddMember,
   watchUpdateMember,
+  watchGetReader,
+  watchGetListReader,
+  watchAddReader,
+  watchUpdateReader,
 } from './NetworkSaga'
 
 export default function* rootSaga() {
@@ -10,4 +14,8 @@ export default function* rootSaga() {
   yield watchGetListMember
   yield watchAddMember
   yield watchUpdateMember
+  yield watchGetReader
+  yield watchGetListReader
+  yield watchAddReader
+  yield watchUpdateReader
 }
