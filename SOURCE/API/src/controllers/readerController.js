@@ -21,7 +21,6 @@ async function getListReader(req, res) {
     : ''
 
   let queryCardNumber = req.query.cardNumber ? `cardNumber = ${req.query.cardNumber}` : ``
-  let queryStatus = req.query.status ? `reader.status = ${req.query.status}` : ``
 
   let queryOrderBy = 'id DESC'
   if (req.query.orderBy == ORDER_BY.READER.CARD_NUMBER_ASC)
@@ -46,7 +45,6 @@ async function getListReader(req, res) {
       isActive: ACTIVE,
       [Op.and]: [
         literal(queryCardNumber),
-        literal(queryStatus),
         literal(querySearch)
       ]
     },
