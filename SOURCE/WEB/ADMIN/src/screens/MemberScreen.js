@@ -470,10 +470,10 @@ class MemberScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -589,9 +589,9 @@ class MemberScreen extends Component {
               value={field}
               onChange={(e) => this.handleChangeFieldModal([STRING.role], parseInt(e.target.value))}
             >
-              <option value="1">Quản lý</option>
-              <option value="2">Trưởng ban</option>
               <option value="3">TNV</option>
+              <option value="2">Trưởng ban</option>
+              <option value="1">Quản lý</option>
             </FormControl>
           </Col>
         </Row>

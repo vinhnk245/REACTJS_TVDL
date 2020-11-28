@@ -150,7 +150,8 @@ class ReaderScreen extends Component {
 
       this.setState({ show: false, loadingAction: false }, () => {
         notifySuccess(STRING.notifySuccess)
-        this.getData({ page })
+        // this.getData({ page })
+        this.getData({})
       })
     } catch (error) {
       this.setState({
@@ -248,7 +249,7 @@ class ReaderScreen extends Component {
     this.setState({ page: pageNumber })
   }
   renderField() {
-    const { page, limit, text, status, orderBy, dobMonth, listStatus, listDobMonth, listOrderByMember } = this.state
+    const { page, limit, text, status, cardNumber, orderBy, listOrderByMember } = this.state
     return (
       <Row className="mx-0">
         <Col className="col-md-5 col-sm-8">
@@ -256,7 +257,6 @@ class ReaderScreen extends Component {
             onKeyPress={this.handleKeyPress}
             type="text"
             className="form-control mb-0"
-            id="exampleInputEmail1"
             placeholder="Nhập từ khóa"
             value={text}
             onChange={(e) => this.handleChange('text', e.target.value)}
@@ -280,39 +280,15 @@ class ReaderScreen extends Component {
           </FormControl>
         </Col>
         <Col className="col-md-2 col-sm-4">
-          <FormControl
-            as="select"
-            className="mb-0"
-            value={dobMonth}
-            onChange={(e) => this.handleChangeSelect('dobMonth', e.target.value)}
-          >
-            <option value="" defaultValue>
-              {STRING.dob}
-            </option>
-            {listDobMonth?.map((item, index) => (
-              <option value={item.value} key={index}>
-                {item.label}
-              </option>
-            ))}
-          </FormControl>
+          <input
+            onKeyPress={this.handleKeyPress}
+            type="text"
+            className="form-control mb-0"
+            placeholder="Nhập số thẻ"
+            value={cardNumber}
+            onChange={(e) => this.handleChange('cardNumber', e.target.value)}
+          />
         </Col>
-        {/* <Col className="col-md-2 col-sm-4">
-          <FormControl
-            as="select"
-            className="mb-0"
-            value={status}
-            onChange={(e) => this.handleChangeSelect('status', e.target.value)}
-          >
-            <option value="" defaultValue>
-              {STRING.status}
-            </option>
-            {listStatus?.map((item, index) => (
-              <option value={item.value} key={index}>
-                {item.label}
-              </option>
-            ))}
-          </FormControl>
-        </Col> */}
       </Row>
     )
   }
@@ -379,9 +355,9 @@ class ReaderScreen extends Component {
               this.setState(
                 {
                   text: '',
-                  status: '',
+                  // status: '',
                   orderBy: '',
-                  dobMonth: '',
+                  cardNumber: '',
                 },
                 () => this.getData({})
               )
@@ -403,10 +379,7 @@ class ReaderScreen extends Component {
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td>{value.cardNumber || '--'}</td>
               <td
-                className={
-                  'hvr-rotate cursor-pointer text-table-hover ' +
-                  (parseInt(value.status) === 1 ? 'color-tvdl' : 'text-danger')
-                }
+                className='hvr-rotate cursor-pointer text-table-hover color-tvdl'
                 onClick={() => {
                   this.setState(
                     {
@@ -421,7 +394,12 @@ class ReaderScreen extends Component {
               <td>{value.parentName || '--'}</td>
               <td>{value.parentPhone || '--'}</td>
               <td>{value.address || '--'}</td>
-              <td>{value.lost}</td>
+              <td
+                className={
+                  '' +
+                  (parseInt(value.lost) > 0 ? 'text-bold text-danger' : '')
+                }
+              >{value.lost}</td>
               <td>{value.createdDate ? toDateString(value.dob) : '--'}</td>
               <td>{value.createdDate ? toDateString(value.createdDate) : '--'}</td>
               <td className="width2btn">
@@ -449,10 +427,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -622,10 +600,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-              onBlur={() => {
-                // console.log(this.state.validateError)
-                validateForm(this, field?.trim(), fieldName)
-              }}
+            // onBlur={() => {
+            //   // console.log(this.state.validateError)
+            //   validateForm(this, field?.trim(), fieldName)
+            // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
