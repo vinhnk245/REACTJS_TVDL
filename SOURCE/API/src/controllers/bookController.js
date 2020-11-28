@@ -139,7 +139,7 @@ async function getBookImages(bookId, urlRequest) {
 }
 
 async function createBook(req, res) {
-    //khong co role => reader
+    // khong co role => reader
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
     let { bookCategoryId, name, code, qty, note, description, author, publishers, publishingYear } = req.body
@@ -202,11 +202,10 @@ async function updateBook(req, res) {
         !name ||
         !code ||
         typeof qty != 'number' ||
-        typeof lost != 'number' ||
-        typeof available != 'number') throw API_CODE.REQUIRE_FIELD
+        typeof lost != 'number') throw API_CODE.REQUIRE_FIELD
 
-    if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
-    if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
+    // if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
+    // if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
 
     let bookUpdate = await Book.findOne({
         where: {
@@ -241,7 +240,7 @@ async function updateBook(req, res) {
         name: name,
         qty: qty,
         lost: lost,
-        available: available,
+        // available: available,
         note: note,
         description: description,
         author: author,
