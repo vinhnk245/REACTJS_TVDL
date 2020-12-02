@@ -142,10 +142,9 @@ async function createBook(req, res) {
     // khong co role => reader
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { bookCategoryId, name, code, qty, note, description, author, publishers, publishingYear } = req.body
+    let { bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!bookCategoryId ||
         !name ||
-        !code ||
         !qty) throw API_CODE.REQUIRE_FIELD
 
     let findCategory = await BookCategory.findOne({
@@ -196,11 +195,10 @@ async function createBook(req, res) {
 async function updateBook(req, res) {
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { id, bookCategoryId, name, code, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
+    let { id, bookCategoryId, name, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
     if (!id ||
         !bookCategoryId ||
         !name ||
-        !code ||
         typeof qty != 'number' ||
         typeof lost != 'number') throw API_CODE.REQUIRE_FIELD
 
@@ -233,6 +231,22 @@ async function updateBook(req, res) {
         })
         if (findBook) throw API_CODE.BOOK_CODE_EXIST
     }
+
+    // if (req.files && req.files.image) {
+    //     const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
+    //     let findBookImage = await BookImage.findOne({
+    //         where: {
+    //             isActive: ACTIVE,
+    //             bookId: bookCategoryId
+    //         }
+    //     })
+    //     if (!findBookImage) throw API_CODE.CATEGORY_NOT_FOUND
+    //     await BookImage.create({
+    //         bookId: newBook.id,
+    //         image: urlImage,
+    //         createdMemberId: req.auth.id
+    //     }, { transaction })
+    // }
 
     await bookUpdate.update({
         bookCategoryId: bookCategoryId,
