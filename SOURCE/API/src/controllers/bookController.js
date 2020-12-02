@@ -219,13 +219,32 @@ async function updateBook(req, res) {
     })
     if (!bookUpdate) throw API_CODE.NOT_FOUND
 
-    let findCategory = await BookCategory.findOne({
-        where: {
-            isActive: ACTIVE,
-            id: bookCategoryId
-        }
-    })
-    if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+    let code = ''
+    if (bookUpdate.bookCategoryId != bookCategoryId) {
+        let findCategory = await BookCategory.findOne({
+            where: {
+                isActive: ACTIVE,
+                id: bookCategoryId
+            }
+        })
+        if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+
+        let countBookByCategory = await Book.count({
+            where: {
+                // isActive: ACTIVE,
+                bookCategoryId
+            }
+        })
+        code = findCategory.code + (countBookByCategory + 1)
+    }
+
+    // let findCategory = await BookCategory.findOne({
+    //     where: {
+    //         isActive: ACTIVE,
+    //         id: bookCategoryId
+    //     }
+    // })
+    // if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
 
     // code = findCategory.code + code
     // if (bookUpdate.code != code) {
@@ -261,7 +280,7 @@ async function updateBook(req, res) {
         }
     }
 
-    await bookUpdate.update({
+    let dataUpdate = {
         bookCategoryId: bookCategoryId,
         // code: code,
         name: name,
@@ -275,7 +294,13 @@ async function updateBook(req, res) {
         publishingYear: publishingYear,
         updatedMemberId: req.auth.id,
         updatedDate: Date.now()
-    })
+    }
+
+    if (code.length > 0) {
+        dataUpdate.code = code
+    }
+
+    await bookUpdate.update(dataUpdate)
 
     return await getBookDetail(bookUpdate.id, req.url)
 }
