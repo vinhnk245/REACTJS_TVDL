@@ -155,7 +155,14 @@ async function createBook(req, res) {
     })
     if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
 
-    code = findCategory.code + code
+    let countBookByCategory = await Book.count({
+        where: {
+            // isActive: ACTIVE,
+            bookCategoryId
+        }
+    })
+
+    let code = findCategory.code + (countBookByCategory + 1)
     let findBook = await Book.findOne({
         where: {
             isActive: ACTIVE,
@@ -195,7 +202,7 @@ async function createBook(req, res) {
 async function updateBook(req, res) {
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { id, bookCategoryId, name, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
+    let { id, bookCategoryId, name, qty, lost, note, description, author, publishers, publishingYear } = req.body
     if (!id ||
         !bookCategoryId ||
         !name ||
@@ -221,36 +228,43 @@ async function updateBook(req, res) {
     })
     if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
 
-    code = findCategory.code + code
-    if (bookUpdate.code != code) {
-        let findBook = await Book.findOne({
-            where: {
-                isActive: ACTIVE,
-                code: code
-            }
-        })
-        if (findBook) throw API_CODE.BOOK_CODE_EXIST
-    }
-
-    // if (req.files && req.files.image) {
-    //     const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
-    //     let findBookImage = await BookImage.findOne({
+    // code = findCategory.code + code
+    // if (bookUpdate.code != code) {
+    //     let findBook = await Book.findOne({
     //         where: {
     //             isActive: ACTIVE,
-    //             bookId: bookCategoryId
+    //             code: code
     //         }
     //     })
-    //     if (!findBookImage) throw API_CODE.CATEGORY_NOT_FOUND
-    //     await BookImage.create({
-    //         bookId: newBook.id,
-    //         image: urlImage,
-    //         createdMemberId: req.auth.id
-    //     }, { transaction })
+    //     if (findBook) throw API_CODE.BOOK_CODE_EXIST
     // }
+
+    if (req.files && req.files.image) {
+        const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
+        let findBookImage = await BookImage.findOne({
+            where: {
+                isActive: ACTIVE,
+                bookId: id
+            }
+        })
+        if (!findBookImage) {
+            await BookImage.create({
+                bookId: id,
+                image: urlImage,
+                createdMemberId: req.auth.id
+            })
+        } else {
+            await findBookImage.update({
+                image: urlImage,
+                updatedMemberId: req.auth.id,
+                updatedDate: Date.now()
+            })
+        }
+    }
 
     await bookUpdate.update({
         bookCategoryId: bookCategoryId,
-        code: code,
+        // code: code,
         name: name,
         qty: qty,
         lost: lost,
