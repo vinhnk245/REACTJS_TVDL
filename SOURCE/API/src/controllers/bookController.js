@@ -142,10 +142,9 @@ async function createBook(req, res) {
     // khong co role => reader
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { bookCategoryId, name, code, qty, note, description, author, publishers, publishingYear } = req.body
+    let { bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!bookCategoryId ||
         !name ||
-        !code ||
         !qty) throw API_CODE.REQUIRE_FIELD
 
     let findCategory = await BookCategory.findOne({
@@ -156,7 +155,14 @@ async function createBook(req, res) {
     })
     if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
 
-    code = findCategory.code + code
+    let countBookByCategory = await Book.count({
+        where: {
+            // isActive: ACTIVE,
+            bookCategoryId
+        }
+    })
+
+    let code = findCategory.code + (countBookByCategory + 1)
     let findBook = await Book.findOne({
         where: {
             isActive: ACTIVE,
@@ -196,13 +202,11 @@ async function createBook(req, res) {
 async function updateBook(req, res) {
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { id, bookCategoryId, name, code, qty, lost, available, note, description, author, publishers, publishingYear } = req.body
+    let { id, bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!id ||
         !bookCategoryId ||
         !name ||
-        !code ||
-        typeof qty != 'number' ||
-        typeof lost != 'number') throw API_CODE.REQUIRE_FIELD
+        !qty) throw API_CODE.REQUIRE_FIELD
 
     // if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
     // if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
@@ -215,31 +219,73 @@ async function updateBook(req, res) {
     })
     if (!bookUpdate) throw API_CODE.NOT_FOUND
 
-    let findCategory = await BookCategory.findOne({
-        where: {
-            isActive: ACTIVE,
-            id: bookCategoryId
-        }
-    })
-    if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
-
-    code = findCategory.code + code
-    if (bookUpdate.code != code) {
-        let findBook = await Book.findOne({
+    let code = ''
+    if (bookUpdate.bookCategoryId != bookCategoryId) {
+        let findCategory = await BookCategory.findOne({
             where: {
                 isActive: ACTIVE,
-                code: code
+                id: bookCategoryId
             }
         })
-        if (findBook) throw API_CODE.BOOK_CODE_EXIST
+        if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+
+        let countBookByCategory = await Book.count({
+            where: {
+                // isActive: ACTIVE,
+                bookCategoryId
+            }
+        })
+        code = findCategory.code + (countBookByCategory + 1)
     }
 
-    await bookUpdate.update({
+    // let findCategory = await BookCategory.findOne({
+    //     where: {
+    //         isActive: ACTIVE,
+    //         id: bookCategoryId
+    //     }
+    // })
+    // if (!findCategory) throw API_CODE.CATEGORY_NOT_FOUND
+
+    // code = findCategory.code + code
+    // if (bookUpdate.code != code) {
+    //     let findBook = await Book.findOne({
+    //         where: {
+    //             isActive: ACTIVE,
+    //             code: code
+    //         }
+    //     })
+    //     if (findBook) throw API_CODE.BOOK_CODE_EXIST
+    // }
+
+    if (req.files && req.files.image) {
+        const urlImage = await uploadFile(req.files.image, CONFIG.PATH_IMAGE_BOOK)
+        let findBookImage = await BookImage.findOne({
+            where: {
+                isActive: ACTIVE,
+                bookId: id
+            }
+        })
+        if (!findBookImage) {
+            await BookImage.create({
+                bookId: id,
+                image: urlImage,
+                createdMemberId: req.auth.id
+            })
+        } else {
+            await findBookImage.update({
+                image: urlImage,
+                updatedMemberId: req.auth.id,
+                updatedDate: Date.now()
+            })
+        }
+    }
+
+    let dataUpdate = {
         bookCategoryId: bookCategoryId,
-        code: code,
+        // code: code,
         name: name,
         qty: qty,
-        lost: lost,
+        // lost: lost,
         // available: available,
         note: note,
         description: description,
@@ -248,7 +294,13 @@ async function updateBook(req, res) {
         publishingYear: publishingYear,
         updatedMemberId: req.auth.id,
         updatedDate: Date.now()
-    })
+    }
+
+    if (code.length > 0) {
+        dataUpdate.code = code
+    }
+
+    await bookUpdate.update(dataUpdate)
 
     return await getBookDetail(bookUpdate.id, req.url)
 }
