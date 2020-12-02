@@ -206,7 +206,7 @@ async function updateBook(req, res) {
     if (!id ||
         !bookCategoryId ||
         !name ||
-        typeof qty != 'number') throw API_CODE.REQUIRE_FIELD
+        !qty) throw API_CODE.REQUIRE_FIELD
 
     // if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
     // if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
