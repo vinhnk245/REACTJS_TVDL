@@ -202,12 +202,11 @@ async function createBook(req, res) {
 async function updateBook(req, res) {
     if (!req.auth.role) throw API_CODE.NO_PERMISSION
 
-    let { id, bookCategoryId, name, qty, lost, note, description, author, publishers, publishingYear } = req.body
+    let { id, bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!id ||
         !bookCategoryId ||
         !name ||
-        typeof qty != 'number' ||
-        typeof lost != 'number') throw API_CODE.REQUIRE_FIELD
+        typeof qty != 'number') throw API_CODE.REQUIRE_FIELD
 
     // if (qty < available) throw API_CODE.ERROR_QTY_LESS_AVAILABLE
     // if (qty < lost || qty - lost != available) throw API_CODE.ERROR_QTY_LOST_AVAILABLE
@@ -267,7 +266,7 @@ async function updateBook(req, res) {
         // code: code,
         name: name,
         qty: qty,
-        lost: lost,
+        // lost: lost,
         // available: available,
         note: note,
         description: description,
