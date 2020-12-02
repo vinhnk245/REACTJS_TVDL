@@ -6,7 +6,7 @@ const ROUTER = {
   READER: '/ban-doc',
   BOOK: '/sach',
   RENTED: '/muon-tra',
-  TRANSPORT: '/xe',
+  EVENT: '/su-kien',
   OVERVIEW: '/tong-quan',
 }
 const STRING = {
@@ -24,6 +24,13 @@ const STRING = {
   numericalOrder: 'STT',
   member: 'TNV',
   reader: 'Bạn đọc',
+  book: 'Sách',
+  bookName: 'Tên sách',
+  bookCode: 'Mã sách',
+  bookAuthor: 'Tác giả',
+  bookCategory: 'Thể loại',
+  image: 'Ảnh',
+  event: 'Sự kiện',
   user: 'Người dùng',
   username: 'Tên người dùng',
   namePhoneNumber: 'Tên, Số điện thoại',

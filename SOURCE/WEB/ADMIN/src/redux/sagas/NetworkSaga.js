@@ -6,6 +6,9 @@ import {
   GET_LIST_READER,
   GET_LIST_READER_SUCCESS,
   GET_LIST_READER_FAIL,
+  GET_LIST_BOOK,
+  GET_LIST_BOOK_SUCCESS,
+  GET_LIST_BOOK_FAIL,
 } from '../actions/type'
 import * as API from '../../constants/Api'
 
@@ -34,8 +37,8 @@ export function* getListMember(action) {
   }
 }
 
-// ============ reader =================
 
+// ============ reader =================
 export function* getListReader(action) {
   try {
     const response = yield call(API.getListReader, action.payload)
@@ -51,6 +54,25 @@ export function* getListReader(action) {
   }
 }
 
+
+// ============ book =================
+export function* getListBook(action) {
+  try {
+    const response = yield call(API.getListBook, action.payload)
+    yield put({
+      type: GET_LIST_BOOK_SUCCESS,
+      payload: { response },
+    })
+  } catch (error) {
+    yield put({
+      type: GET_LIST_BOOK_FAIL,
+      payload: error,
+    })
+  }
+}
+
 export const watchGetListMember = takeEvery(GET_LIST_MEMBER, getListMember)
 
 export const watchGetListReader = takeEvery(GET_LIST_READER, getListReader)
+
+export const watchGetListBook = takeEvery(GET_LIST_BOOK, getListBook)

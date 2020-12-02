@@ -42,7 +42,7 @@ function createAxios() {
         })
       return response
     },
-    (error) => {}
+    (error) => { }
   )
   return axiosInstant
 }
@@ -152,6 +152,7 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
+
 // Reader
 export const getListReader = (payload) => {
   return handleResult(
@@ -175,4 +176,38 @@ export const updateReader = (payload) => {
 
 export const getReaderInfo = (payload) => {
   return handleResult(getAxios.get(`reader/getReaderInfo?id=${payload.id}`))
+}
+
+
+// Book
+export const getListCategory = (payload) => {
+  return handleResult(
+    getAxios.get(
+      `bookCategory/getListCategory?text=${payload.text}`
+    )
+  )
+}
+
+export const getListBook = (payload) => {
+  return handleResult(
+    getAxios.get(
+      `book/getListBook?page=${payload.page}&limit=${payload.limit}&text=${payload.text}&orderBy=${payload.orderBy}&bookCategoryId=${payload.bookCategoryId}`
+    )
+  )
+}
+
+export const createBook = (payload) => {
+  return handleResult(getAxios.post(`book/createBook`, payload))
+}
+
+export const deleteBook = (payload) => {
+  return handleResult(getAxios.post(`book/deleteBook`, payload))
+}
+
+export const updateBook = (payload) => {
+  return handleResult(getAxios.post(`book/updateBook`, payload))
+}
+
+export const getBookInfo = (payload) => {
+  return handleResult(getAxios.get(`book/getBookInfo?id=${payload.id}`))
 }

@@ -87,7 +87,7 @@ class OverViewScreen extends Component {
               </div>
               <div className="col-xl-3 col-lg-6">
                 <div className="card hvr-float">
-                  <div className="card-body card-type-3">
+                  <div className="card-body card-type-3" onClick={() => push(ROUTER.READER)}>
                     <div className="row">
                       <div className="col">
                         <h6 className="text-muted mb-0">Bạn đọc</h6>
@@ -104,7 +104,7 @@ class OverViewScreen extends Component {
               </div>
               <div className="col-xl-3 col-lg-6">
                 <div className="card hvr-float">
-                  <div className="card-body card-type-3">
+                  <div className="card-body card-type-3" onClick={() => push(ROUTER.BOOK)}>
                     <div className="row">
                       <div className="col">
                         <h6 className="text-muted mb-0">Sách</h6>

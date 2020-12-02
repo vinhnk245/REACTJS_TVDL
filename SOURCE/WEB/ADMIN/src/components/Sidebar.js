@@ -58,7 +58,7 @@ class Sidebar extends Component {
                 onClick={() => push(ROUTER.MEMBER)}
               >
                 <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
-                  <i className="nav-icon fas fa-user-circle" />
+                  <i className="nav-icon fas fa-users" />
                   <p className="me-txt-menu">{STRING.member}</p>
                 </a>
               </li>
@@ -68,8 +68,28 @@ class Sidebar extends Component {
                 onClick={() => push(ROUTER.READER)}
               >
                 <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
-                  <i className="nav-icon fas fa-user-circle" />
+                  <i className="nav-icon fas fa-address-card" />
                   <p className="me-txt-menu">{STRING.reader}</p>
+                </a>
+              </li>
+
+              <li
+                className={pathName.search('sach') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
+                onClick={() => push(ROUTER.BOOK)}
+              >
+                <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
+                  <i className="nav-icon fas fa-book-open" />
+                  <p className="me-txt-menu">{STRING.book}</p>
+                </a>
+              </li>
+
+              <li
+                className={pathName.search('su-kien') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
+                onClick={() => push(ROUTER.EVENT)}
+              >
+                <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
+                  <i className="nav-icon fas fa-calendar-check" />
+                  <p className="me-txt-menu">{STRING.event}</p>
                 </a>
               </li>
 
