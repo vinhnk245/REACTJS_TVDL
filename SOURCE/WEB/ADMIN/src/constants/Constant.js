@@ -24,6 +24,7 @@ const STRING = {
   numericalOrder: 'STT',
   member: 'TNV',
   reader: 'Bạn đọc',
+  rented: 'Mượn trả',
   book: 'Sách',
   bookName: 'Tên sách',
   bookCode: 'Mã sách',

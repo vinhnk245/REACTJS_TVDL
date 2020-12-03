@@ -84,6 +84,16 @@ class Sidebar extends Component {
               </li>
 
               <li
+                className={pathName.search('muon-tra') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
+                onClick={() => push(ROUTER.RENTED)}
+              >
+                <a className="nav-link cursor nav-link-hover" data-widget={this.state.width < 990 && 'pushmenu'}>
+                  <i className="nav-icon fab fa-buffer" />
+                  <p className="me-txt-menu">{STRING.rented}</p>
+                </a>
+              </li>
+
+              <li
                 className={pathName.search('su-kien') !== -1 ? 'nav-item actived hoved' : 'nav-item hoved'}
                 onClick={() => push(ROUTER.EVENT)}
               >

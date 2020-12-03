@@ -4,6 +4,7 @@ import { ROUTER } from '@constants/Constant'
 import MemberScreen from '@screens/MemberScreen'
 import ReaderScreen from '@screens/ReaderScreen'
 import BookScreen from '@screens/BookScreen'
+import RentedScreen from '@screens/RentedScreen'
 import EventScreen from '@screens/EventScreen'
 import LoginScreen from '@screens/Auth/LoginScreen'
 import PrivateRoute from './PrivateRoute'
@@ -37,6 +38,7 @@ class MainNavigator extends Component {
           <PrivateRoute path={ROUTER.MEMBER} exact Component={MemberScreen} />
           <PrivateRoute path={ROUTER.READER} exact Component={ReaderScreen} />
           <PrivateRoute path={ROUTER.BOOK} exact Component={BookScreen} />
+          <PrivateRoute path={ROUTER.RENTED} exact Component={RentedScreen} />
           <PrivateRoute path={ROUTER.EVENT} exact Component={EventScreen} />
           <Route render={() => <Redirect to={ROUTER.OVERVIEW} />} />
         </Switch>
