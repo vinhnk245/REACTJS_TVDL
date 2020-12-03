@@ -42,7 +42,7 @@ function createAxios() {
         })
       return response
     },
-    (error) => { }
+    (error) => {}
   )
   return axiosInstant
 }
@@ -152,7 +152,6 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
-
 // Reader
 export const getListReader = (payload) => {
   return handleResult(
@@ -178,14 +177,9 @@ export const getReaderInfo = (payload) => {
   return handleResult(getAxios.get(`reader/getReaderInfo?id=${payload.id}`))
 }
 
-
 // Book
 export const getListCategory = (payload) => {
-  return handleResult(
-    getAxios.get(
-      `bookCategory/getListCategory?text=${payload.text}`
-    )
-  )
+  return handleResult(getAxios.get(`bookCategory/getListCategory?text=${payload.text}`))
 }
 
 export const getListBook = (payload) => {

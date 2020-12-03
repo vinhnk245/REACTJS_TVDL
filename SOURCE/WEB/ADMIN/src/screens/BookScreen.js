@@ -18,7 +18,7 @@ import MultiSelect from 'react-multi-select-component'
 import { getListBook } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
-import { deleteBook, createBook, updateBook, getBookInfo } from '@constants/Api'
+import { deleteBook, createBook, updateBook, getBookInfo, getListCategory } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -53,13 +53,15 @@ class BookScreen extends Component {
       listDobMonth: LIST_DOB_MONTH,
       listOrderByMember: LIST_ORDER_BY_READER,
       modal: {
-        [STRING.name]: '',
-        [STRING.parentName]: '',
-        [STRING.cardNumber]: '',
-        [STRING.parentPhone]: '',
-        [STRING.address]: '',
-        [STRING.date_of_birth]: '',
+        [STRING.bookCategory]: '',
+        [STRING.bookName]: '',
+        [STRING.amountBook]: '',
         [STRING.note]: '',
+        [STRING.description]: '',
+        [STRING.author]: '',
+        [STRING.publishers]: '',
+        [STRING.publishingYear]: '',
+        [STRING.image]: null,
       },
       validateError: {
         account: '',
@@ -70,6 +72,9 @@ class BookScreen extends Component {
       isEditBook: false,
       id: '',
       error: null,
+      // state book
+      listBookCategory: [],
+      bookCategoryId: '',
     }
     this.getData = this.getData.bind(this)
     this.renderModalField = this.renderModalField.bind(this)
@@ -79,6 +84,7 @@ class BookScreen extends Component {
 
   componentDidMount() {
     this.getData({})
+    this.getListBookCategory()
   }
 
   async getBookInfo() {
@@ -88,15 +94,35 @@ class BookScreen extends Component {
     })
   }
 
+  async getListBookCategory() {
+    this.setState({
+      isLoading: true,
+    })
+    try {
+      const res = await getListCategory({ text: '' })
+      if (res.status === 1) {
+        this.setState({
+          isLoading: false,
+          listBookCategory: res.data,
+        })
+      }
+    } catch (error) {
+      this.setState({
+        isLoading: false,
+      })
+    }
+  }
+
   async getData({ page }) {
     this.setState({ loadingAction: true })
-    const { limit, text, orderBy } = this.state
+    const { limit, text, orderBy, bookCategoryId } = this.state
     try {
       await this.props.getListBook({
         page: page || 1,
         limit: limit || CONFIG.LIMIT,
         text: text?.trim() || '',
         orderBy: orderBy || '',
+        bookCategoryId: bookCategoryId || '',
       })
 
       this.setState({
@@ -111,46 +137,72 @@ class BookScreen extends Component {
 
   async createBook() {
     const {
-      [STRING.name]: name,
-      [STRING.parentName]: parentName,
-      [STRING.parentPhone]: phone,
-      [STRING.address]: address,
-      [STRING.date_of_birth]: dob,
+      [STRING.bookCategory]: bookCategoryId,
+      [STRING.bookName]: name,
+      [STRING.amountBook]: qty,
       [STRING.note]: note,
-      [STRING.cardNumber]: cardNumber,
+      [STRING.description]: description,
+      [STRING.author]: author,
+      [STRING.publishers]: publishers,
+      [STRING.publishingYear]: publishingYear,
+      [STRING.image]: image,
     } = this.state.modal
-    const { reader_id, page } = this.state
+    const { page, bookId, isEditBook } = this.state
     this.setState({
       loadingAction: true,
     })
     try {
-      if (this.state.isEditBook) {
-        await updateBook({
-          id: reader_id,
-          name: name,
-          address: address,
-          dob: dob,
-          cardNumber: cardNumber,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
-        })
+      const formData = new FormData()
+      formData.append('id', bookId)
+      formData.append('name', name)
+      formData.append('bookCategoryId', bookCategoryId)
+      formData.append('qty', qty)
+      formData.append('note', note)
+      formData.append('author', author)
+      formData.append('publishers', publishers)
+      formData.append('description', description)
+      formData.append('publishingYear', publishingYear)
+      formData.append('image', image)
+      let res
+      if (isEditBook) {
+        res = await updateBook(formData)
       } else {
-        await createBook({
-          name: name,
-          address: address,
-          dob: dob,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
-        })
+        res = await createBook(formData)
       }
+      if (res.status === 1) {
+        this.setState(
+          {
+            show: false,
+            loadingAction: false,
 
-      this.setState({ show: false, loadingAction: false }, () => {
-        notifySuccess(STRING.notifySuccess)
-        // this.getData({ page })
-        this.getData({})
-      })
+            validateError: {
+              // account: null,
+              name: null,
+              phone: null,
+              email: null,
+              address: null,
+              [STRING.userType]: [],
+            },
+            modal: {
+              [STRING.bookCategory]: '',
+              [STRING.bookName]: '',
+              [STRING.amountBook]: '',
+              [STRING.note]: '',
+              [STRING.description]: '',
+              [STRING.author]: '',
+              [STRING.publishers]: '',
+              [STRING.publishingYear]: '',
+              [STRING.image]: null,
+            },
+            imgBook: '',
+            bookId: '',
+          },
+          () => {
+            notifySuccess(STRING.notifySuccess)
+            this.getData({})
+          }
+        )
+      }
     } catch (error) {
       this.setState({
         loadingAction: false,
@@ -158,37 +210,29 @@ class BookScreen extends Component {
     }
   }
 
-  async deleteBook() {
-    const { bookId } = this.state
-    if (bookId !== this.state.id) {
-      this.setState({ loadingAction: true })
-      try {
-        await deleteBook({
-          id: this.state.id,
-        })
-        this.getData({})
+  async deleteBook(id) {
+    this.setState({ loadingAction: true })
+    try {
+      const res = await deleteBook({
+        id: id,
+      })
+      if (res.status === 1) {
         this.setState(
           {
             loadingAction: false,
             confirmModal: false,
           },
-          () => notifySuccess(STRING.notifySuccess)
+          () => {
+            this.getData({})
+            notifySuccess(STRING.notifySuccess)
+          }
         )
-      } catch (err) {
-        this.setState(
-          {
-            loadingAction: false,
-            confirmModal: false,
-            error: err,
-          },
-          () => notifyFail(STRING.notifyFail)
-        )
-        console.log(err)
       }
-    } else {
-      swal('Tài khoản đang đăng nhập, không thể xóa')
+    } catch (err) {
       this.setState({
+        loadingAction: false,
         confirmModal: false,
+        error: err,
       })
     }
   }
@@ -209,6 +253,17 @@ class BookScreen extends Component {
     })
   }
 
+  fileUpload = (e) => {
+    this.setState({
+      ...this.state,
+      modal: {
+        ...this.state.modal,
+        [STRING.image]: e.target.files[0],
+      },
+      imgBook: '',
+    })
+  }
+
   handleChangeSelect = async (fieldName, value) => {
     await this.setState({
       ...this.state,
@@ -224,22 +279,25 @@ class BookScreen extends Component {
     }
   }
 
-  async setShow(bool, reader = {}) {
-    reactotron.log(reader)
+  async setShow(bool, book = {}) {
+    reactotron.log('book', book)
     this.setState({
       ...this.state,
       show: bool,
       modal: {
-        [STRING.name]: reader.name,
-        [STRING.parentName]: reader.parentName,
-        [STRING.parentPhone]: reader.parentPhone,
-        [STRING.address]: reader.address,
-        [STRING.date_of_birth]: Date.parse(reader.dob),
-        [STRING.note]: reader.note,
-        [STRING.cardNumber]: reader.cardNumber,
+        [STRING.bookCategory]: parseInt(book?.book_category?.id),
+        [STRING.bookName]: book?.name,
+        [STRING.amountBook]: book?.qty,
+        [STRING.note]: book?.note,
+        [STRING.description]: book?.description,
+        [STRING.author]: book?.author,
+        [STRING.publishers]: book?.publishers,
+        [STRING.publishingYear]: book?.publishingYear,
+        [STRING.image]: null,
       },
-      isEditBook: reader.id ? true : false,
-      reader_id: reader.id,
+      isEditBook: book.id ? true : false,
+      bookId: book.id,
+      imgBook: book?.book_images[0]?.image || '',
     })
   }
 
@@ -247,10 +305,10 @@ class BookScreen extends Component {
     this.setState({ page: pageNumber })
   }
   renderField() {
-    const { page, limit, text, orderBy } = this.state
+    const { page, limit, text, orderBy, listBookCategory, bookCategoryId } = this.state
     return (
       <Row className="mx-0">
-        <Col className="col-md-5 col-sm-8">
+        <Col className="col-md-4 col-sm-8">
           <input
             onKeyPress={this.handleKeyPress}
             type="text"
@@ -259,6 +317,29 @@ class BookScreen extends Component {
             value={text}
             onChange={(e) => this.handleChange('text', e.target.value)}
           />
+        </Col>
+        <Col className="col-md-4 col-sm-8">
+          <FormControl
+            as="select"
+            value={bookCategoryId}
+            onChange={(e) =>
+              this.setState(
+                {
+                  bookCategoryId: e.target.value,
+                },
+                () => this.getData({})
+              )
+            }
+          >
+            <option value="" defaultValue>
+              Chọn loại sách
+            </option>
+            {listBookCategory?.map((item, index) => (
+              <option value={item.id} key={index}>
+                {item.name}
+              </option>
+            ))}
+          </FormControl>
         </Col>
       </Row>
     )
@@ -349,7 +430,7 @@ class BookScreen extends Component {
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
               <td
-                className='hvr-rotate cursor-pointer text-table-hover color-tvdl'
+                className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
                 onClick={() => {
                   this.setState(
                     {
@@ -361,10 +442,18 @@ class BookScreen extends Component {
               >
                 {value.name || '--'}
               </td>
-              <td>{value.code || '--'}</td>
+              <td style={{ alignItems: 'center' }}>{value.code || '--'}</td>
               <td>{value.author || '--'}</td>
-              <td>{value.book_category?.name || '--'}</td>
-              <td>{value.book_images[0]?.image || '--'}</td>
+              <td>
+                {value.book_category?.logo ? <img src={value.book_category?.logo} width="100" height="auto" /> : '--'}
+              </td>
+              <td>
+                {value.book_images[0]?.image ? (
+                  <img src={value.book_images[0]?.image} width="100" height="auto" />
+                ) : (
+                  '--'
+                )}
+              </td>
               <td className="width2btn">
                 <i
                   className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
@@ -381,7 +470,7 @@ class BookScreen extends Component {
                   className="btnDelete far fa-trash-alt hvr-bounce-in"
                   onClick={() => {
                     this.setState({
-                      id: value.id,
+                      bookId: value.id,
                       confirmModal: true,
                     })
                   }}
@@ -390,10 +479,10 @@ class BookScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -479,7 +568,30 @@ class BookScreen extends Component {
             className="mr-0 ml-1"
             variant="secondary"
             onClick={() => {
-              this.setShow(false)
+              this.setState({
+                show: false,
+                validateError: {
+                  // account: null,
+                  name: null,
+                  phone: null,
+                  email: null,
+                  address: null,
+                  [STRING.userType]: [],
+                },
+                modal: {
+                  [STRING.bookCategory]: '',
+                  [STRING.bookName]: '',
+                  [STRING.amountBook]: '',
+                  [STRING.note]: '',
+                  [STRING.description]: '',
+                  [STRING.author]: '',
+                  [STRING.publishers]: '',
+                  [STRING.publishingYear]: '',
+                  [STRING.image]: null,
+                },
+                imgBook: '',
+                bookId: '',
+              })
             }}
           >
             {STRING.exit}
@@ -490,27 +602,10 @@ class BookScreen extends Component {
   }
 
   renderModalField(fieldName) {
+    const { listBookCategory, isEditBook, imgBook } = this.state
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
-    if (fieldName === STRING.date_of_birth) {
-      return (
-        <Row>
-          <Col className="modal-field" sm={4}>
-            <span>{fieldName}</span>
-          </Col>
-          <Col sm={8}>
-            <DatePickerCustom
-              className={`date-picker form-control`}
-              dateFormat="dd/MM/yyyy"
-              placeholderText={STRING.date_of_birth}
-              handleChange={this.handleChangeFieldModal}
-              selected={field}
-              maxDate={new Date()}
-            />
-          </Col>
-        </Row>
-      )
-    } else if (fieldName === STRING.parentPhone) {
+    if (fieldName === STRING.bookCategory) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
@@ -518,6 +613,68 @@ class BookScreen extends Component {
           </Col>
           <Col sm={8}>
             <FormControl
+              as="select"
+              value={field}
+              onChange={(e) => this.handleChangeFieldModal(fieldName, parseInt(e.target.value))}
+            >
+              <option value="" defaultValue>
+                Chọn loại sách
+              </option>
+              {listBookCategory?.map((item, index) => (
+                <option value={item.id} key={index}>
+                  {item.name}
+                </option>
+              ))}
+            </FormControl>
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.image) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            {isEditBook && <img src={imgBook || ''} width="100" height="auto" />}
+            <FormControl type="file" onChange={this.fileUpload} />
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.description) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <textarea
+              className="form-control"
+              placeholder="Nhập mô tả"
+              onChange={(e) => {
+                validateForm(this, field, fieldName)
+                this.setState({
+                  ...this.state,
+                  modal: {
+                    ...this.state.modal,
+                    [fieldName]: e.target.value.trim(),
+                  },
+                })
+              }}
+              value={field}
+            />
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.publishingYear) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <FormControl
+              type="number"
               aria-describedby="basic-addon1"
               placeholder={`Nhập ${fieldName?.toLowerCase()}`}
               onChange={(e) => {
@@ -526,7 +683,7 @@ class BookScreen extends Component {
                   ...this.state,
                   modal: {
                     ...this.state.modal,
-                    [fieldName]: e.target.value.trim(),
+                    [fieldName]: parseInt(e.target.value),
                   },
                 })
               }}
@@ -560,10 +717,10 @@ class BookScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
@@ -578,8 +735,8 @@ class BookScreen extends Component {
       <Modal
         show={show}
         onHide={() => {
-          this.setShow(false)
           this.setState({
+            show: false,
             validateError: {
               // account: null,
               name: null,
@@ -588,6 +745,19 @@ class BookScreen extends Component {
               address: null,
               [STRING.userType]: [],
             },
+            modal: {
+              [STRING.bookCategory]: '',
+              [STRING.bookName]: '',
+              [STRING.amountBook]: '',
+              [STRING.note]: '',
+              [STRING.description]: '',
+              [STRING.author]: '',
+              [STRING.publishers]: '',
+              [STRING.publishingYear]: '',
+              [STRING.image]: null,
+            },
+            imgBook: '',
+            bookId: '',
           })
         }}
         dialogClassName="modal-90w"
@@ -600,13 +770,15 @@ class BookScreen extends Component {
         <Modal.Body className="custom-body">
           {/* {isEditBook == false &&
                         this.renderModalField(STRING.account)} */}
-          {this.renderModalField(STRING.name)}
-          {this.renderModalField(STRING.parentName)}
-          {this.renderModalField(STRING.parentPhone)}
-          {this.renderModalField(STRING.address)}
-          {isEditBook && this.renderModalField(STRING.cardNumber)}
-          {this.renderModalField(STRING.date_of_birth)}
+          {this.renderModalField(STRING.bookCategory)}
+          {this.renderModalField(STRING.bookName)}
+          {this.renderModalField(STRING.amountBook)}
           {this.renderModalField(STRING.note)}
+          {this.renderModalField(STRING.description)}
+          {this.renderModalField(STRING.author)}
+          {this.renderModalField(STRING.publishers)}
+          {this.renderModalField(STRING.publishingYear)}
+          {this.renderModalField(STRING.image)}
           {this.renderModalButton()}
         </Modal.Body>
       </Modal>
@@ -636,7 +808,7 @@ class BookScreen extends Component {
               <Button
                 variant="success"
                 onClick={() => {
-                  this.deleteBook(this.state.reader_id)
+                  this.deleteBook(this.state.bookId)
                 }}
               >
                 OK
@@ -659,7 +831,6 @@ class BookScreen extends Component {
   }
 
   render() {
-    console.log('render')
     const { isLoading } = this.props.listBookState
     const { loadingAction } = this.state
     return (

@@ -63,6 +63,13 @@ const STRING = {
   dobMonth: 'Tháng ',
   notifySuccess: 'Thao tác thành công',
   notifyFail: 'Thao tác thất bại',
+  codeBook: 'Mã sách',
+  amountBook: 'Số lượng sách',
+  description: 'Mô tả',
+  author: 'Tác giả',
+  publishers: 'Nhà xuất bản',
+  publishingYear: 'Năm xuất bản',
+  image: 'Ảnh bìa',
 }
 const NUMBER = {
   OPTION_ONE: 1,
