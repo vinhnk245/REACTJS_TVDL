@@ -70,7 +70,7 @@ class OverViewScreen extends Component {
             <div className="row mt-4">
               <div className="col-xl-3 col-lg-6">
                 <div className="card hvr-float">
-                  <div className="card-body card-type-3">
+                  <div className="card-body card-type-3" onClick={() => push(ROUTER.RENTED)}>
                     <div className="row">
                       <div className="col">
                         <h6 className="text-muted mb-0">Mượn sách</h6>
