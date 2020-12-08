@@ -18,7 +18,7 @@ import MultiSelect from 'react-multi-select-component'
 import { getListReader } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
-import { deleteReader, createReader, updateReader, getReaderInfo } from '@constants/Api'
+import { getListRented, createReader, updateReader, getReaderInfo } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -70,6 +70,9 @@ class ReaderScreen extends Component {
       isEditReader: false,
       id: '',
       error: null,
+      //
+      listBookHis: [],
+      count: '',
     }
     this.getData = this.getData.bind(this)
     this.renderModalField = this.renderModalField.bind(this)
@@ -90,19 +93,34 @@ class ReaderScreen extends Component {
 
   async getData({ page }) {
     this.setState({ loadingAction: true })
-    const { limit, text, status, orderBy, cardNumber } = this.state
+    const {
+      limit,
+      text,
+      status,
+      orderBy,
+      cardNumber,
+      readerName,
+      bookName,
+      [STRING.fromDate]: fromDate,
+      [STRING.toDate]: toDate,
+    } = this.state
     try {
-      await this.props.getListReader({
+      const res = await getListRented({
         page: page || 1,
         limit: limit || CONFIG.LIMIT,
-        text: text?.trim() || '',
+        cardNumber: cardNumber || '',
+        readerName: readerName || '',
+        bookName: bookName || '',
+        fromDate: fromDate || '',
+        toDate: toDate || '',
         status: status || '',
         orderBy: orderBy || '',
-        cardNumber: cardNumber || '',
       })
 
       this.setState({
         loadingAction: false,
+        listBookHis: res.data.items,
+        count: res.data.count,
       })
     } catch (error) {
       this.setState({
@@ -160,40 +178,40 @@ class ReaderScreen extends Component {
     }
   }
 
-  async deleteReader() {
-    const { memberId } = this.state
-    if (memberId !== this.state.id) {
-      this.setState({ loadingAction: true })
-      try {
-        await deleteReader({
-          id: this.state.id,
-        })
-        this.getData({})
-        this.setState(
-          {
-            loadingAction: false,
-            confirmModal: false,
-          },
-          () => notifySuccess(STRING.notifySuccess)
-        )
-      } catch (err) {
-        this.setState(
-          {
-            loadingAction: false,
-            confirmModal: false,
-            error: err,
-          },
-          () => notifyFail(STRING.notifyFail)
-        )
-        console.log(err)
-      }
-    } else {
-      swal('Tài khoản đang đăng nhập, không thể xóa')
-      this.setState({
-        confirmModal: false,
-      })
-    }
-  }
+  // async deleteReader() {
+  //   const { memberId } = this.state
+  //   if (memberId !== this.state.id) {
+  //     this.setState({ loadingAction: true })
+  //     try {
+  //       await deleteReader({
+  //         id: this.state.id,
+  //       })
+  //       this.getData({})
+  //       this.setState(
+  //         {
+  //           loadingAction: false,
+  //           confirmModal: false,
+  //         },
+  //         () => notifySuccess(STRING.notifySuccess)
+  //       )
+  //     } catch (err) {
+  //       this.setState(
+  //         {
+  //           loadingAction: false,
+  //           confirmModal: false,
+  //           error: err,
+  //         },
+  //         () => notifyFail(STRING.notifyFail)
+  //       )
+  //       console.log(err)
+  //     }
+  //   } else {
+  //     swal('Tài khoản đang đăng nhập, không thể xóa')
+  //     this.setState({
+  //       confirmModal: false,
+  //     })
+  //   }
+  // }
 
   handleChange(fieldName, value) {
     this.setState({
@@ -371,15 +389,18 @@ class ReaderScreen extends Component {
   }
 
   renderTableData() {
+    const { listBookHis } = this.state
+    reactotron.log(listBookHis)
     return (
       <tbody>
-        {this.props.listReaderState?.data?.data?.items?.length ? (
-          this.props.listReaderState?.data?.data?.items?.map((value, index) => (
+        {listBookHis.length ? (
+          listBookHis.map((value, index) => (
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
-              <td>{value.cardNumber || '--'}</td>
+              <td rowspan={value?.rented_book_details?.length}>{value.readerCardNumber || '--'}</td>
               <td
-                className='hvr-rotate cursor-pointer text-table-hover color-tvdl'
+                rowspan={value?.rented_book_details?.length}
+                className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
                 onClick={() => {
                   this.setState(
                     {
@@ -389,53 +410,54 @@ class ReaderScreen extends Component {
                   )
                 }}
               >
-                {value.name || '--'}
+                {value.readerName || '--'}
               </td>
-              <td>{value.parentName || '--'}</td>
-              <td>{value.parentPhone || '--'}</td>
-              <td>{value.address || '--'}</td>
-              <td
-                className={
-                  '' +
-                  (parseInt(value.lost) > 0 ? 'text-bold text-danger' : '')
-                }
-              >{value.lost}</td>
-              <td>{value.createdDate ? toDateString(value.dob) : '--'}</td>
-              <td>{value.createdDate ? toDateString(value.createdDate) : '--'}</td>
-              <td className="width2btn">
-                <i
-                  className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
-                  onClick={() => {
-                    this.setState(
-                      {
-                        modalTitle: 'Sửa bạn đọc',
-                      },
-                      () => this.setShow(true, value)
-                    )
-                  }}
-                />
-                <i
-                  className="btnDelete far fa-trash-alt hvr-bounce-in"
-                  onClick={() => {
-                    this.setState({
-                      id: value.id,
-                      confirmModal: true,
-                    })
-                  }}
-                />
+              <td rowspan={value?.rented_book_details?.length}>
+                {value.borrowedDate ? toDateString(value.borrowedDate) : '--'}
               </td>
+              <td rowspan={value?.rented_book_details?.length}>{value.borrowedConfirmMemberName || '--'}</td>
+              {value?.rented_book_details?.map((item, index) => (
+                <tr colSpan={7}>
+                  <td>{item.bookCode || '--'}</td>
+                  <td>{item?.bookName || '--'}</td>
+                  <td>{item?.lost || '--'}</td>
+                  <td>{value.returnedDate ? toDateString(value.returnedDate) : '--'}</td>
+                  <td>{item?.returnedConfirmMemberName || '--'}</td>
+                  <td>{item?.note || '--'}</td>
+                  {/* <td className="width2btn">
+                    <i
+                      className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
+                      onClick={() => {
+                        this.setState(
+                          {
+                            modalTitle: 'Trả sách',
+                          },
+                          () => this.setShow(true, item)
+                        )
+                      }}
+                    />
+                  </td> */}
+                </tr>
+              ))}
+              {/* <td className="width2btn">
+                <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
+                  Trả toàn bộ
+                </span>
+              </td> */}
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
 
   renderTable() {
+    const { listBookHis } = this.state
+
     return (
       <div className="col-md-12 mt-3">
         <table id="example2" className="table table-hover table-responsive-sm table-responsive-md">
@@ -444,16 +466,47 @@ class ReaderScreen extends Component {
               <th>#</th>
               <th>{STRING.cardNumber}</th>
               <th>{STRING.name}</th>
-              <th>{STRING.parentName}</th>
-              <th>{STRING.parentPhone}</th>
-              <th>{STRING.address}</th>
-              <th>{STRING.lostBook}</th>
-              <th>{STRING.dob}</th>
-              <th>{STRING.joinedDate}</th>
-              <th></th>
+              <th>Ngày mượn</th>
+              <th>TNV cho mượn</th>
+              <th>{STRING.bookCode}</th>
+              <th>{STRING.bookName}</th>
+              <th>Làm mất</th>
+              <th>Ngày trả</th>
+              <th>TNV xác nhận</th>
+              <th>Ghi chú</th>
             </tr>
           </thead>
-          {this.renderTableData()}
+          <tbody>
+            {listBookHis?.map((value, index) => (
+              <>
+                <tr>
+                  <td rowSpan={value?.rented_book_details.length}>1</td>
+                  <td rowSpan={value?.rented_book_details.length}>1</td>
+                  <td rowSpan={value?.rented_book_details.length}>1</td>
+                  <td rowSpan={value?.rented_book_details.length}>1</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>2</td>
+                </tr>
+                <>
+                  {value?.rented_book_details.map((item, index) => (
+                    <tr>
+                      <td>2</td>
+                      <td>2</td>
+                      <td>2</td>
+                      <td>2</td>
+                      <td>2</td>
+                      <td>2</td>
+                    </tr>
+                  ))}
+                </>
+              </>
+            ))}
+          </tbody>
+          {/* {this.renderTableData()} */}
         </table>
       </div>
     )
@@ -600,10 +653,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>

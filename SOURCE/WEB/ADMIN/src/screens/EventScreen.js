@@ -15,10 +15,9 @@ import {
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
 import MultiSelect from 'react-multi-select-component'
-import { getListReader } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
-import { deleteReader, createReader, updateReader, getReaderInfo } from '@constants/Api'
+import { getListEvent, createEvent, updateEvent, deleteEvent } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -32,18 +31,10 @@ class ReaderScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      memberId: '',
-      account: '',
-      name: '',
-      phone: '',
-      email: '',
       address: '',
       page: 1,
       limit: CONFIG.LIMIT,
-      text: '',
-      status: '',
       orderBy: '',
-      cardNumber: '',
       totalCount: '',
       modalTitle: '',
       show: false,
@@ -53,13 +44,12 @@ class ReaderScreen extends Component {
       listDobMonth: LIST_DOB_MONTH,
       listOrderByMember: LIST_ORDER_BY_READER,
       modal: {
-        [STRING.name]: '',
-        [STRING.parentName]: '',
-        [STRING.cardNumber]: '',
-        [STRING.parentPhone]: '',
-        [STRING.address]: '',
-        [STRING.date_of_birth]: '',
+        [STRING.nameEvent]: '',
+        [STRING.content]: '',
+        [STRING.linkGoogleForm]: '',
         [STRING.note]: '',
+        [STRING.eventDate]: '',
+        [STRING.imageEvent]: null,
       },
       validateError: {
         account: '',
@@ -70,6 +60,10 @@ class ReaderScreen extends Component {
       isEditReader: false,
       id: '',
       error: null,
+      //state
+      listEvent: '',
+      imgEvent: '',
+      isEditEvent: false,
     }
     this.getData = this.getData.bind(this)
     this.renderModalField = this.renderModalField.bind(this)
@@ -81,28 +75,20 @@ class ReaderScreen extends Component {
     this.getData({})
   }
 
-  async getReaderInfo() {
-    const res = await getReaderInfo()
-    this.setState({
-      memberId: res?.data?.id,
-    })
-  }
-
   async getData({ page }) {
     this.setState({ loadingAction: true })
     const { limit, text, status, orderBy, cardNumber } = this.state
     try {
-      await this.props.getListReader({
+      const res = await getListEvent({
         page: page || 1,
         limit: limit || CONFIG.LIMIT,
-        text: text?.trim() || '',
-        status: status || '',
         orderBy: orderBy || '',
-        cardNumber: cardNumber || '',
       })
-
+      reactotron.log(res)
       this.setState({
         loadingAction: false,
+        listEvent: res.data.items,
+        count: res.data.totalCount,
       })
     } catch (error) {
       this.setState({
@@ -111,48 +97,53 @@ class ReaderScreen extends Component {
     }
   }
 
-  async createReader() {
+  async createEvent() {
     const {
-      [STRING.name]: name,
-      [STRING.parentName]: parentName,
-      [STRING.parentPhone]: phone,
-      [STRING.address]: address,
-      [STRING.date_of_birth]: dob,
-      [STRING.note]: note,
-      [STRING.cardNumber]: cardNumber,
+      [STRING.nameEvent]: name,
+      [STRING.content]: content,
+      [STRING.linkGoogleForm]: linkGoogleForm,
+      [STRING.eventDate]: eventDate,
+      [STRING.imageEvent]: imageEvent,
     } = this.state.modal
-    const { reader_id, page } = this.state
+    const { reader_id, page, event_id } = this.state
     this.setState({
       loadingAction: true,
     })
     try {
-      if (this.state.isEditReader) {
-        await updateReader({
-          id: reader_id,
-          name: name,
-          address: address,
-          dob: dob,
-          cardNumber: cardNumber,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
-        })
+      const formData = new FormData()
+      formData.append('id', event_id)
+      formData.append('name', name)
+      formData.append('content', content)
+      formData.append('linkGoogleForm', linkGoogleForm)
+      formData.append('eventDate', Date.parse(eventDate))
+      formData.append('image', imageEvent)
+      let res
+      if (this.state.isEditEvent) {
+        res = await updateEvent(formData)
       } else {
-        await createReader({
-          name: name,
-          address: address,
-          dob: dob,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
-        })
+        res = await createEvent(formData)
       }
-
-      this.setState({ show: false, loadingAction: false }, () => {
-        notifySuccess(STRING.notifySuccess)
-        // this.getData({ page })
-        this.getData({})
-      })
+      if (res.status === 1) {
+        this.setState(
+          {
+            show: false,
+            loadingAction: false,
+            modal: {
+              [STRING.nameEvent]: '',
+              [STRING.content]: '',
+              [STRING.linkGoogleForm]: '',
+              [STRING.note]: '',
+              [STRING.eventDate]: '',
+              [STRING.imageEvent]: null,
+            },
+            imgEvent: '',
+          },
+          () => {
+            notifySuccess(STRING.notifySuccess)
+          }
+        )
+      }
+      this.getData({})
     } catch (error) {
       this.setState({
         loadingAction: false,
@@ -160,15 +151,14 @@ class ReaderScreen extends Component {
     }
   }
 
-  async deleteReader() {
-    const { memberId } = this.state
-    if (memberId !== this.state.id) {
-      this.setState({ loadingAction: true })
-      try {
-        await deleteReader({
-          id: this.state.id,
-        })
-        this.getData({})
+  async deleteEvent() {
+    const { event_id } = this.state
+    this.setState({ loadingAction: true })
+    try {
+      const res = await deleteEvent({
+        id: event_id,
+      })
+      if (res.status === 1) {
         this.setState(
           {
             loadingAction: false,
@@ -176,22 +166,18 @@ class ReaderScreen extends Component {
           },
           () => notifySuccess(STRING.notifySuccess)
         )
-      } catch (err) {
-        this.setState(
-          {
-            loadingAction: false,
-            confirmModal: false,
-            error: err,
-          },
-          () => notifyFail(STRING.notifyFail)
-        )
-        console.log(err)
+        this.getData({})
       }
-    } else {
-      swal('Tài khoản đang đăng nhập, không thể xóa')
-      this.setState({
-        confirmModal: false,
-      })
+    } catch (err) {
+      this.setState(
+        {
+          loadingAction: false,
+          confirmModal: false,
+          error: err,
+        },
+        () => notifyFail(STRING.notifyFail)
+      )
+      console.log(err)
     }
   }
 
@@ -226,22 +212,20 @@ class ReaderScreen extends Component {
     }
   }
 
-  async setShow(bool, reader = {}) {
-    reactotron.log(reader)
+  async setShow(bool, event = {}) {
+    reactotron.log(event)
     this.setState({
       ...this.state,
       show: bool,
       modal: {
-        [STRING.name]: reader.name,
-        [STRING.parentName]: reader.parentName,
-        [STRING.parentPhone]: reader.parentPhone,
-        [STRING.address]: reader.address,
-        [STRING.date_of_birth]: Date.parse(reader.dob),
-        [STRING.note]: reader.note,
-        [STRING.cardNumber]: reader.cardNumber,
+        [STRING.nameEvent]: event?.name,
+        [STRING.content]: event?.content,
+        [STRING.linkGoogleForm]: event?.linkGoogleForm,
+        [STRING.eventDate]: new Date(event.eventDate),
       },
-      isEditReader: reader.id ? true : false,
-      reader_id: reader.id,
+      imgEvent: event.image,
+      isEditEvent: event.id ? true : false,
+      event_id: event.id,
     })
   }
 
@@ -252,16 +236,6 @@ class ReaderScreen extends Component {
     const { page, limit, text, status, cardNumber, orderBy, listOrderByMember } = this.state
     return (
       <Row className="mx-0">
-        <Col className="col-md-5 col-sm-8">
-          <input
-            onKeyPress={this.handleKeyPress}
-            type="text"
-            className="form-control mb-0"
-            placeholder="Nhập từ khóa"
-            value={text}
-            onChange={(e) => this.handleChange('text', e.target.value)}
-          />
-        </Col>
         <Col className="col-md-3 col-sm-4">
           <FormControl
             as="select"
@@ -272,22 +246,13 @@ class ReaderScreen extends Component {
             <option value="" defaultValue>
               {STRING.orderBy}
             </option>
-            {listOrderByMember?.map((item, index) => (
-              <option value={item.value} key={index}>
-                {item.label}
-              </option>
-            ))}
+            <option value={1} defaultValue>
+              Ngày gần nhất
+            </option>
+            <option value={2} defaultValue>
+              Ngày xa nhất
+            </option>
           </FormControl>
-        </Col>
-        <Col className="col-md-2 col-sm-4">
-          <input
-            onKeyPress={this.handleKeyPress}
-            type="text"
-            className="form-control mb-0"
-            placeholder="Nhập số thẻ"
-            value={cardNumber}
-            onChange={(e) => this.handleChange('cardNumber', e.target.value)}
-          />
         </Col>
       </Row>
     )
@@ -301,10 +266,7 @@ class ReaderScreen extends Component {
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
-                  {STRING.event}
-                  {this.props.listReaderState?.data?.data?.totalCount
-                    ? ' - ' + this.props.listReaderState?.data?.data?.totalCount
-                    : ''}
+                  {STRING.event} - {this.state.count}
                 </h1>
               </div>
               <div className="col-md-8 col-sm-8">{this.renderButton()}</div>
@@ -354,10 +316,7 @@ class ReaderScreen extends Component {
             onClick={() =>
               this.setState(
                 {
-                  text: '',
-                  // status: '',
                   orderBy: '',
-                  cardNumber: '',
                 },
                 () => this.getData({})
               )
@@ -371,15 +330,15 @@ class ReaderScreen extends Component {
   }
 
   renderTableData() {
+    const { listEvent } = this.state
     return (
       <tbody>
-        {this.props.listReaderState?.data?.data?.items?.length ? (
-          this.props.listReaderState?.data?.data?.items?.map((value, index) => (
+        {listEvent.length ? (
+          listEvent.map((value, index) => (
             <tr key={index}>
               <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
-              <td>{value.cardNumber || '--'}</td>
               <td
-                className='hvr-rotate cursor-pointer text-table-hover color-tvdl'
+                className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
                 onClick={() => {
                   this.setState(
                     {
@@ -391,17 +350,8 @@ class ReaderScreen extends Component {
               >
                 {value.name || '--'}
               </td>
-              <td>{value.parentName || '--'}</td>
-              <td>{value.parentPhone || '--'}</td>
-              <td>{value.address || '--'}</td>
-              <td
-                className={
-                  '' +
-                  (parseInt(value.lost) > 0 ? 'text-bold text-danger' : '')
-                }
-              >{value.lost}</td>
-              <td>{value.createdDate ? toDateString(value.dob) : '--'}</td>
-              <td>{value.createdDate ? toDateString(value.createdDate) : '--'}</td>
+              <td>{value.image ? <img src={value.image} width="100" height="auto" /> : '--'}</td>
+              <td>{value.eventDate ? toDateString(value.eventDate) : '--'}</td>
               <td className="width2btn">
                 <i
                   className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
@@ -418,7 +368,7 @@ class ReaderScreen extends Component {
                   className="btnDelete far fa-trash-alt hvr-bounce-in"
                   onClick={() => {
                     this.setState({
-                      id: value.id,
+                      event_id: value.id,
                       confirmModal: true,
                     })
                   }}
@@ -427,10 +377,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -442,14 +392,9 @@ class ReaderScreen extends Component {
           <thead className="text-center">
             <tr>
               <th>#</th>
-              <th>{STRING.cardNumber}</th>
-              <th>{STRING.name}</th>
-              <th>{STRING.parentName}</th>
-              <th>{STRING.parentPhone}</th>
-              <th>{STRING.address}</th>
-              <th>{STRING.lostBook}</th>
-              <th>{STRING.dob}</th>
-              <th>{STRING.joinedDate}</th>
+              <th>{STRING.nameEvent}</th>
+              <th>{STRING.imageEvent}</th>
+              <th>{STRING.eventDate}</th>
               <th></th>
             </tr>
           </thead>
@@ -490,14 +435,15 @@ class ReaderScreen extends Component {
   }
 
   checkValidationErrors() {
+    const { imgEvent } = this.state
     const {
-      account: accountError,
-      phone: phoneError,
-      name: nameError,
-      address: addressError,
-    } = this.state.validateError
-    const { account, phone, address, name } = this.state.modal
-    return accountError || phoneError || nameError || addressError || !(phone && account && address && name)
+      [STRING.nameEvent]: name,
+      [STRING.content]: content,
+      [STRING.linkGoogleForm]: linkGoogleForm,
+      [STRING.eventDate]: eventDate,
+      [STRING.imageEvent]: imageEvent,
+    } = this.state.modal
+    return !(name && content && linkGoogleForm && eventDate && imgEvent)
   }
 
   renderModalButton() {
@@ -508,9 +454,9 @@ class ReaderScreen extends Component {
           <Button
             className="mr-0 ml-1"
             variant="success"
-            // disabled={this.checkValidationErrors()}
+            disabled={this.checkValidationErrors()}
             onClick={() => {
-              this.createReader()
+              this.createEvent()
             }}
           >
             {STRING.save}
@@ -529,10 +475,52 @@ class ReaderScreen extends Component {
     )
   }
 
+  fileUpload = (e) => {
+    this.setState({
+      ...this.state,
+      modal: {
+        ...this.state.modal,
+        [STRING.imageEvent]: e.target.files[0],
+      },
+      imgEvent: URL.createObjectURL(e.target.files[0]),
+    })
+  }
+
   renderModalField(fieldName) {
+    const { isEditEvent, imgEvent } = this.state
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
-    if (fieldName === STRING.date_of_birth) {
+    if (fieldName === STRING.content) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <textarea
+              className="form-control"
+              aria-describedby="basic-addon1"
+              placeholder={`Nhập ${fieldName?.toLowerCase()}`}
+              onChange={(e) => {
+                this.setState({
+                  ...this.state,
+                  modal: {
+                    ...this.state.modal,
+                    [fieldName]: e.target.value,
+                  },
+                })
+              }}
+              value={field}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
+            />
+            {fieldError && <span className="validation-error">{fieldError}</span>}
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.eventDate) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
@@ -542,40 +530,22 @@ class ReaderScreen extends Component {
             <DatePickerCustom
               className={`date-picker form-control`}
               dateFormat="dd/MM/yyyy"
-              placeholderText={STRING.date_of_birth}
+              placeholderText={STRING.eventDate}
               handleChange={this.handleChangeFieldModal}
               selected={field}
-              maxDate={new Date()}
             />
           </Col>
         </Row>
       )
-    } else if (fieldName === STRING.parentPhone) {
+    } else if (fieldName === STRING.imageEvent) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <FormControl
-              aria-describedby="basic-addon1"
-              placeholder={`Nhập ${fieldName?.toLowerCase()}`}
-              onChange={(e) => {
-                validateForm(this, field, fieldName)
-                this.setState({
-                  ...this.state,
-                  modal: {
-                    ...this.state.modal,
-                    [fieldName]: e.target.value.trim(),
-                  },
-                })
-              }}
-              value={field}
-              onBlur={() => {
-                validateForm(this, field, fieldName)
-              }}
-            />
-            {fieldError && <span className="validation-error align-top">{fieldError}</span>}
+            {isEditEvent && <img src={imgEvent || ''} width="100" height="auto" />}
+            <FormControl type="file" onChange={this.fileUpload} />
           </Col>
         </Row>
       )
@@ -600,10 +570,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
@@ -613,23 +583,25 @@ class ReaderScreen extends Component {
   }
 
   renderModal() {
-    const { show, modalTitle, isEditReader } = this.state
+    const { show, modalTitle } = this.state
     return (
       <Modal
         show={show}
-        onHide={() => {
-          this.setShow(false)
+        onHide={() =>
           this.setState({
-            validateError: {
-              // account: null,
-              name: null,
-              phone: null,
-              email: null,
-              address: null,
-              [STRING.userType]: [],
+            ...this.state,
+            modal: {
+              [STRING.nameEvent]: '',
+              [STRING.content]: '',
+              [STRING.linkGoogleForm]: '',
+              [STRING.note]: '',
+              [STRING.eventDate]: '',
+              [STRING.imageEvent]: null,
             },
+            validateError: {},
+            show: false,
           })
-        }}
+        }
         dialogClassName="modal-90w"
         aria-labelledby="example-custom-modal-styling-title"
         centered
@@ -638,15 +610,11 @@ class ReaderScreen extends Component {
           <h5 className="text-white">{modalTitle}</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
-          {/* {isEditReader == false &&
-                        this.renderModalField(STRING.account)} */}
-          {this.renderModalField(STRING.name)}
-          {this.renderModalField(STRING.parentName)}
-          {this.renderModalField(STRING.parentPhone)}
-          {this.renderModalField(STRING.address)}
-          {isEditReader && this.renderModalField(STRING.cardNumber)}
-          {this.renderModalField(STRING.date_of_birth)}
-          {this.renderModalField(STRING.note)}
+          {this.renderModalField(STRING.nameEvent)}
+          {this.renderModalField(STRING.content)}
+          {this.renderModalField(STRING.linkGoogleForm)}
+          {this.renderModalField(STRING.eventDate)}
+          {this.renderModalField(STRING.imageEvent)}
           {this.renderModalButton()}
         </Modal.Body>
       </Modal>
@@ -676,7 +644,7 @@ class ReaderScreen extends Component {
               <Button
                 variant="success"
                 onClick={() => {
-                  this.deleteReader(this.state.reader_id)
+                  this.deleteEvent()
                 }}
               >
                 OK
@@ -699,9 +667,7 @@ class ReaderScreen extends Component {
   }
 
   render() {
-    console.log('render')
-    const { isLoading } = this.props.listReaderState
-    const { loadingAction } = this.state
+    const { loadingAction, isLoading } = this.state
     return (
       <>
         {/* {isDataLoaded && <Loading />}
@@ -715,12 +681,4 @@ class ReaderScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  listReaderState: state.ReaderReducer,
-})
-
-const mapDispatchToProps = {
-  getListReader,
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ReaderScreen)
+export default ReaderScreen

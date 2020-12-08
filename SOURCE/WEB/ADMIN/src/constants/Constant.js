@@ -70,6 +70,11 @@ const STRING = {
   publishers: 'Nhà xuất bản',
   publishingYear: 'Năm xuất bản',
   image: 'Ảnh bìa',
+  eventDate: 'Ngày sự kiện',
+  imageEvent: 'Ảnh',
+  content: 'Nội dung',
+  linkGoogleForm: 'Link google',
+  nameEvent: 'Tên sự kiện',
 }
 const NUMBER = {
   OPTION_ONE: 1,
