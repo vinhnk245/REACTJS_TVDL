@@ -301,7 +301,7 @@ class ReaderScreen extends Component {
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
-                  {STRING.reader}
+                  {STRING.event}
                   {this.props.listReaderState?.data?.data?.totalCount
                     ? ' - ' + this.props.listReaderState?.data?.data?.totalCount
                     : ''}

@@ -128,6 +128,7 @@ export const requestGetOverviews = () => {
   return handleResult(getAxios.get(`home/getOverviews`))
 }
 
+
 // Member
 export const getListMember = (payload) => {
   return handleResult(
@@ -153,6 +154,7 @@ export const getMemberInfo = (payload) => {
   return handleResult(getAxios.get(`member/getMemberInfo?id=${payload.id}`))
 }
 
+
 // Reader
 export const getListReader = (payload) => {
   return handleResult(
@@ -177,6 +179,7 @@ export const updateReader = (payload) => {
 export const getReaderInfo = (payload) => {
   return handleResult(getAxios.get(`reader/getReaderInfo?id=${payload.id}`))
 }
+
 
 // Book
 export const getListCategory = (payload) => {
@@ -205,4 +208,30 @@ export const updateBook = (payload) => {
 
 export const getBookInfo = (payload) => {
   return handleResult(getAxios.get(`book/getBookInfo?id=${payload.id}`))
+}
+
+
+// Event
+export const getListEvent = (payload) => {
+  return handleResult(
+    getAxios.get(
+      `event/getListEvent?page=${payload.page}&limit=${payload.limit}&orderBy=${payload.orderBy}`
+    )
+  )
+}
+
+export const createEvent = (payload) => {
+  return handleResult(getAxios.post(`event/createEvent`, payload))
+}
+
+export const deleteEvent = (payload) => {
+  return handleResult(getAxios.post(`event/deleteEvent`, payload))
+}
+
+export const updateEvent = (payload) => {
+  return handleResult(getAxios.post(`event/updateEvent`, payload))
+}
+
+export const getEventInfo = (payload) => {
+  return handleResult(getAxios.get(`event/getEventInfo?id=${payload.id}`))
 }
