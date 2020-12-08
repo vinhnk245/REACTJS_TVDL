@@ -8,6 +8,7 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 function createAxios() {
   var axiosInstant = axios.create()
   axiosInstant.defaults.baseURL = process.env.HOST || `http://13.251.27.111:9496/`
+  // axiosInstant.defaults.baseURL = process.env.HOST || `http://localhost:9496/`
   axiosInstant.defaults.timeout = 20000
   axiosInstant.defaults.headers = { 'Content-Type': 'application/json' }
   axiosInstant.defaults.headers = { 'access-control-allow-origin': '*' }
@@ -42,7 +43,7 @@ function createAxios() {
         })
       return response
     },
-    (error) => {}
+    (error) => { }
   )
   return axiosInstant
 }
