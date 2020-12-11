@@ -69,7 +69,7 @@ async function getRentedBookHistory(req, res) {
             'id', 'status', 'noteMember', 'readerId',
             [col("reader.cardNumber"), "readerCardNumber"],
             [col("reader.name"), "readerName"],
-            'borrowedDate', 'borrowedConfirmMemberId',
+            'borrowedDate', 'returnedDate', 'borrowedConfirmMemberId',
             [col("borrowedConfirmMember.name"), "borrowedConfirmMemberName"],
         ],
         include: [
