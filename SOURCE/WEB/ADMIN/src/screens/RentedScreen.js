@@ -9,6 +9,7 @@ import {
   CONFIG,
   ROLE,
   STATUS,
+  ROUTER,
   LIST_STATUS,
   LIST_DOB_MONTH,
   LIST_ORDER_BY_READER,
@@ -27,6 +28,7 @@ import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
 import swal from 'sweetalert'
 import reactotron from 'reactotron-react-js'
+import { Link } from 'react-router-dom'
 
 class ReaderScreen extends Component {
   constructor(props) {
@@ -423,12 +425,13 @@ class ReaderScreen extends Component {
                 {/* <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
                   Trả toàn bộ
                 </span> */}
-                <i
-                  className="btnEdit far fa-edit hvr-bounce-in"
-                  onClick={() => {
-                    alert('xem chi tiet')
-                  }}
-                />
+                <Link
+                  to={ROUTER.RENTED_DETAIL + '/' + value.id}
+                >
+                  <i
+                    className="btnEdit far fa-edit hvr-bounce-in"
+                  />
+                </Link>
               </td>
             </tr>
           ))

@@ -8,6 +8,7 @@ const ROUTER = {
   RENTED: '/muon-tra',
   EVENT: '/su-kien',
   OVERVIEW: '/tong-quan',
+  RENTED_DETAIL: '/chi-tiet-muon-tra',
 }
 const STRING = {
   lostBook: 'Làm mất',
