@@ -62,6 +62,7 @@ class MemberScreen extends Component {
         [STRING.date_of_birth]: '',
         [STRING.role]: '',
         [STRING.note]: '',
+        [STRING.status]: '',
         [STRING.joined_Date]: '',
       },
       validateError: {
@@ -128,6 +129,7 @@ class MemberScreen extends Component {
       [STRING.date_of_birth]: dob,
       [STRING.role]: role,
       [STRING.note]: note,
+      [STRING.status]: status,
       [STRING.joined_Date]: joinedDate,
     } = this.state.modal
     const { user_id, status_modal, page } = this.state
@@ -147,6 +149,7 @@ class MemberScreen extends Component {
           dob: dob,
           role: role,
           note: note,
+          status: status,
           joinedDate: joinedDate || null,
         })
       } else {
@@ -157,8 +160,9 @@ class MemberScreen extends Component {
           email: email,
           address: address,
           dob: dob,
-          role: role,
+          role: role || 3,
           note: note,
+          status: 1,
           joinedDate: joinedDate || null,
         })
       }
@@ -241,7 +245,6 @@ class MemberScreen extends Component {
   }
 
   async setShow(bool, member = {}) {
-    reactotron.log('men', member)
     this.setState({
       ...this.state,
       show: bool,
@@ -255,6 +258,7 @@ class MemberScreen extends Component {
         [STRING.note]: member.note,
         [STRING.date_of_birth]: Date.parse(member.dob),
         [STRING.role]: member.role,
+        [STRING.status]: member.status,
         [STRING.joined_Date]: Date.parse(member.joinedDate) || '',
       },
       isEditMember: member.account ? true : false,
@@ -470,10 +474,10 @@ class MemberScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -577,7 +581,33 @@ class MemberScreen extends Component {
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
 
-    if (fieldName === STRING.role) {
+    if (fieldName === STRING.status) {
+      return (
+        <Row>
+          <Col className="modal-field" sm={4}>
+            <span>{fieldName}</span>
+          </Col>
+          <Col sm={8}>
+            <FormControl
+              as="select"
+              value={field}
+              onChange={(e) =>
+                this.setState({
+                  ...this.state,
+                  modal: {
+                    ...this.state.modal,
+                    [fieldName]: parseInt(e.target.value),
+                  },
+                })
+              }
+            >
+              <option value={1}>Đang hoạt động</option>
+              <option value={0}>Tạm dừng</option>
+            </FormControl>
+          </Col>
+        </Row>
+      )
+    } else if (fieldName === STRING.role) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
@@ -724,7 +754,7 @@ class MemberScreen extends Component {
   }
 
   renderModal() {
-    const { show, modalTitle } = this.state
+    const { show, modalTitle, isEditMember } = this.state
     return (
       <Modal
         show={show}
@@ -759,6 +789,7 @@ class MemberScreen extends Component {
           {this.renderModalField(STRING.date_of_birth)}
           {this.renderModalField(STRING.role)}
           {this.renderModalField(STRING.note)}
+          {isEditMember && this.renderModalField(STRING.status)}
           {this.renderModalField(STRING.joined_Date)}
           {this.renderModalButton()}
         </Modal.Body>

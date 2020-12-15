@@ -3,7 +3,7 @@ import { withRouter, Link } from 'react-router-dom'
 import '@styles/Header.css'
 import Cookie from 'js-cookie'
 import { connect } from 'react-redux'
-import { requestGetUserInfo, updateMember } from '@constants/Api'
+import { requestGetUserInfo, updateMember, changePassword } from '@constants/Api'
 import { getListMember } from '@src/redux/actions'
 import { Button, Modal, Col, Row, FormControl } from 'react-bootstrap'
 import { STRING, ROUTER } from '@constants/Constant'
@@ -13,6 +13,7 @@ import { validateForm } from '@src/utils/helper'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
 import { toDateString } from '@src/utils/helper'
+import swal from 'sweetalert'
 
 class Header extends Component {
   constructor(props) {
@@ -69,6 +70,48 @@ class Header extends Component {
     })
   }
 
+  async changePasswordUser() {
+    this.setState({
+      loadingAction: true,
+    })
+    const { currentPassword, newPassword, confirmNewPassword } = this.state.modal
+    if (newPassword === confirmNewPassword) {
+      try {
+        const res = await changePassword({
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        })
+        if (res.status === 1) {
+          this.setState(
+            {
+              showModal: false,
+              loadingAction: false,
+            },
+            () =>
+              swal({
+                title: 'Đổi mật khẩu thành công',
+                icon: 'success',
+              })
+          )
+        }
+      } catch (error) {
+        this.setState({
+          loadingAction: true,
+        })
+      }
+    } else {
+      this.setState(
+        {
+          loadingAction: false,
+        },
+        () =>
+          swal({
+            title: 'Mật khẩu không trùng khớp',
+            icon: 'warning',
+          })
+      )
+    }
+  }
   async updateMember(memberId) {
     const user = this.props.user
     this.setState({
@@ -136,9 +179,9 @@ class Header extends Component {
         [STRING.address]: res.ADDRESS || '',
         [STRING.userType]: user.USER_ROLE
           ? user.USER_ROLE.map((e) => ({
-            label: e.ROLE_NAME,
-            value: e.ROLE_ID,
-          }))
+              label: e.ROLE_NAME,
+              value: e.ROLE_ID,
+            }))
           : [],
       },
       editUser: user.PHONE ? true : false,
@@ -226,7 +269,7 @@ class Header extends Component {
             </Col>
           </Row>
           <Row sm={4} style={{ justifyContent: 'center', marginLeft: 30 }}>
-            <Button variant="success" onClick={() => this.saveAndChangePass()} disabled={this.checkValueEmpty()}>
+            <Button variant="success" onClick={() => this.changePasswordUser()}>
               Lưu
             </Button>
           </Row>
@@ -416,7 +459,6 @@ class Header extends Component {
   render() {
     const { memberId, show, loadingAction, countBadge, user } = this.state
     // const  = this.props.user
-    reactotron.log('user ', user)
     return (
       <>
         {loadingAction && <LoadingAction />}
@@ -434,8 +476,7 @@ class Header extends Component {
           {/* Right navbar links */}
           <ul className="navbar-nav ml-auto">
             {/* Notifications Dropdown Menu */}
-            <li className="nav-item dropdown" onClick={() => this.setState({ showModalNoti: true })}>
-            </li>
+            <li className="nav-item dropdown" onClick={() => this.setState({ showModalNoti: true })}></li>
             {/* Dropdown Admin Menu */}
             <li className="nav-item dropdown">
               <a className="nav-link" data-toggle="dropdown" href="#">

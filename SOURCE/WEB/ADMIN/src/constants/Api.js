@@ -229,13 +229,33 @@ export const updateEvent = (payload) => {
 export const getEventInfo = (payload) => {
   return handleResult(getAxios.get(`event/getEventInfo?id=${payload.id}`))
 }
+
 //rented
 export const getListRented = (payload) => {
   return handleResult(
     getAxios.get(
-      `rented/getRentedBookHistory?page=1&limit=10&cardNumber=&readerName=&bookCode=&bookName=&fromDate=&toDate=&status=&orderBy`
+      `rented/getRentedBookHistory?page=${payload.page}&limit=${payload.limit}&cardNumber=${payload.cardNumber}&readerName=${payload.readerName}&bookCode=${payload.bookCode}&bookName=${payload.bookName}&fromDate=${payload.fromDate}&toDate=${payload.toDate}&status${payload.status}=&orderBy${payload.orderBy}`
     )
   )
+}
+export const getRentedDetail = (payload) => {
+  return handleResult(getAxios.get(`rented/getRentedBookDetail?id=${payload.id}`))
+}
+
+export const updateBookDetail = (payload) => {
+  return handleResult(getAxios.post(`rented/updateRentedBookDetail`, payload))
+}
+
+export const updateRentedBook = (payload) => {
+  return handleResult(getAxios.post(`rented/updateRentedBook`, payload))
+}
+
+export const createRentedBook = (payload) => {
+  return handleResult(getAxios.post(`rented/createRentedBook`, payload))
+}
+
+export const changePassword = (payload) => {
+  return handleResult(getAxios.post(`home/changePassword`, payload))
 }
 
 // export const createEvent = (payload) => {

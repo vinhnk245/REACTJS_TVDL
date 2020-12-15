@@ -15,11 +15,11 @@ import {
   LIST_ORDER_BY_READER,
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
-import MultiSelect from 'react-multi-select-component'
-import { getListReader } from '@src/redux/actions'
+import { Multiselect } from 'multiselect-react-dropdown'
+import { getListReader, getListBook } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
-import { getListRented, createReader, updateReader, getReaderInfo } from '@constants/Api'
+import { getListRented, createReader, updateReader, getReaderInfo, createRentedBook } from '@constants/Api'
 import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
@@ -55,13 +55,9 @@ class ReaderScreen extends Component {
       listDobMonth: LIST_DOB_MONTH,
       listOrderByMember: LIST_ORDER_BY_READER,
       modal: {
-        [STRING.name]: '',
-        [STRING.parentName]: '',
-        [STRING.cardNumber]: '',
-        [STRING.parentPhone]: '',
-        [STRING.address]: '',
-        [STRING.date_of_birth]: '',
+        [STRING.reader]: '',
         [STRING.note]: '',
+        [STRING.book]: '',
       },
       validateError: {
         account: '',
@@ -75,6 +71,8 @@ class ReaderScreen extends Component {
       //
       listBookHis: [],
       totalCount: '',
+      reader: [],
+      listBoook: [],
     }
     this.getData = this.getData.bind(this)
     this.renderModalField = this.renderModalField.bind(this)
@@ -84,6 +82,50 @@ class ReaderScreen extends Component {
 
   componentDidMount() {
     this.getData({})
+    this.getListReader()
+    this.getListBook()
+  }
+
+  async getListReader() {
+    this.setState({ loadingAction: true })
+    try {
+      await this.props.getListReader({
+        page: 1,
+        limit: 100000000,
+        text: '',
+        status: '',
+        orderBy: '',
+        cardNumber: '',
+      })
+
+      this.setState({
+        loadingAction: false,
+      })
+    } catch (error) {
+      this.setState({
+        loadingAction: false,
+      })
+    }
+  }
+
+  async getListBook() {
+    this.setState({ loadingAction: true })
+    try {
+      await this.props.getListBook({
+        page: 1,
+        limit: 100000000,
+        text: '',
+        orderBy: '',
+        bookCategoryId: '',
+      })
+      this.setState({
+        loadingAction: false,
+      })
+    } catch (error) {
+      this.setState({
+        loadingAction: false,
+      })
+    }
   }
 
   async getReaderInfo() {
@@ -118,7 +160,6 @@ class ReaderScreen extends Component {
         status: status || '',
         orderBy: orderBy || '',
       })
-
       this.setState({
         loadingAction: false,
         listBookHis: res.data.items,
@@ -131,89 +172,36 @@ class ReaderScreen extends Component {
     }
   }
 
-  async createReader() {
-    const {
-      [STRING.name]: name,
-      [STRING.parentName]: parentName,
-      [STRING.parentPhone]: phone,
-      [STRING.address]: address,
-      [STRING.date_of_birth]: dob,
-      [STRING.note]: note,
-      [STRING.cardNumber]: cardNumber,
-    } = this.state.modal
-    const { reader_id, page } = this.state
+  async createRentedBook() {
+    const { [STRING.note]: note } = this.state.modal
+    const { reader, listBook } = this.state
     this.setState({
       loadingAction: true,
     })
     try {
-      if (this.state.isEditReader) {
-        await updateReader({
-          id: reader_id,
-          name: name,
-          address: address,
-          dob: dob,
-          cardNumber: cardNumber,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
-        })
-      } else {
-        await createReader({
-          name: name,
-          address: address,
-          dob: dob,
-          parentName: parentName,
-          parentPhone: phone,
-          note: note,
+      let res = await createRentedBook({
+        readerId: reader[0]?.id,
+        noteMember: note,
+        listBook: listBook?.map(
+          (item) =>
+            new Object({
+              bookId: item.id,
+              bookCategoryId: item.category_id,
+            })
+        ),
+      })
+      if (res.status === 1) {
+        this.setState({ show: false, loadingAction: false }, () => {
+          notifySuccess(STRING.notifySuccess)
+          this.getData({})
         })
       }
-
-      this.setState({ show: false, loadingAction: false }, () => {
-        notifySuccess(STRING.notifySuccess)
-        // this.getData({ page })
-        this.getData({})
-      })
     } catch (error) {
       this.setState({
         loadingAction: false,
       })
     }
   }
-
-  // async deleteReader() {
-  //   const { memberId } = this.state
-  //   if (memberId !== this.state.id) {
-  //     this.setState({ loadingAction: true })
-  //     try {
-  //       await deleteReader({
-  //         id: this.state.id,
-  //       })
-  //       this.getData({})
-  //       this.setState(
-  //         {
-  //           loadingAction: false,
-  //           confirmModal: false,
-  //         },
-  //         () => notifySuccess(STRING.notifySuccess)
-  //       )
-  //     } catch (err) {
-  //       this.setState(
-  //         {
-  //           loadingAction: false,
-  //           confirmModal: false,
-  //           error: err,
-  //         },
-  //         () => notifyFail(STRING.notifyFail)
-  //       )
-  //       console.log(err)
-  //     }
-  //   } else {
-  //     swal('Tài khoản đang đăng nhập, không thể xóa')
-  //     this.setState({
-  //       confirmModal: false,
-  //     })
-  //   }
-  // }
 
   handleChange(fieldName, value) {
     this.setState({
@@ -247,7 +235,6 @@ class ReaderScreen extends Component {
   }
 
   async setShow(bool, reader = {}) {
-    reactotron.log(reader)
     this.setState({
       ...this.state,
       show: bool,
@@ -322,9 +309,7 @@ class ReaderScreen extends Component {
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
                   Lượt mượn trong tháng
-                  {this.state.totalCount
-                    ? ' - ' + this.state.totalCount
-                    : ''}
+                  {this.state.totalCount ? ' - ' + this.state.totalCount : ''}
                 </h1>
               </div>
               <div className="col-md-8 col-sm-8">{this.renderButton()}</div>
@@ -392,7 +377,6 @@ class ReaderScreen extends Component {
 
   renderTableData() {
     const { listBookHis } = this.state
-    reactotron.log(listBookHis)
     return (
       <tbody>
         {listBookHis.length ? (
@@ -413,33 +397,25 @@ class ReaderScreen extends Component {
               >
                 {value.readerName || '--'}
               </td>
-              <td>
-                {value.borrowedDate ? toDateString(value.borrowedDate) : '--'}
-              </td>
-              <td>
-                {value.returnedDate ? toDateString(value.returnedDate) : '--'}
-              </td>
+              <td>{value.borrowedDate ? toDateString(value.borrowedDate) : '--'}</td>
+              <td>{value.returnedDate ? toDateString(value.returnedDate) : '--'}</td>
               <td>{value.borrowedConfirmMemberName || '--'}</td>
               <td>{value.rented_book_details?.length || '--'}</td>
               <td className="width2btn">
                 {/* <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
                   Trả toàn bộ
                 </span> */}
-                <Link
-                  to={ROUTER.RENTED_DETAIL + '/' + value.id}
-                >
-                  <i
-                    className="btnEdit far fa-edit hvr-bounce-in"
-                  />
+                <Link to={ROUTER.RENTED_DETAIL + '/' + value.id}>
+                  <i className="btnEdit far fa-edit hvr-bounce-in" />
                 </Link>
               </td>
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -519,7 +495,7 @@ class ReaderScreen extends Component {
             variant="success"
             // disabled={this.checkValidationErrors()}
             onClick={() => {
-              this.createReader()
+              this.createRentedBook()
             }}
           >
             {STRING.save}
@@ -538,35 +514,81 @@ class ReaderScreen extends Component {
     )
   }
 
+  onSelect = (selectedList, selectedItem) => {
+    this.setState({
+      ...this.state,
+      reader: selectedList || '',
+    })
+  }
+
+  onRemove = (selectedList, removedItem) => {
+    this.setState({
+      ...this.state,
+      reader: selectedList || '',
+    })
+  }
+  onSelectBook = (selectedList, selectedItem) => {
+    this.setState({
+      ...this.state,
+      listBook: selectedList || '',
+    })
+  }
+
+  onRemoveBook = (selectedList, removedItem) => {
+    this.setState({
+      ...this.state,
+      listBook: selectedList || '',
+    })
+  }
+
   renderModalField(fieldName) {
+    const { note, reader } = this.state
+    const listReader = this.props.listReaderState?.data?.data?.items?.map(
+      (reader) =>
+        new Object({
+          id: reader.id,
+          name: reader.name,
+        })
+    )
+    const listBook = this.props.listBookState?.data?.data?.items?.map(
+      (reader) =>
+        new Object({
+          id: reader.id,
+          name: reader.name,
+          category_id: reader.book_category.id,
+        })
+    )
+
     const { [fieldName]: field } = this.state.modal
     const { [fieldName]: fieldError } = this.state.validateError
-    if (fieldName === STRING.date_of_birth) {
+    if (fieldName === STRING.reader) {
       return (
-        <Row>
+        <Row className="mb-2">
           <Col className="modal-field" sm={4}>
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <DatePickerCustom
-              className={`date-picker form-control`}
-              dateFormat="dd/MM/yyyy"
-              placeholderText={STRING.date_of_birth}
-              handleChange={this.handleChangeFieldModal}
-              selected={field}
-              maxDate={new Date()}
+            <Multiselect
+              selectionLimit={1}
+              options={listReader}
+              selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
+              onSelect={this.onSelect} // Function will trigger on select event
+              onRemove={this.onRemove} // Function will trigger on remove event
+              displayValue="name"
+              placeholder="Chọn bạn đọc"
             />
           </Col>
         </Row>
       )
-    } else if (fieldName === STRING.parentPhone) {
+    } else if (fieldName === STRING.note) {
       return (
         <Row>
           <Col className="modal-field" sm={4}>
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <FormControl
+            <textarea
+              className="form-control"
               aria-describedby="basic-addon1"
               placeholder={`Nhập ${fieldName?.toLowerCase()}`}
               onChange={(e) => {
@@ -588,33 +610,23 @@ class ReaderScreen extends Component {
           </Col>
         </Row>
       )
-    } else {
+    } else if (fieldName === STRING.book) {
       return (
-        <Row>
+        <Row className="mb-2">
           <Col className="modal-field" sm={4}>
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            <FormControl
-              aria-describedby="basic-addon1"
-              placeholder={`Nhập ${fieldName?.toLowerCase()}`}
-              onChange={(e) => {
-                validateForm(this, field, fieldName)
-                this.setState({
-                  ...this.state,
-                  modal: {
-                    ...this.state.modal,
-                    [fieldName]: e.target.value,
-                  },
-                })
-              }}
-              value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+            <Multiselect
+              className="form-control"
+              selectionLimit={3}
+              options={listBook}
+              selectedValues={this.state.selectedValue} // Preselected value to persist in dropdown
+              onSelect={this.onSelectBook} // Function will trigger on select event
+              onRemove={this.onRemoveBook} // Function will trigger on remove event
+              displayValue="name"
+              placeholder="Chọn sách"
             />
-            {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
         </Row>
       )
@@ -647,14 +659,8 @@ class ReaderScreen extends Component {
           <h5 className="text-white">{modalTitle}</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
-          {/* {isEditReader == false &&
-                        this.renderModalField(STRING.account)} */}
-          {this.renderModalField(STRING.name)}
-          {this.renderModalField(STRING.parentName)}
-          {this.renderModalField(STRING.parentPhone)}
-          {this.renderModalField(STRING.address)}
-          {isEditReader && this.renderModalField(STRING.cardNumber)}
-          {this.renderModalField(STRING.date_of_birth)}
+          {this.renderModalField(STRING.reader)}
+          {this.renderModalField(STRING.book)}
           {this.renderModalField(STRING.note)}
           {this.renderModalButton()}
         </Modal.Body>
@@ -708,7 +714,6 @@ class ReaderScreen extends Component {
   }
 
   render() {
-    console.log('render')
     const { isLoading } = this.props.listReaderState
     const { loadingAction } = this.state
     return (
@@ -726,10 +731,12 @@ class ReaderScreen extends Component {
 
 const mapStateToProps = (state) => ({
   listReaderState: state.ReaderReducer,
+  listBookState: state.BookReducer,
 })
 
 const mapDispatchToProps = {
   getListReader,
+  getListBook,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReaderScreen)
