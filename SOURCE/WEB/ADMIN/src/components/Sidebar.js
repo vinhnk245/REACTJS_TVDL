@@ -28,7 +28,7 @@ class Sidebar extends Component {
       <aside className="main-sidebar sidebar-dark-primary elevation-4 me-sidebar">
         {/* Brand Logo */}
         <a className="brand-link cursor head-menu-sidebar">
-          <img src={logo} className="brand-image logo-sidebar" data-auto-collapse-size="768" />
+          {/* <img src={logo} className="brand-image logo-sidebar" data-auto-collapse-size="768" /> */}
           <i className="nav-icon fas fa-bars me-delete" data-widget={this.state.width < 990 && 'pushmenu'}></i>
         </a>
         {/* Sidebar */}

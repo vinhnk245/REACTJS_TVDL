@@ -72,7 +72,7 @@ class ReaderScreen extends Component {
       error: null,
       //
       listBookHis: [],
-      count: '',
+      totalCount: '',
     }
     this.getData = this.getData.bind(this)
     this.renderModalField = this.renderModalField.bind(this)
@@ -120,7 +120,7 @@ class ReaderScreen extends Component {
       this.setState({
         loadingAction: false,
         listBookHis: res.data.items,
-        count: res.data.count,
+        totalCount: res.data.totalCount,
       })
     } catch (error) {
       this.setState({
@@ -319,9 +319,9 @@ class ReaderScreen extends Component {
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
-                  Mượn trả trong tháng
-                  {this.props.listReaderState?.data?.data?.totalCount
-                    ? ' - ' + this.props.listReaderState?.data?.data?.totalCount
+                  Lượt mượn trong tháng
+                  {this.state.totalCount
+                    ? ' - ' + this.state.totalCount
                     : ''}
                 </h1>
               </div>
@@ -396,10 +396,9 @@ class ReaderScreen extends Component {
         {listBookHis.length ? (
           listBookHis.map((value, index) => (
             <tr key={index}>
-              <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
-              <td rowspan={value?.rented_book_details?.length}>{value.readerCardNumber || '--'}</td>
+              {/* <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td> */}
+              <td>{value.readerCardNumber || '--'}</td>
               <td
-                rowspan={value?.rented_book_details?.length}
                 className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
                 onClick={() => {
                   this.setState(
@@ -412,45 +411,32 @@ class ReaderScreen extends Component {
               >
                 {value.readerName || '--'}
               </td>
-              <td rowspan={value?.rented_book_details?.length}>
+              <td>
                 {value.borrowedDate ? toDateString(value.borrowedDate) : '--'}
               </td>
-              <td rowspan={value?.rented_book_details?.length}>{value.borrowedConfirmMemberName || '--'}</td>
-              {value?.rented_book_details?.map((item, index) => (
-                <tr colSpan={7}>
-                  <td>{item.bookCode || '--'}</td>
-                  <td>{item?.bookName || '--'}</td>
-                  <td>{item?.lost || '--'}</td>
-                  <td>{value.returnedDate ? toDateString(value.returnedDate) : '--'}</td>
-                  <td>{item?.returnedConfirmMemberName || '--'}</td>
-                  <td>{item?.note || '--'}</td>
-                  {/* <td className="width2btn">
-                    <i
-                      className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
-                      onClick={() => {
-                        this.setState(
-                          {
-                            modalTitle: 'Trả sách',
-                          },
-                          () => this.setShow(true, item)
-                        )
-                      }}
-                    />
-                  </td> */}
-                </tr>
-              ))}
-              {/* <td className="width2btn">
-                <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
+              <td>
+                {value.returnedDate ? toDateString(value.returnedDate) : '--'}
+              </td>
+              <td>{value.borrowedConfirmMemberName || '--'}</td>
+              <td>{value.rented_book_details?.length || '--'}</td>
+              <td className="width2btn">
+                {/* <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
                   Trả toàn bộ
-                </span>
-              </td> */}
+                </span> */}
+                <i
+                  className="btnEdit far fa-edit hvr-bounce-in"
+                  onClick={() => {
+                    alert('xem chi tiet')
+                  }}
+                />
+              </td>
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -463,50 +449,17 @@ class ReaderScreen extends Component {
         <table id="example2" className="table table-hover table-responsive-sm table-responsive-md">
           <thead className="text-center">
             <tr>
-              <th>#</th>
+              {/* <th>#</th> */}
               <th>{STRING.cardNumber}</th>
               <th>{STRING.name}</th>
               <th>Ngày mượn</th>
-              <th>TNV cho mượn</th>
-              <th>{STRING.bookCode}</th>
-              <th>{STRING.bookName}</th>
-              <th>Làm mất</th>
               <th>Ngày trả</th>
-              <th>TNV xác nhận</th>
-              <th>Ghi chú</th>
+              <th>TNV cho mượn</th>
+              <th>Số lượng</th>
+              <th></th>
             </tr>
           </thead>
-          <tbody>
-            {listBookHis?.map((value, index) => (
-              <>
-                <tr>
-                  <td rowSpan={value?.rented_book_details.length}>1</td>
-                  <td rowSpan={value?.rented_book_details.length}>1</td>
-                  <td rowSpan={value?.rented_book_details.length}>1</td>
-                  <td rowSpan={value?.rented_book_details.length}>1</td>
-                  <td>2</td>
-                  <td>2</td>
-                  <td>2</td>
-                  <td>2</td>
-                  <td>2</td>
-                  <td>2</td>
-                </tr>
-                <>
-                  {value?.rented_book_details.map((item, index) => (
-                    <tr>
-                      <td>2</td>
-                      <td>2</td>
-                      <td>2</td>
-                      <td>2</td>
-                      <td>2</td>
-                      <td>2</td>
-                    </tr>
-                  ))}
-                </>
-              </>
-            ))}
-          </tbody>
-          {/* {this.renderTableData()} */}
+          {this.renderTableData()}
         </table>
       </div>
     )
@@ -653,10 +606,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-              // onBlur={() => {
-              //   // console.log(this.state.validateError)
-              //   validateForm(this, field?.trim(), fieldName)
-              // }}
+            // onBlur={() => {
+            //   // console.log(this.state.validateError)
+            //   validateForm(this, field?.trim(), fieldName)
+            // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>

@@ -377,10 +377,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -511,10 +511,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-              // onBlur={() => {
-              //   // console.log(this.state.validateError)
-              //   validateForm(this, field?.trim(), fieldName)
-              // }}
+            // onBlur={() => {
+            //   // console.log(this.state.validateError)
+            //   validateForm(this, field?.trim(), fieldName)
+            // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
@@ -570,10 +570,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-              // onBlur={() => {
-              //   // console.log(this.state.validateError)
-              //   validateForm(this, field?.trim(), fieldName)
-              // }}
+            // onBlur={() => {
+            //   // console.log(this.state.validateError)
+            //   validateForm(this, field?.trim(), fieldName)
+            // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
