@@ -14,7 +14,6 @@ import {
   LIST_ORDER_BY_READER,
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
-import MultiSelect from 'react-multi-select-component'
 import { getListReader } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'

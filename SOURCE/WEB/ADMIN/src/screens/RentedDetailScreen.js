@@ -4,19 +4,10 @@ import '@styles/ReaderScreen.css'
 import '@styles/hover.css'
 import {
   STRING,
-  NUMBER,
-  IS_ACTIVE,
   CONFIG,
-  ROLE,
-  STATUS,
-  LIST_STATUS,
-  LIST_DOB_MONTH,
-  LIST_ORDER_BY_READER,
 } from '@constants/Constant'
-import { validateForm } from '@src/utils/helper'
 import Loading from '@src/components/Loading'
 import Error from '@src/components/Error'
-import DatePickerCustom from '@src/components/DatePickerCustom'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
 import { toDateString } from '@src/utils/helper'
@@ -180,12 +171,12 @@ class RentedDetailScreen extends Component {
     return (
       <div
         className="p-2"
-        // style={{
-        //   backgroundColor: 'white',
-        //   borderRadius: '5px',
-        //   boxShadow: '3px 3px 10px rgb(0, 0, 0, 0.4)',
-        //   marginTop: -5,
-        // }}
+      // style={{
+      //   backgroundColor: 'white',
+      //   borderRadius: '5px',
+      //   boxShadow: '3px 3px 10px rgb(0, 0, 0, 0.4)',
+      //   marginTop: -5,
+      // }}
       >
         <div className="mx-2">
           <div className="row">
@@ -246,26 +237,17 @@ class RentedDetailScreen extends Component {
         {rentedDetail?.rented_book_details?.length ? (
           rentedDetail?.rented_book_details?.map((value, index) => (
             <tr key={index}>
-              <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td>
-              <td>{value?.bookName || '--'}</td>
-              <td
-              // className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
-              // onClick={() => {
-              //   this.setState(
-              //     {
-              //       modalTitle: 'Sửa bạn đọc',
-              //     },
-              //     () => this.setShow(true, value)
-              //   )
-              // }}
-              >
-                {value.bookCode || '--'}
-              </td>
               <td>
                 <img src={value?.categoryLogo || ''} width="100" height="auto" />
               </td>
               <td>
                 <img src={value?.bookImage[0] || ''} width="100" height="auto" />
+              </td>
+              {/* <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td> */}
+              <td>{value?.bookName || '--'}</td>
+              <td
+              >
+                {value.bookCode || '--'}
               </td>
               <td className={'' + (parseInt(value.lost) > 0 ? 'text-bold text-danger' : '')}>{value.lost}</td>
               <td>{value.returnedDate ? toDateString(value?.returnedDate) : '--'}</td>
@@ -286,10 +268,10 @@ class RentedDetailScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={9}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={9}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -300,11 +282,11 @@ class RentedDetailScreen extends Component {
         <table id="example2" className="table table-hover table-responsive-sm table-responsive-md">
           <thead className="text-center">
             <tr>
-              <th>#</th>
+              {/* <th>#</th> */}
+              <th>Thể loại</th>
+              <th>Ảnh</th>
               <th>Tên sách</th>
               <th>Mã sách</th>
-              <th>Loại sách</th>
-              <th>Ảnh bìa</th>
               <th>Làm mất</th>
               <th>Ngày trả</th>
               <th>Người xác nhận</th>
@@ -374,12 +356,12 @@ class RentedDetailScreen extends Component {
             </Col>
           </Row>
           <Row>
-            <Col className="button-wrapper" style={{ justifyContent: 'center' }}>
+            <Col className="button-wrapper mt-3" style={{ justifyContent: 'center' }}>
               <Button variant="success" onClick={() => this.setState({ confirmModal: true })}>
-                OK
+                Xác nhận
               </Button>
               <Button
-                variant="primary"
+                variant="secondary"
                 onClick={() => {
                   this.setState({
                     showModalBookDetail: false,

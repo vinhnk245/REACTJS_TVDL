@@ -14,7 +14,6 @@ import {
   LIST_ORDER_BY_READER,
 } from '@constants/Constant'
 import Pagination from 'react-js-pagination'
-import MultiSelect from 'react-multi-select-component'
 import { getListBook } from '@src/redux/actions'
 import { connect } from 'react-redux'
 import { toDateString } from '@src/utils/helper'
@@ -451,8 +450,8 @@ class BookScreen extends Component {
                 {value.book_images[0]?.image ? (
                   <img src={value.book_images[0]?.image} width="100" height="auto" />
                 ) : (
-                  '--'
-                )}
+                    '--'
+                  )}
               </td>
               <td className="width2btn">
                 <i
@@ -479,10 +478,10 @@ class BookScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -717,10 +716,10 @@ class BookScreen extends Component {
                 })
               }}
               value={field}
-              // onBlur={() => {
-              //   // console.log(this.state.validateError)
-              //   validateForm(this, field?.trim(), fieldName)
-              // }}
+            // onBlur={() => {
+            //   // console.log(this.state.validateError)
+            //   validateForm(this, field?.trim(), fieldName)
+            // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>

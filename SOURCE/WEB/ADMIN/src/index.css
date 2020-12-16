@@ -204,6 +204,20 @@ thead {
   border: none !important;
 }
 
-/* .text-table-hover:hover {
-  padding-top: 0px !important;
+._7ahQImyV4dj0EpcNOjnwA {
+  background: #00cc7a !important;
+}
+
+.modal-header {
+  /* background-color: cornflowerblue; */
+  background-color: #00cc7a !important;
+}
+
+/* .form-control:focus {
+  box-shadow: 0 0 1px 0.4px #00cc7a !important;
+  border: none !important;
 } */
+
+input[type='checkbox']:focus { 
+  box-shadow: none !important;
+}

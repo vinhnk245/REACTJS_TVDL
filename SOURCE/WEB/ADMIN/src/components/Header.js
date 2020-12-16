@@ -8,7 +8,8 @@ import { getListMember } from '@src/redux/actions'
 import { Button, Modal, Col, Row, FormControl } from 'react-bootstrap'
 import { STRING, ROUTER } from '@constants/Constant'
 import reactotron from 'reactotron-react-js'
-import MultiSelect from 'react-multi-select-component'
+// import MultiSelect from 'react-multi-select-component'
+import MultiSelect from 'multiselect-react-dropdown'
 import { validateForm } from '@src/utils/helper'
 import LoadingAction from '@src/components/LoadingAction'
 import { notifyFail, notifySuccess } from '@src/utils/notify'
@@ -91,12 +92,14 @@ class Header extends Component {
               swal({
                 title: 'Đổi mật khẩu thành công',
                 icon: 'success',
+                timer: 2000,
               })
           )
         }
+
       } catch (error) {
         this.setState({
-          loadingAction: true,
+          loadingAction: false,
         })
       }
     } else {
@@ -106,7 +109,7 @@ class Header extends Component {
         },
         () =>
           swal({
-            title: 'Mật khẩu không trùng khớp',
+            title: 'Mật khẩu xác nhận không khớp',
             icon: 'warning',
           })
       )
@@ -179,9 +182,9 @@ class Header extends Component {
         [STRING.address]: res.ADDRESS || '',
         [STRING.userType]: user.USER_ROLE
           ? user.USER_ROLE.map((e) => ({
-              label: e.ROLE_NAME,
-              value: e.ROLE_ID,
-            }))
+            label: e.ROLE_NAME,
+            value: e.ROLE_ID,
+          }))
           : [],
       },
       editUser: user.PHONE ? true : false,
