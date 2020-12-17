@@ -10,7 +10,7 @@ import {
   ROLE,
   STATUS,
   ROUTER,
-  LIST_STATUS,
+  LIST_STATUS_RENTED,
   LIST_DOB_MONTH,
   LIST_ORDER_BY_READER,
 } from '@constants/Constant'
@@ -41,7 +41,7 @@ class ReaderScreen extends Component {
       email: '',
       address: '',
       page: 1,
-      limit: CONFIG.LIMIT,
+      limit: CONFIG.LIMIT_10,
       text: '',
       status: '',
       orderBy: '',
@@ -51,7 +51,7 @@ class ReaderScreen extends Component {
       show: false,
       confirmModal: false,
       loadingAction: false,
-      listStatus: LIST_STATUS,
+      listStatusRented: LIST_STATUS_RENTED,
       listDobMonth: LIST_DOB_MONTH,
       listOrderByMember: LIST_ORDER_BY_READER,
       modal: {
@@ -139,7 +139,6 @@ class ReaderScreen extends Component {
     this.setState({ loadingAction: true })
     const {
       limit,
-      text,
       status,
       orderBy,
       cardNumber,
@@ -151,14 +150,14 @@ class ReaderScreen extends Component {
     try {
       const res = await getListRented({
         page: page || 1,
-        limit: limit || CONFIG.LIMIT,
+        limit: limit || CONFIG.LIMIT_10,
         cardNumber: cardNumber || '',
-        readerName: readerName || '',
-        bookName: bookName || '',
-        fromDate: fromDate || '',
-        toDate: toDate || '',
+        // readerName: readerName || '',
+        // bookName: bookName || '',
+        // fromDate: fromDate || '',
+        // toDate: toDate || '',
         status: status || '',
-        orderBy: orderBy || '',
+        // orderBy: orderBy || '',
       })
       this.setState({
         loadingAction: false,
@@ -256,10 +255,10 @@ class ReaderScreen extends Component {
     this.setState({ page: pageNumber })
   }
   renderField() {
-    const { page, limit, text, status, cardNumber, orderBy, listOrderByMember } = this.state
+    const { status, cardNumber, orderBy, listStatusRented } = this.state
     return (
       <Row className="mx-0">
-        <Col className="col-md-5 col-sm-8">
+        {/* <Col className="col-md-5 col-sm-8">
           <input
             onKeyPress={this.handleKeyPress}
             type="text"
@@ -268,8 +267,8 @@ class ReaderScreen extends Component {
             value={text}
             onChange={(e) => this.handleChange('text', e.target.value)}
           />
-        </Col>
-        <Col className="col-md-3 col-sm-4">
+        </Col> */}
+        {/* <Col className="col-md-3 col-sm-4">
           <FormControl
             as="select"
             className="mb-0"
@@ -285,7 +284,7 @@ class ReaderScreen extends Component {
               </option>
             ))}
           </FormControl>
-        </Col>
+        </Col> */}
         <Col className="col-md-2 col-sm-4">
           <input
             onKeyPress={this.handleKeyPress}
@@ -295,6 +294,23 @@ class ReaderScreen extends Component {
             value={cardNumber}
             onChange={(e) => this.handleChange('cardNumber', e.target.value)}
           />
+        </Col>
+        <Col className="col-md-2 col-sm-4">
+          <FormControl
+            as="select"
+            className="mb-0"
+            value={status}
+            onChange={(e) => this.handleChangeSelect('status', e.target.value)}
+          >
+            <option value="" defaultValue>
+              {STRING.status}
+            </option>
+            {listStatusRented?.map((item, index) => (
+              <option value={item.value} key={index}>
+                {item.label}
+              </option>
+            ))}
+          </FormControl>
         </Col>
       </Row>
     )
@@ -308,8 +324,8 @@ class ReaderScreen extends Component {
             <div className="row my-2">
               <div className="col-md-4 col-sm-4">
                 <h1 className="text-header-screen">
-                  Lượt mượn trong tháng
-                  {this.state.totalCount ? ' - ' + this.state.totalCount : ''}
+                  Mượn trả
+                  {/* {this.state.totalCount ? ' - ' + this.state.totalCount : ''} */}
                 </h1>
               </div>
               <div className="col-md-8 col-sm-8">{this.renderButton()}</div>
@@ -360,7 +376,7 @@ class ReaderScreen extends Component {
               this.setState(
                 {
                   text: '',
-                  // status: '',
+                  status: '',
                   orderBy: '',
                   cardNumber: '',
                 },
@@ -382,7 +398,7 @@ class ReaderScreen extends Component {
         {listBookHis.length ? (
           listBookHis.map((value, index) => (
             <tr key={index}>
-              {/* <td>{index + CONFIG.LIMIT * (this.state.page - 1) + 1}</td> */}
+              {/* <td>{index + CONFIG.LIMIT_10 * (this.state.page - 1) + 1}</td> */}
               <td>{value.readerCardNumber || '--'}</td>
               <td
                 className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
@@ -401,10 +417,8 @@ class ReaderScreen extends Component {
               <td>{value.returnedDate ? toDateString(value.returnedDate) : '--'}</td>
               <td>{value.borrowedConfirmMemberName || '--'}</td>
               <td>{value.rented_book_details?.length || '--'}</td>
+              <td>{parseInt(value.status) === 2 ? STATUS.RETURNED : parseInt(value.status) === 1 ? STATUS.BORROWED : STATUS.PENDING || '--'}</td>
               <td className="width2btn">
-                {/* <span onClick={() => alert('1')} style={{ cursor: 'pointer' }}>
-                  Trả toàn bộ
-                </span> */}
                 <Link to={ROUTER.RENTED_DETAIL + '/' + value.id}>
                   <i className="btnEdit far fa-edit hvr-bounce-in" />
                 </Link>
@@ -412,10 +426,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-          <tr className="text-center">
-            <td colSpan={12}>{STRING.emptyData}</td>
-          </tr>
-        )}
+            <tr className="text-center">
+              <td colSpan={12}>{STRING.emptyData}</td>
+            </tr>
+          )}
       </tbody>
     )
   }
@@ -435,6 +449,7 @@ class ReaderScreen extends Component {
               <th>Ngày trả</th>
               <th>TNV cho mượn</th>
               <th>Số lượng</th>
+              <th>Trạng thái</th>
               <th></th>
             </tr>
           </thead>
@@ -445,8 +460,9 @@ class ReaderScreen extends Component {
   }
 
   renderPagination() {
-    const totalCount = this.props.listReaderState?.data?.data?.totalCount
-    // console.log(this.props.listReaderState)
+    // const totalCount = this.props.listReaderState?.data?.data?.totalCount
+    const totalCount = this.state.totalCount
+    // alert(totalCount)
     const { page } = this.state
     return (
       <Col md="12">
@@ -456,7 +472,7 @@ class ReaderScreen extends Component {
           hideDisabled
           activePage={page}
           totalItemsCount={totalCount || 0}
-          itemsCountPerPage={CONFIG.LIMIT}
+          itemsCountPerPage={CONFIG.LIMIT_10}
           pageRangeDisplayed={5}
           hideNavigation
           hideFirstLastPages

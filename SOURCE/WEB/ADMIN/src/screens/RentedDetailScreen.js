@@ -101,6 +101,7 @@ class RentedDetailScreen extends Component {
             swal({
               title: 'Thành công',
               icon: 'success',
+              timer: 2000,
             })
         )
         this.getDetail()
@@ -252,6 +253,7 @@ class RentedDetailScreen extends Component {
               <td className={'' + (parseInt(value.lost) > 0 ? 'text-bold text-danger' : '')}>{value.lost}</td>
               <td>{value.returnedDate ? toDateString(value?.returnedDate) : '--'}</td>
               <td>{value.returnedConfirmMemberName || '--'}</td>
+              <td className={'' + (parseInt(value.outOfDate) > 0 ? 'text-bold text-danger' : '')}>{value.outOfDate}</td>
               <td className="width2btn">
                 <i
                   className="btnEdit fa fa-fw fa-edit hvr-bounce-in"
@@ -290,6 +292,7 @@ class RentedDetailScreen extends Component {
               <th>Làm mất</th>
               <th>Ngày trả</th>
               <th>Người xác nhận</th>
+              <th>Quá hạn</th>
               <th></th>
             </tr>
           </thead>

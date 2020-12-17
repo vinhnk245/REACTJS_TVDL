@@ -43,7 +43,7 @@ function createAxios() {
         })
       return response
     },
-    (error) => {}
+    (error) => { }
   )
   return axiosInstant
 }
@@ -234,7 +234,8 @@ export const getEventInfo = (payload) => {
 export const getListRented = (payload) => {
   return handleResult(
     getAxios.get(
-      `rented/getRentedBookHistory?page=${payload.page}&limit=${payload.limit}&cardNumber=${payload.cardNumber}&readerName=${payload.readerName}&bookCode=${payload.bookCode}&bookName=${payload.bookName}&fromDate=${payload.fromDate}&toDate=${payload.toDate}&status${payload.status}=&orderBy${payload.orderBy}`
+      // `rented/getRentedBookHistory?page=${payload.page}&limit=${payload.limit}&cardNumber=${payload.cardNumber}&readerName=${payload.readerName}&bookCode=${payload.bookCode}&bookName=${payload.bookName}&fromDate=${payload.fromDate}&toDate=${payload.toDate}&status=${payload.status}&orderBy=${payload.orderBy}`
+      `rented/getRentedBookHistory?page=${payload.page}&limit=${payload.limit}&cardNumber=${payload.cardNumber}&status=${payload.status}`
     )
   )
 }

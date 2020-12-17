@@ -83,6 +83,8 @@ const NUMBER = {
 }
 const CONFIG = {
   LIMIT: 5,
+  LIMIT_10: 10,
+  LIMIT_20: 20,
 }
 const IS_ACTIVE = {
   ACTIVE: 1,
@@ -145,6 +147,9 @@ const ORDER_BY = {
 const STATUS = {
   ACTIVE: 'Đang hoạt động',
   INACTIVE: 'Tạm dừng',
+  BORROWED: 'Đang mượn',
+  RETURNED: 'Đã trả',
+  PENDING: 'Chờ duyệt',
 }
 const GENDER = {
   male: 'Nam',
@@ -153,6 +158,10 @@ const GENDER = {
 const LIST_STATUS = [
   { value: 1, label: STATUS.ACTIVE },
   { value: 0, label: STATUS.INACTIVE },
+]
+const LIST_STATUS_RENTED = [
+  { value: 1, label: STATUS.BORROWED },
+  { value: 2, label: STATUS.RETURNED },
 ]
 const LIST_DOB_MONTH = [
   { value: 1, label: STRING.dobMonth + 1 },
@@ -194,6 +203,7 @@ export {
   IS_ACTIVE,
   ROLE,
   LIST_STATUS,
+  LIST_STATUS_RENTED,
   LIST_DOB_MONTH,
   LIST_ORDER_BY_MEMBER,
   LIST_ORDER_BY_READER,
