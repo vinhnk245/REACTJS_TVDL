@@ -123,7 +123,7 @@ async function getMemberDetail(memberId) {
 }
 
 async function createMember(req, res) {
-    if (req.auth.role == ROLE.MEMBER)
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let { account, name, address, dob, joinedDate, phone, email, role, note } = req.body
@@ -164,7 +164,7 @@ async function createMember(req, res) {
 }
 
 async function updateMember(req, res) {
-    if (req.auth.role == ROLE.MEMBER)
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let { id, account, name, address, dob, joinedDate, phone, email, role, note, status } = req.body
@@ -200,7 +200,7 @@ async function updateMember(req, res) {
 }
 
 async function deleteMember(req, res) {
-    if (req.auth.role == ROLE.MEMBER)
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER)
         throw API_CODE.NO_PERMISSION
 
     let id = req.body.id

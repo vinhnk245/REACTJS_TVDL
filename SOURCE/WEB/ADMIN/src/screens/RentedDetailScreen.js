@@ -395,7 +395,7 @@ class RentedDetailScreen extends Component {
         centered
       >
         <Modal.Header closeButton>
-          <h5 style={{ color: 'white' }}>Bạn chắc chắn muốn trả sách ?</h5>
+          <h5 style={{ color: 'white' }}>Bạn chắc chắn muốn trả sách?</h5>
         </Modal.Header>
         <Modal.Body className="custom-body">
           <Row>
@@ -407,7 +407,7 @@ class RentedDetailScreen extends Component {
                 OK
               </Button>
               <Button
-                variant="primary"
+                variant="secondary"
                 onClick={() => {
                   this.setState({
                     confirmModal: false,

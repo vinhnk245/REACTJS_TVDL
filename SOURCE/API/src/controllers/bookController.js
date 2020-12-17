@@ -140,7 +140,7 @@ async function getBookImages(bookId, urlRequest) {
 
 async function createBook(req, res) {
     // khong co role => reader
-    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!bookCategoryId ||
@@ -200,7 +200,7 @@ async function createBook(req, res) {
 }
 
 async function updateBook(req, res) {
-    if (!req.auth.role) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { id, bookCategoryId, name, qty, note, description, author, publishers, publishingYear } = req.body
     if (!id ||

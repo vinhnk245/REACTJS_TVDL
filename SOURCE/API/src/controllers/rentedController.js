@@ -29,7 +29,7 @@ async function getRentedBookHistory(req, res) {
     let bookName = (req.query.bookName || '').trim()
     let searchCardNumber = cardNumber.length > 0 ? `reader.cardNumber = '${cardNumber}'` : ''
     let searchReaderName = readerName.length > 0 ? `reader.name like '%${readerName}%'` : ''
-    let searchBookCode = bookCode.length > 0 ? `code = '${bookCode}'` : ''
+    // let searchBookCode = bookCode.length > 0 ? `code = '${bookCode}'` : ''
     let searchBookName = bookName.length > 0 ? `name like '%${bookName}%'` : ''
 
     let searchStatus = req.query.status ? `rented_book.status = ${req.query.status}` : `rented_book.status in (${RENTED_BOOK_STATUS.BORROWED}, ${RENTED_BOOK_STATUS.RETURNED})`
@@ -87,7 +87,7 @@ async function getRentedBookHistory(req, res) {
                         where: {
                             isActive: ACTIVE,
                             [Op.and]: [
-                                literal(searchBookCode),
+                                // literal(searchBookCode),
                                 literal(searchBookName)
                             ]
                         },
@@ -507,52 +507,54 @@ async function updateRentedBookDetail(req, res) {
         }
     })
     if (!rentedBookDetailUpdate) throw API_CODE.NOT_FOUND
-
-    let findRentedBook = await RentedBook.findOne({
-        where: {
-            isActive: ACTIVE,
-            id: rentedBookDetailUpdate.rentedBookId
-        }
-    })
+    if (rentedBookDetailUpdate.returnedDate) throw API_CODE.RENTED_BOOK_DETAIL_HAS_BEEN_UPDATE
 
     let dataUpdate = {
         status,
         lost,
         note,
+        returnedDate: Date.now(),
+        returnedConfirmMemberId: req.auth.id,
     }
 
     let data = await sequelize.transaction(async transaction => {
-        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.RETURNED && status == RENTED_BOOK_STATUS.BORROWED) {
-            dataUpdate.returnedDate = null
-            dataUpdate.returnedConfirmMemberId = null
-
-            if (findRentedBook.status === RENTED_BOOK_STATUS.RETURNED) {
-                await findRentedBook.update({ status: RENTED_BOOK_STATUS.BORROWED }, { transaction })
-            }
-        }
-        if (rentedBookDetailUpdate.status === RENTED_BOOK_STATUS.BORROWED && status == RENTED_BOOK_STATUS.RETURNED) {
-            dataUpdate.returnedDate = Date.now()
-            dataUpdate.returnedConfirmMemberId = req.auth.id
-        }
         await rentedBookDetailUpdate.update(dataUpdate, { transaction })
 
-        if (lost == 1) {
-            let findReader = await Reader.findOne({ id: rentedBookDetailUpdate.readerId, isActive: ACTIVE })
-            if (!findReader) throw API_CODE.NOT_FOUND
+        let countBookNoReturn = await RentedBookDetail.count({
+            where: {
+                isActive: ACTIVE,
+                rentedBookId: rentedBookDetailUpdate.rentedBookId,
+                returnedDate: null
+            }
+        })
+        if (countBookNoReturn == 1) {
+            // nếu trả quyển cuối trong đơn => cập nhật lại đơn
+            await RentedBook.update({
+                status: RENTED_BOOK_STATUS.RETURNED,
+                returnedDate: Date.now(),
+                returnedConfirmMemberId: req.auth.id,
+            }, {
+                where: {
+                    isActive: ACTIVE,
+                    id: rentedBookDetailUpdate.rentedBookId
+                },
+                transaction,
+            })
+        }
 
-            await findReader.update({ lost: literal(`lost + 1`) }, { transaction })
+        if (lost == 1) {
+            await Reader.update({
+                lost: literal(`lost + 1`)
+            }, {
+                where: {
+                    isActive: ACTIVE,
+                    id: rentedBookDetailUpdate.readerId
+                },
+                transaction
+            })
         }
     })
-    let checkRentedFinish = await RentedBookDetail.count({
-        where: {
-            isActive: ACTIVE,
-            rentedBookId: rentedBookDetailUpdate.rentedBookId,
-            returnedDate: null
-        }
-    })
-    if (checkRentedFinish == 0) {
-        await findRentedBook.update({ status: RENTED_BOOK_STATUS.RETURNED })
-    }
+
     return await rentedDetail(rentedBookDetailUpdate.rentedBookId, req.url)
 }
 

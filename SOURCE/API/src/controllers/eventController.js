@@ -88,7 +88,7 @@ async function createEvent(req, res) {
 }
 
 async function updateEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let { id, name, content, linkGoogleForm, eventDate } = req.body
     if (!id ||
@@ -124,7 +124,7 @@ async function updateEvent(req, res) {
 }
 
 async function deleteEvent(req, res) {
-    if (req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
+    if (!req.auth.role || req.auth.role == ROLE.MEMBER) throw API_CODE.NO_PERMISSION
 
     let id = req.body.id
     if (!id) throw API_CODE.INVALID_PARAM

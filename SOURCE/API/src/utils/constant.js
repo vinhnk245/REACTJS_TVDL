@@ -56,6 +56,7 @@ module.exports = {
     ACCOUNT_EXIST: { code: 40, message: 'Mã TNV đã tồn tại' },
     BOOK_NOT_FOUND: { code: 41, message: 'Thông tin sách không tồn tại' },
     RENTED_BOOK_OUT_OF_QTY: { code: 42, message: 'Mỗi đơn chỉ được phép mượn tối đa 3 quyển' },
+    RENTED_BOOK_DETAIL_HAS_BEEN_UPDATE: { code: 43, message: 'Quyển sách này đã được trả từ trước' },
   },
 
   CONFIG: {
