@@ -172,12 +172,6 @@ class RentedDetailScreen extends Component {
     return (
       <div
         className="p-2"
-      // style={{
-      //   backgroundColor: 'white',
-      //   borderRadius: '5px',
-      //   boxShadow: '3px 3px 10px rgb(0, 0, 0, 0.4)',
-      //   marginTop: -5,
-      // }}
       >
         <div className="mx-2">
           <div className="row">
@@ -185,7 +179,7 @@ class RentedDetailScreen extends Component {
             <div className="col-md-6 col-12">
               <div className="row mx-2 my-1">
                 <div className="col-5">
-                  <Col>Họ tên</Col>
+                  <Col>Bạn đọc</Col>
                 </div>
                 <div className="col-7">
                   <Col>
@@ -215,7 +209,7 @@ class RentedDetailScreen extends Component {
               </div>
               <div className="row mx-2 my-3">
                 <div className="col-5">
-                  <Col>Người cho mượn</Col>
+                  <Col>TNV cho mượn</Col>
                 </div>
                 <div className="col-7">
                   <Col>
@@ -224,8 +218,6 @@ class RentedDetailScreen extends Component {
                 </div>
               </div>
             </div>
-            {/* col 2 */}
-            {/* <div className="col-md-6 col-12"></div> */}
           </div>
         </div>
       </div>
@@ -291,7 +283,7 @@ class RentedDetailScreen extends Component {
               <th>Mã sách</th>
               <th>Làm mất</th>
               <th>Ngày trả</th>
-              <th>Người xác nhận</th>
+              <th>TNV xác nhận</th>
               <th>Quá hạn</th>
               <th></th>
             </tr>
@@ -430,7 +422,8 @@ class RentedDetailScreen extends Component {
         <div className="m-2 mb-3" style={{ justifyContent: 'space-between', display: 'flex' }}>
           <h1 className="header h1--cursor" onClick={() => this.props.history.goBack()} style={{ cursor: 'pointer' }}>
             <i className="fas mr-2 fa-angle-left" />
-            Chi tiết người mượn {rentedDetail?.readerName}
+            {/* Chi tiết người mượn {rentedDetail?.readerName} */}
+            Chi tiết mượn sách
           </h1>
           <div>
             <Button

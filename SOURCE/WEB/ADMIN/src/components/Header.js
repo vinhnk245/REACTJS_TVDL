@@ -483,17 +483,17 @@ class Header extends Component {
             {/* Dropdown Admin Menu */}
             <li className="nav-item dropdown">
               <a className="nav-link" data-toggle="dropdown" href="#">
-                <p className="me-txt-menu">Xin chào {user?.name}</p>
+                <p className="me-txt-menu text-bold color-tvdl"> {user?.name}</p>
               </a>
               <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right" style={{ width: '110%' }}>
-                <a
+                {/* <a
                   className="dropdown-item cursor menu-hover"
                   onClick={() => this.setShow(true) && this.updateMember(memberId)}
                 >
                   <div className="dropdown-admin-item ">
                     <p className="me-txt-admin-drop">Sửa thông tin</p>
                   </div>
-                </a>
+                </a> */}
                 <a className="dropdown-item cursor menu-hover" onClick={() => this.setShowModal(true)}>
                   <div className="dropdown-admin-item">
                     <p className="me-txt-admin-drop">Đổi mật khẩu</p>
