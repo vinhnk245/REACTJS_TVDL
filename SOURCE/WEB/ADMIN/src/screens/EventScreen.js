@@ -376,10 +376,10 @@ class ReaderScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -463,9 +463,11 @@ class ReaderScreen extends Component {
           <Button
             className="mr-0 ml-1"
             variant="secondary"
-            onClick={() => {
-              this.setShow(false)
-            }}
+            onClick={() =>
+              this.setState({
+                show: false,
+              })
+            }
           >
             {STRING.exit}
           </Button>
@@ -510,10 +512,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
@@ -543,7 +545,7 @@ class ReaderScreen extends Component {
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            {isEditEvent && <img src={imgEvent || ''} width="100" height="auto" />}
+            {imgEvent && <img src={imgEvent || ''} width="100" height="auto" />}
             <FormControl type="file" onChange={this.fileUpload} />
           </Col>
         </Row>
@@ -569,10 +571,10 @@ class ReaderScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>

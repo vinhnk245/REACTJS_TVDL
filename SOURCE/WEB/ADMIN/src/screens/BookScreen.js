@@ -259,7 +259,7 @@ class BookScreen extends Component {
         ...this.state.modal,
         [STRING.image]: e.target.files[0],
       },
-      imgBook: '',
+      imgBook: URL.createObjectURL(e.target.files[0]),
     })
   }
 
@@ -279,7 +279,6 @@ class BookScreen extends Component {
   }
 
   async setShow(bool, book = {}) {
-    reactotron.log('book', book)
     this.setState({
       ...this.state,
       show: bool,
@@ -450,8 +449,8 @@ class BookScreen extends Component {
                 {value.book_images[0]?.image ? (
                   <img src={value.book_images[0]?.image} width="100" height="auto" />
                 ) : (
-                    '--'
-                  )}
+                  '--'
+                )}
               </td>
               <td className="width2btn">
                 <i
@@ -478,10 +477,10 @@ class BookScreen extends Component {
             </tr>
           ))
         ) : (
-            <tr className="text-center">
-              <td colSpan={12}>{STRING.emptyData}</td>
-            </tr>
-          )}
+          <tr className="text-center">
+            <td colSpan={12}>{STRING.emptyData}</td>
+          </tr>
+        )}
       </tbody>
     )
   }
@@ -635,7 +634,7 @@ class BookScreen extends Component {
             <span>{fieldName}</span>
           </Col>
           <Col sm={8}>
-            {isEditBook && <img src={imgBook || ''} width="100" height="auto" />}
+            {imgBook && <img src={imgBook || ''} width="100" height="auto" />}
             <FormControl type="file" onChange={this.fileUpload} />
           </Col>
         </Row>
@@ -716,10 +715,10 @@ class BookScreen extends Component {
                 })
               }}
               value={field}
-            // onBlur={() => {
-            //   // console.log(this.state.validateError)
-            //   validateForm(this, field?.trim(), fieldName)
-            // }}
+              // onBlur={() => {
+              //   // console.log(this.state.validateError)
+              //   validateForm(this, field?.trim(), fieldName)
+              // }}
             />
             {fieldError && <span className="validation-error">{fieldError}</span>}
           </Col>
