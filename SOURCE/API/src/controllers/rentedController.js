@@ -507,7 +507,7 @@ async function updateRentedBookDetail(req, res) {
         }
     })
     if (!rentedBookDetailUpdate) throw API_CODE.NOT_FOUND
-    if (rentedBookDetailUpdate.returnedDate) throw API_CODE.RENTED_BOOK_DETAIL_HAS_BEEN_UPDATE
+    if (rentedBookDetailUpdate.status == RENTED_BOOK_STATUS.RETURNED) throw API_CODE.RENTED_BOOK_DETAIL_HAS_BEEN_UPDATE
 
     let dataUpdate = {
         status,
