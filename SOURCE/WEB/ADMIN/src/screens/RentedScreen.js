@@ -353,7 +353,7 @@ class ReaderScreen extends Component {
             variant="success"
             onClick={() => {
               this.setState({
-                modalTitle: 'Thêm bạn đọc',
+                modalTitle: 'Mượn sách',
                 show: true,
               })
             }}
@@ -402,14 +402,14 @@ class ReaderScreen extends Component {
               <td>{value.readerCardNumber || '--'}</td>
               <td
                 className="hvr-rotate cursor-pointer text-table-hover color-tvdl"
-                onClick={() => {
-                  this.setState(
-                    {
-                      modalTitle: 'Sửa bạn đọc',
-                    },
-                    () => this.setShow(true, value)
-                  )
-                }}
+              // onClick={() => {
+              //   this.setState(
+              //     {
+              //       modalTitle: 'Sửa bạn đọc',
+              //     },
+              //     () => this.setShow(true, value)
+              //   )
+              // }}
               >
                 {value.readerName || '--'}
               </td>
