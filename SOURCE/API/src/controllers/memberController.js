@@ -21,7 +21,8 @@ async function getListMember(req, res) {
 
     let queryStatus = status ? `status = ${status}` : ``
 
-    let queryOrderBy = 'status DESC, role, id DESC'
+    // let queryOrderBy = 'status DESC, role, id DESC'
+    let queryOrderBy = 'status DESC, id DESC'
     if (orderBy == ORDER_BY.MEMBER.ID_ASC)
         queryOrderBy = 'id ASC'
     if (orderBy == ORDER_BY.MEMBER.ID_DESC)
