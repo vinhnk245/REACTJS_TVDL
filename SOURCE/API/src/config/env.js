@@ -2,10 +2,16 @@ const Sequelize = require("sequelize");
 const { debug } = require("../utils/constant");
 const CONSTANT = require("../utils/constant");
 
+// const env = {
+//   host: process.env.DB_HOST || "13.251.27.111",
+//   user: process.env.DB_USER || "vinhnk",
+//   password: process.env.DB_PASSWORD || "V21official",
+//   database: process.env.DB_NAME || "duonglieu_library_test"
+// }
 const env = {
-  host: process.env.DB_HOST || "13.251.27.111",
-  user: process.env.DB_USER || "vinhnk",
-  password: process.env.DB_PASSWORD || "V21official",
+  host: process.env.DB_HOST || "34.87.147.132",
+  user: process.env.DB_USER || "tvdl-db",
+  password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "duonglieu_library_test"
 }
 
