@@ -9,7 +9,7 @@ const CONSTANT = require("../utils/constant");
 //   database: process.env.DB_NAME || "duonglieu_library_test"
 // }
 const env = {
-  host: process.env.DB_HOST || "34.87.147.132",
+  host: process.env.DB_HOST || "35.197.150.231",
   user: process.env.DB_USER || "tvdl-db",
   password: process.env.DB_PASSWORD || "",
   database: process.env.DB_NAME || "duonglieu_library_test"
